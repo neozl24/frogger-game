@@ -91,8 +91,8 @@ var Engine = (function(global) {
                 'images/stone-block.png',   // 第一行石头
                 'images/stone-block.png',   // 第二行石头
                 'images/stone-block.png',   // 第三行石头
-                'images/grass-block.png',   // 第一行草地
-                'images/grass-block.png'    // 第二行草地
+                'images/stone-block.png',   // 第四行石头（个人认为不需要两行草地）
+                'images/grass-block.png'    // 第一行草地
             ],
             numRows = 6,
             numCols = 5,
@@ -120,6 +120,12 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
+        allObstacles.forEach(function(obstacle) {
+            obstacle.render();
+        });
+        allTreasure.forEach(function(treasure) {
+            treasure.render();
+        });
 
         player.render();
     }
@@ -132,7 +138,7 @@ var Engine = (function(global) {
         scoreTxt.update();
         msgTxt.reset();
         chancesTxt.update();
-        score = 0;
+        player.score = 0;
     }
 
     //自定义暂停功能
@@ -160,7 +166,9 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/Rock.png',
+        'images/Gem Blue.png'
     ]);
     Resources.onReady(init);
 

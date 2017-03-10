@@ -1,18 +1,43 @@
+// Entity为后面各个类的父类
+var Entity = function() {
+    this.initLocation();
+}
+
+//把坐标的设定单独写成一个方法，是因为子类需要在多种情形下重设坐标，而不仅仅是初始化时
+Entity.prototype.initLocation = function() {
+    var col, row;
+
+    //通过下面的循环，保证新生成的静态元素不会和目前已有的静态元素重叠
+    do {
+        col = Math.floor( Math.random() * 5);
+        row = Math.floor( Math.random() * 4);
+        if (!isOccupied[row][col]) {
+            break;
+        }
+    } while (true);
+    isOccupied[row][col] = true;
+
+    this.x = cellWidth * col;
+    this.y = cellHeight * (row + 1);
+}
+
 // 这是我们的玩家要躲避的敌人
 var Enemy = function() {
-    // 要应用到每个敌人的实例的变量写在这里
-    // 我们已经提供了一个来帮助你实现更多
+    Entity.call(this);
 
     // 敌人的图片或者雪碧图，用一个我们提供的工具函数来轻松的加载文件
     this.sprite = 'images/enemy-bug.png';
-    this.initLocation();
+
 };
 
-//重置敌人的初始位置（绘图区域左侧之外）
+Enemy.prototype = Object.create(Entity.prototype);
+Enemy.prototype.constructor = Enemy;
+
+//重置敌人的初始位置（绘图区域左侧之外），覆盖了父类的方法
 Enemy.prototype.initLocation = function() {
     this.x = -cellWidth;
-    this.y = cellHeight * ( Math.ceil( Math.random() * 3) );
-    this.speed = 40 * Math.ceil( 2 + Math.random() * 3);
+    this.y = cellHeight * ( Math.ceil( Math.random() * 4) );
+    this.speed = 30 * Math.ceil( 3 + Math.random() * 3);
 }
 
 // 此为游戏必须的函数，用来更新敌人的位置
@@ -28,10 +53,35 @@ Enemy.prototype.update = function(dt) {
     }
 };
 
-// 此为游戏必须的函数，用来在屏幕上画出敌人，-65是为了修正敌人的纵坐标显示
+// 此为游戏必须的函数，用来在屏幕上画出敌人，几个数字用来调整大小和坐标偏移
 Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y - 65);
+    ctx.drawImage(Resources.get(this.sprite), this.x + 10, this.y - 40, 80, 136);
 };
+
+//障碍物类
+var Obstacle = function() {
+    Entity.call(this);
+    this.sprite = 'images/Rock.png';
+}
+
+Obstacle.prototype = Object.create(Entity.prototype);
+Obstacle.prototype.constructor = Obstacle;
+
+Obstacle.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x + 10, this.y - 40, 80, 136);
+}
+
+//道具类
+var Treasure = function() {
+    Entity.call(this);
+    this.sprite = 'images/Gem Blue.png';
+}
+
+Treasure.prototype = Object.create(Entity.prototype);
+Treasure.prototype.constructor = Treasure;
+Treasure.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x + 20, this.y - 15, 60, 102);
+}
 
 
 // 现在实现你自己的玩家类
@@ -52,50 +102,61 @@ Player.prototype.initLocation = function() {
 Player.prototype.update = function() {
 
     //发生碰撞时先暂停游戏，然后在上面文字区域提示玩家发生碰撞，再将角色归附原位，最后继续游戏
-    for (var i = 0, len = allEnemies.length; i < len; i ++) {
-        if ( this.canMove && this.hasCollisionWith(allEnemies[i]) ) {
-            var _this = this;
-            this.canMove = false;
-            Engine.pauseGame(); //暂停游戏
-            this.chances -= 1;
-            chancesTxt.update();
+    if ( this.canMove && this.hasCollisionWith(allEnemies) ) {
+        var _this = this;
+        this.canMove = false;
+        Engine.pauseGame(); //暂停游戏
 
-            //如果剩余机会大于0，则重置角色位置，减去一滴血，再继续游戏
-            //如果剩余机会为0，则提示Game Over，重置所有角色和记分板，再重新开始游戏
-            if (this.chances > 0) {
-                msgTxt.innerText = "Oops! Collide with a bug!"
-                setTimeout(function(){
-                    msgTxt.reset();
-                    _this.initLocation();
-                    Engine.continueGame();
-                }, 1000);
-            } else {
-                msgTxt.innerText = "Game Over";
-                setTimeout(function(){
-                    _this.initLocation();
-                    _this.chances = 3;
-                    Engine.restartGame();
-                }, 1000);
-            }
+        this.chances -= 1;
+        chancesTxt.update();
+
+        //如果剩余机会大于0，则重置角色位置，减去一滴血，再继续游戏
+        //如果剩余机会为0，则提示Game Over，重置所有元素和记分板，再重新开始游戏
+        if (this.chances > 0) {
+            msgTxt.innerText = "Oops! Collide with a bug!"
+            setTimeout(function(){
+                msgTxt.reset();
+                _this.initLocation();
+                Engine.continueGame();
+            }, 1000);
+        } else {
+            msgTxt.innerText = "Game Over";
+            setTimeout(function(){
+                _this.initLocation();
+                _this.chances = 3;
+                Engine.restartGame();
+            }, 1000);
         }
     }
 };
 
 //针对玩家位置检测是否与其它物体发生碰撞
-Player.prototype.hasCollisionWith = function(obj) {
+Player.prototype.hasCollisionWith = function(array) {
 
-    //确保该物体有横纵坐标值
-    if (!obj.hasOwnProperty('x') || !obj.hasOwnProperty('y')) {
-        console.log('not an obj!');
+    //确保参数是Array对象
+    if ( !(array instanceof Array) ) {
+        console.log('not an array!');
         return false;
     }
-    // 80这个数字是量出来的，这时实际图片效果刚刚开始重叠
-    if ( (this.x - obj.x) < 80 && (this.x - obj.x) > -80
-        && (this.y - obj.y) === 0 ) {
-        return true;
-    } else {
-        return false;
+
+    //遍历该数组
+    for (let i = 0; i < array.length; i++) {
+        var obj = array[i];
+
+        //确保数组成员有横纵坐标值，如果没有则跳入下一个循环
+        if (!obj.hasOwnProperty('x') || !obj.hasOwnProperty('y')) {
+            console.log('not an obj!');
+            continue;
+        }
+
+        // 65这个数字是根据角色和甲虫的宽度量出来的，这时实际图片刚刚开始重叠
+        if ( (this.x - obj.x) < 65 && (this.x - obj.x) > -65
+            && (this.y - obj.y) === 0 ) {
+            return true;
+        }
     }
+
+    return false;
 };
 
 Player.prototype.render = function() {
@@ -104,32 +165,43 @@ Player.prototype.render = function() {
 };
 
 Player.prototype.handleInput = function(direction) {
-    //如果角色处于我们规定的 canMove === false状态，则不进入判断
+    //到达河边，或者和敌人发生碰撞时，为了让玩家看清发生了什么，会让角色短暂地固定在事发地
+    //如果角色处于我们规定的 canMove === false状态，则不产生任何动作
     if (!this.canMove) {
         return;
     }
 
+    //若移动后和障碍物发生碰撞，则还原到碰撞前的位置，等同于无法移动到障碍物所在处
     switch (direction) {
         case 'left':
             if (this.x >= cellWidth) {
                 this.x -= cellWidth;
+                if (this.hasCollisionWith(allObstacles)) {
+                    this.x += cellWidth;
+                }
             }
             break;
         case 'right':
             if (this.x < cellWidth * 4) {
                 this.x += cellWidth;
+                if (this.hasCollisionWith(allObstacles)) {
+                    this.x -= cellWidth;
+                }
             }
             break;
         case 'up':
             if (this.y > 0) {
                 this.y -= cellHeight;
+                if (this.hasCollisionWith(allObstacles)) {
+                    this.y += cellHeight;
+                }
 
                 //如果到了最上面的那条河，就记录成功一次，并重归原位
                 //到了最上面，会停留一下子，此时将canMove置为false
                 if (this.y <= 0) {
                     this.canMove = false;
 
-                    this.score += 1;
+                    this.score += 10;
                     scoreTxt.update();
                     msgTxt.innerText = "Good job!";
 
@@ -146,6 +218,9 @@ Player.prototype.handleInput = function(direction) {
         case 'down':
             if (this.y < cellHeight * 5) {
                 this.y += cellHeight;
+                if (this.hasCollisionWith(allObstacles)) {
+                    this.y -= cellHeight;
+                }
             }
             break;
         default:
@@ -153,9 +228,9 @@ Player.prototype.handleInput = function(direction) {
     }
 };
 
-//用来界定元素大小的变量
-var cellWidth = 101,
-    cellHeight = 83;
+//用来界定格子大小的变量
+const cellWidth = 101;
+const cellHeight = 83;
 
 //下面是用来计分统计的变量
 var scoreTxt = document.getElementById('score'),
@@ -170,8 +245,17 @@ scoreTxt.update = function() {
 }
 chancesTxt.update = function() {
     this.innerText = "";
-    for(var i = 0; i < player.chances; i ++) {
+    for(let i = 0; i < player.chances; i ++) {
         this.innerText += "♥";
+    }
+}
+
+//创建一个二维数组，用来标记格子是否被障碍物或道具占据，如果是，则无法在此生成新的静态元素
+var isOccupied = [];
+for (let i = 0; i < 4; i ++) {
+    isOccupied[i] = [];
+    for (let j = 0; j < 5; j ++) {
+        isOccupied[i][j] = false;
     }
 }
 
@@ -181,9 +265,17 @@ chancesTxt.update = function() {
 var player = new Player();
 
 var allEnemies = [];
-for(var i = 0; i < 3; i ++) {
+for(let i = 0; i < 3; i ++) {
     allEnemies.push(new Enemy());
 }
+
+var allObstacles = [];
+for(let i = 0; i < 3; i ++) {
+    allObstacles.push(new Obstacle());
+}
+
+var allTreasure = [];
+allTreasure.push(new Treasure());
 
 // 这段代码监听游戏玩家的键盘点击事件并且代表将按键的关键数字送到 Player.handleInput()
 // 方法里面。你不需要再更改这段代码了。
