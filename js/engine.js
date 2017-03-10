@@ -11,7 +11,7 @@
  */
 
 var Engine = (function(global) {
-    /* 实现定义我们会在这个作用于用到的变量
+    /* 实现定义我们会在这个作用域用到的变量
      * 创建 canvas 元素，拿到对应的 2D 上下文
      * 设置 canvas 元素的高/宽 然后添加到dom中
      */
@@ -34,8 +34,8 @@ var Engine = (function(global) {
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
-        /* 调用我们的 update / render 函数， 传递事件间隙给 update 函数因为这样
-         * 可以使动画更加顺畅。
+        /* 调用我们的 update / render 函数， 传递事件间隙给 update 函数
+         * 因为这样可以使动画更加顺畅。
          */
         update(dt);
         render();
@@ -105,7 +105,7 @@ var Engine = (function(global) {
                  * 第二个和第三个分别是起始点的x和y坐标。我们用我们事先写好的资源管理工具来获取
                  * 我们需要的图片，这样我们可以享受缓存图片的好处，因为我们会反复的用到这些图片
                  */
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
+                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83 - 40);
             }
         }
 
@@ -129,7 +129,9 @@ var Engine = (function(global) {
      * 函数调用一次。
      */
     function reset() {
-        // 空操作
+        scoreTxt.innerText = "Score: 0";
+        msgTxt.innerText = "Move to the river above!";
+        chancesTxt.innerText = "♥ ♥ ♥";
     }
 
     /* 紧接着我们来加载我们知道的需要来绘制我们游戏关卡的图片。然后把 init 方法设置为回调函数。

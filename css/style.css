@@ -1,3 +1,29 @@
 body {
     text-align: center;
 }
+.top-bar {
+    height: 64px;
+    background-color: #206030;
+    overflow: hidden;
+}
+.info-panel {
+    width: 505px;
+    margin: 0 auto;
+    font-size: 18px;
+    color: white;
+    position: relative;
+}
+.txt {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+#score {
+    float: left;
+}
+#msg {
+    position: absolute;
+    left: 140px;
+}
+#chances {
+    float: right;
+}
