@@ -1,8 +1,13 @@
+* {
+    margin: 0;
+    padding: 0;
+}
 body {
     text-align: center;
 }
 .top-bar {
-    height: 64px;
+    height: 60px;
+    line-height: 60px;
     background-color: #206030;
     overflow: hidden;
 }
@@ -10,20 +15,20 @@ body {
     width: 505px;
     margin: 0 auto;
     font-size: 18px;
+    font-family: sans-serif;
     color: white;
     position: relative;
 }
-.txt {
-    padding-left: 10px;
-    padding-right: 10px;
-}
 #score {
     float: left;
+    padding-left: 10px
 }
 #msg {
     position: absolute;
-    left: 140px;
+    left: 130px;
+    width: 240px;
 }
 #chances {
     float: right;
+    padding-right: 10px;
 }

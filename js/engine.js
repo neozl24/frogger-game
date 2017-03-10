@@ -22,7 +22,7 @@ var Engine = (function(global) {
         lastTime;
 
     canvas.width = 505;
-    canvas.height = 606;
+    canvas.height = 560;    //文档给的值是606，但好像用不着这么大，大了会造成屏幕滚动
     doc.body.appendChild(canvas);
 
     /* 这个函数是整个游戏的主入口，负责适当的调用 update / render 函数 */
@@ -105,7 +105,7 @@ var Engine = (function(global) {
                  * 第二个和第三个分别是起始点的x和y坐标。我们用我们事先写好的资源管理工具来获取
                  * 我们需要的图片，这样我们可以享受缓存图片的好处，因为我们会反复的用到这些图片
                  */
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83 - 40);
+                ctx.drawImage(Resources.get(rowImages[row]), col * cellWidth, row * cellHeight - 40);
             }
         }
 
@@ -125,13 +125,31 @@ var Engine = (function(global) {
     }
 
     /* 这个函数现在没干任何事，但是这会是一个好地方让你来处理游戏重置的逻辑。可能是一个
-     * 从新开始游戏的按钮，也可以是一个游戏结束的画面，或者其它类似的设计。它只会被 init()
-     * 函数调用一次。
+     * 从新开始游戏的按钮，也可以是一个游戏结束的画面，或者其它类似的设计。
      */
     function reset() {
-        scoreTxt.innerText = "Score: 0";
-        msgTxt.innerText = "Move to the river above!";
-        chancesTxt.innerText = "♥ ♥ ♥";
+        //重置信息板
+        scoreTxt.update();
+        msgTxt.reset();
+        chancesTxt.update();
+        score = 0;
+    }
+
+    //自定义暂停功能
+    function pauseGame() {
+        update = function() {}; //将updata函数临时改成空函数，就起到了暂停游戏的作用
+    }
+
+    //自定义继续游戏的功能
+    function continueGame() {
+        update = function(dt) {
+            updateEntities(dt);
+        }
+    }
+
+    function restartGame() {
+        reset();
+        continueGame();
     }
 
     /* 紧接着我们来加载我们知道的需要来绘制我们游戏关卡的图片。然后把 init 方法设置为回调函数。
@@ -150,4 +168,11 @@ var Engine = (function(global) {
      * 对象。从而开发者就可以在他们的app.js文件里面更容易的使用它。
      */
     global.ctx = ctx;
+
+    //把自定义的暂停及继续功能暴露出来
+    return {
+        pauseGame: pauseGame,
+        continueGame: continueGame,
+        restartGame: restartGame
+    }
 })(this);
