@@ -1,43 +1,16 @@
-// Entity为后面各个类的父类
-var Entity = function() {
+// 这是玩家要躲避的敌人类
+var Enemy = function(level) {
+    this.level = level;
     this.initLocation();
-}
-
-//把坐标的设定单独写成一个方法，是因为子类需要在多种情形下重设坐标，而不仅仅是初始化时
-Entity.prototype.initLocation = function() {
-    var col, row;
-
-    //通过下面的循环，保证新生成的静态元素不会和目前已有的静态元素重叠
-    do {
-        col = Math.floor( Math.random() * 5);
-        row = Math.floor( Math.random() * 4);
-        if (!isOccupied[row][col]) {
-            break;
-        }
-    } while (true);
-    isOccupied[row][col] = true;
-
-    this.x = cellWidth * col;
-    this.y = cellHeight * (row + 1);
-}
-
-// 这是我们的玩家要躲避的敌人
-var Enemy = function() {
-    Entity.call(this);
-
-    // 敌人的图片或者雪碧图，用一个我们提供的工具函数来轻松的加载文件
+    // 敌人的图片或者雪碧图，用一个我们提供的工具函数来轻松地加载文件
     this.sprite = 'images/enemy-bug.png';
-
 };
 
-Enemy.prototype = Object.create(Entity.prototype);
-Enemy.prototype.constructor = Enemy;
-
-//重置敌人的初始位置（绘图区域左侧之外），覆盖了父类的方法
+// 重置敌人的初始位置（绘图区域左侧之外），覆盖了父类的方法
 Enemy.prototype.initLocation = function() {
     this.x = -cellWidth;
     this.y = cellHeight * ( Math.ceil( Math.random() * 4) );
-    this.speed = 30 * Math.ceil( 3 + Math.random() * 3);
+    this.speed = (25 + this.level * 5) * (3 + Math.random() * 4);
 }
 
 // 此为游戏必须的函数，用来更新敌人的位置
@@ -47,7 +20,7 @@ Enemy.prototype.update = function(dt) {
     // 都是以同样的速度运行的
     this.x += this.speed * dt;
 
-    //敌人跑到屏幕右侧之外后，将其重置到屏幕左侧
+    // 敌人跑到屏幕右侧之外后，将其重置到屏幕左侧
     if (this.x > cellWidth * 5) {
         this.initLocation();
     }
@@ -58,7 +31,43 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x + 10, this.y - 40, 80, 136);
 };
 
-//障碍物类
+// Entity为后面障碍物类和宝物类的父类
+var Entity = function() {
+    this.initLocation();
+}
+
+//把坐标的设定单独写成一个方法，是因为子类需要在多种情形下重设坐标，而不仅仅是初始化时
+Entity.prototype.initLocation = function() {
+
+    var col, row;
+
+    // 通过下面的循环，保证新生成的静态元素不会和目前已有的静态元素重叠
+    do {
+        col = Math.floor( Math.random() * 5);
+        row = Math.floor( Math.random() * 4);
+        if (!Entity.isOccupied[row][col]) {
+            break;
+        }
+    } while (true);
+    Entity.isOccupied[row][col] = true;
+
+    this.x = cellWidth * col;
+    this.y = cellHeight * (row + 1);
+}
+
+// 创建一个二维数组，用来标记格子是否被障碍物或道具占据，如果是，则无法在此生成新的静态元素
+Entity.isOccupied = (function() {
+    var matrix = [];
+    for (var i = 0; i < 4; i ++) {
+        matrix[i] = [];
+        for (var j = 0; j < 5; j ++) {
+            matrix[i][j] = false;
+        }
+    }
+    return matrix;
+}) ();
+
+// 障碍物类是Entity类的子类，它的主要特点是玩家无法移动到障碍物所在区域
 var Obstacle = function() {
     Entity.call(this);
     this.sprite = 'images/Rock.png';
@@ -71,10 +80,10 @@ Obstacle.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x + 10, this.y - 40, 80, 136);
 }
 
-//道具类
+// 宝物类也是Entity类的子类，包含宝石、生命符等静态元素
+// 玩家移动到所在格子之后会导致其消失，并触发效果
 var Treasure = function() {
     Entity.call(this);
-    this.sprite = 'images/Gem Blue.png';
 }
 
 Treasure.prototype = Object.create(Entity.prototype);
@@ -82,6 +91,28 @@ Treasure.prototype.constructor = Treasure;
 Treasure.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x + 20, this.y - 15, 60, 102);
 }
+
+// 三个Gem类都是Treasure类的子类
+var BlueGem = function() {
+    Treasure.call(this);
+    this.sprite = "images/Gem Blue.png";
+}
+BlueGem.prototype = Object.create(Treasure.prototype);
+BlueGem.prototype.constructor = BlueGem;
+
+var GreenGem = function() {
+    Treasure.call(this);
+    this.sprite = "images/Gem Green.png";
+}
+GreenGem.prototype = Object.create(Treasure.prototype);
+GreenGem.prototype.constructor = GreenGem;
+
+var OrangeGem = function() {
+    Treasure.call(this);
+    this.sprite = "images/Gem Orange.png";
+}
+OrangeGem.prototype = Object.create(Treasure.prototype);
+OrangeGem.prototype.constructor = OrangeGem;
 
 
 // 现在实现你自己的玩家类
@@ -250,15 +281,6 @@ chancesTxt.update = function() {
     }
 }
 
-//创建一个二维数组，用来标记格子是否被障碍物或道具占据，如果是，则无法在此生成新的静态元素
-var isOccupied = [];
-for (let i = 0; i < 4; i ++) {
-    isOccupied[i] = [];
-    for (let j = 0; j < 5; j ++) {
-        isOccupied[i][j] = false;
-    }
-}
-
 // 现在实例化你的所有对象
 // 把所有敌人的对象都放进一个叫 allEnemies 的数组里面
 // 把玩家对象放进一个叫 player 的变量里面
@@ -266,7 +288,7 @@ var player = new Player();
 
 var allEnemies = [];
 for(let i = 0; i < 3; i ++) {
-    allEnemies.push(new Enemy());
+    allEnemies.push(new Enemy(1));
 }
 
 var allObstacles = [];
@@ -275,7 +297,9 @@ for(let i = 0; i < 3; i ++) {
 }
 
 var allTreasure = [];
-allTreasure.push(new Treasure());
+allTreasure.push(new BlueGem());
+allTreasure.push(new GreenGem());
+allTreasure.push(new OrangeGem());
 
 // 这段代码监听游戏玩家的键盘点击事件并且代表将按键的关键数字送到 Player.handleInput()
 // 方法里面。你不需要再更改这段代码了。
