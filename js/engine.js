@@ -21,6 +21,9 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
+    // 自定义elapsedTime变量，用来记录总时常，便于控制游戏进程
+    var elapsedTime;
+
     canvas.width = 505;
     canvas.height = 560;    //文档给的值是606，但好像用不着这么大，大了会造成屏幕滚动
     doc.body.appendChild(canvas);
@@ -42,6 +45,8 @@ var Engine = (function(global) {
 
         /* 设置我们的 lastTime 变量，它会被用来决定 main 函数下次被调用的事件。 */
         lastTime = now;
+
+        elapsedTime += dt;
 
         /* 在浏览准备好调用重绘下一个帧的时候，用浏览器的 requestAnimationFrame 函数
          * 来调用这个函数
@@ -124,7 +129,10 @@ var Engine = (function(global) {
             obstacle.render();
         });
         allTreasure.forEach(function(treasure) {
-            treasure.render();
+            // 因为玩家碰到宝物后，宝物消失，因此allTreasure数组中的该对象会赋值为null
+            if (treasure !== null) {
+                treasure.render();
+            }
         });
 
         player.render();
@@ -135,27 +143,34 @@ var Engine = (function(global) {
      */
     function reset() {
         //重置信息板
-        scoreTxt.update();
-        msgTxt.reset();
-        chancesTxt.update();
+        controller.updateScore();
+        controller.resetMsg();
+        controller.updateChances();
         player.score = 0;
+        elapsedTime = 0;
     }
 
-    //自定义暂停功能
+    // 自定义暂停功能
     function pauseGame() {
         update = function() {}; //将updata函数临时改成空函数，就起到了暂停游戏的作用
     }
 
-    //自定义继续游戏的功能
+    // 自定义继续游戏的功能
     function continueGame() {
         update = function(dt) {
             updateEntities(dt);
         }
     }
 
+    // 自定义重新开始游戏功能
     function restartGame() {
         reset();
         continueGame();
+    }
+
+    // 自定义函数用来获取游戏总时长
+    function getElapsedTime() {
+        return elapsedTime;
     }
 
     /* 紧接着我们来加载我们知道的需要来绘制我们游戏关卡的图片。然后把 init 方法设置为回调函数。
@@ -186,6 +201,8 @@ var Engine = (function(global) {
     return {
         pauseGame: pauseGame,
         continueGame: continueGame,
-        restartGame: restartGame
+        restartGame: restartGame,
+
+        getElapsedTime: getElapsedTime
     }
 })(this);
