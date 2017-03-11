@@ -129,7 +129,10 @@ var Engine = (function(global) {
             enemy.render();
         });
         allObstacles.forEach(function(obstacle) {
-            obstacle.render();
+            // 玩家碰到钥匙时，会将一个障碍物对象置为null，随后数组会剔出此对象
+            if (obstacle !== null) {
+                obstacle.render();
+            }
         });
         allTreasure.forEach(function(treasure) {
             // 因为玩家碰到宝物后，宝物消失，因此allTreasure数组中的该对象会赋值为null

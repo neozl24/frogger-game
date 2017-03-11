@@ -11,12 +11,9 @@ var allObstacles = [];
 var allTreasure = [];
 
 // 初始化游戏元素
-controller.addElements(3, Enemy, allEnemies, 1);
-controller.addElements(2, Obstacle, allObstacles);
-controller.addElements(1, GreenGem, allTreasure);
-controller.addElements(1, BlueGem, allTreasure);
-controller.addElements(1, OrangeGem, allTreasure);
-controller.addElements(1, Heart, allTreasure);
+controller.addEnemy(3, 1);
+controller.addObstacle(2);
+controller.addRandomTreasure(3);
 
 
 // 这段代码监听游戏玩家的键盘点击事件并且代表将按键的关键数字送到 Player.handleInput()
@@ -28,6 +25,5 @@ document.addEventListener('keyup', function(e) {
         39: 'right',
         40: 'down'
     };
-
     player.handleInput(allowedKeys[e.keyCode]);
 });

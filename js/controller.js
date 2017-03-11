@@ -3,13 +3,61 @@ var controller = (function() {
     //下面是用来计分统计的DOM元素
     var scoreTxt = document.getElementById('score'),
         msgTxt = document.getElementById('msg'),
-        chancesTxt = document.getElementById('chances');
+        chancesTxt = document.getElementById('chances'),
+        progressBar = document.getElementById('progress-bar');
 
-    var addElements = function(num, ClassName, array, level) {
-        for(let i = 0; i < num; i ++) {
-            // level这个参数只对ClassName为Enemy时才有作用
-            array.push(new ClassName(level));
+    var addEnemy = function(num, level) {
+        for (var i = 0; i < num; i++) {
+            allEnemies.push(new Enemy(level));
         }
+    }
+
+    var addObstacle = function(num) {
+        for (var i = 0; i < num; i++) {
+            allObstacles.push(new Obstacle());
+        }
+    }
+
+    var addTreasure = function(num, ClassName) {
+        for (var i = 0; i < num; i++) {
+            allTreasure.push(new ClassName());
+        }
+    }
+
+    // 按各种宝物的概率权重，随机生成若干个宝物
+    var addRandomTreasure = function(num) {
+        var treasureList = [
+            { ClassName: BlueGem, weight: 20 },
+            { ClassName: GreenGem, weight: 10 },
+            { ClassName: OrangeGem, weight: 25 },
+            { ClassName: Heart, weight: 10 },
+            { ClassName: Key, weight: 10 },
+            { ClassName: Star, weight: 5 },
+        ];
+        var totalWeight = 0;
+        for (let i = 0; i < treasureList.length; i++) {
+            totalWeight += treasureList[i].weight;
+        }
+
+        var randomNum, currentTotalWeight, targetClass;
+        for (let i = 0; i < num; i++) {
+            randomNum = Math.ceil( Math.random() * totalWeight);
+            targetClass = treasureList[0].ClassName;
+            currentTotalWeight = 0;
+            for (let j = 0; j < treasureList.length - 1; j++) {
+                currentTotalWeight += treasureList[j].weight;
+                if (currentTotalWeight < randomNum) {
+                    targetClass = treasureList[j+1].ClassName;
+                }
+            }
+            this.addTreasure(1, targetClass);
+        }
+    }
+
+    var removeRock = function(num) {
+        var randomIndex = Math.floor(Math.random(allObstacles.length));
+        allObstacles[randomIndex] = null;
+        this.takeOutNullElements(allObstacles);
     };
 
     var resetMsg = function() {
@@ -72,12 +120,54 @@ var controller = (function() {
         }
     };
 
+    var slowTimeTemporarily = function() {
+        Engine.setTimeSpeed(0.2);
+
+        // 有效时间
+        var actionTime = 5000;
+        // 渲染的时间间隔，会影响进度条动画的平顺
+        var dt = 20;
+
+        var totalWidth = progressBar.parentNode.offsetWidth;
+        var width = totalWidth;
+
+        setInterval(function() {
+            width -= totalWidth * (dt / actionTime);
+            progressBar.style.width = width + "px";
+        }, dt);
+
+        setTimeout(function() {
+            Engine.setTimeSpeed(1);
+            clearInterval();
+        }, actionTime);
+    };
+
+    var takeOutNullElements = function(array) {
+        var newArray = [];
+        for(var i = 0, j = 0; i < array.length; i ++) {
+            if (array[i] !== null) {
+                newArray[j] = array[i];
+                j ++;
+            }
+        }
+    }
+
     return {
-        addElements: addElements,
+        addEnemy: addEnemy,
+        addObstacle: addObstacle,
+        addTreasure: addTreasure,
+        addRandomTreasure: addRandomTreasure,
+        removeRock: removeRock,
+
         resetMsg: resetMsg,
         updateScore: updateScore,
         updateChances: updateChances,
+
         handleCrossingRiver: handleCrossingRiver,
-        handleCollisionWithEnemy: handleCollisionWithEnemy
+        handleCollisionWithEnemy: handleCollisionWithEnemy,
+
+        slowTimeTemporarily: slowTimeTemporarily,
+
+        takeOutNullElements: takeOutNullElements
     }
 })();

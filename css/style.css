@@ -9,26 +9,39 @@ body {
     height: 60px;
     line-height: 60px;
     background-color: #206030;
+    position: relative;
     overflow: hidden;
 }
 .info-panel {
     width: 505px;
+    height: 100%;
     margin: 0 auto;
     font-size: 18px;
     font-family: sans-serif;
     color: white;
     position: relative;
 }
+#progress-bar {
+    position: absolute;
+    width: 0;
+    height: 100%;
+    z-index: 1;
+    background-color: #2244AA;
+    border-right: 1px solid #113399;
+}
+.txt {
+    z-index: 2;
+    position: absolute;
+}
 #score {
-    float: left;
+    left: 0;
     padding-left: 10px
 }
 #msg {
-    position: absolute;
     left: 130px;
     width: 240px;
 }
 #chances {
-    float: right;
+    right: 0;
     padding-right: 10px;
 }
