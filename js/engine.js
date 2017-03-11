@@ -145,12 +145,12 @@ var Engine = (function(global) {
      * 从新开始游戏的按钮，也可以是一个游戏结束的画面，或者其它类似的设计。
      */
     function reset() {
-        //重置信息板
-        controller.updateScore();
-        controller.resetMsg();
-        controller.updateChances();
-        player.score = 0;
         elapsedTime = 0;
+
+        //重置信息板
+        controller.updateScore(player);
+        controller.resetMsg();
+        controller.updateChances(player);
     }
 
     // 自定义暂停功能
@@ -176,6 +176,7 @@ var Engine = (function(global) {
         return elapsedTime;
     }
 
+    // 自定义函数用来控制时间流逝的快慢，影响的不仅是敌人的速度，内部计时elapsedTime也受影响
     function setTimeSpeed(speed) {
         // speed值越大，代表时间流逝的越快，设为1可恢复默认速度
         timeSpeed = speed;

@@ -128,6 +128,15 @@ var OrangeGem = function() {
 OrangeGem.prototype = Object.create(Treasure.prototype);
 OrangeGem.prototype.constructor = OrangeGem;
 
+var Heart = function() {
+    Treasure.call(this);
+    this.sprite = "images/Heart.png";
+}
+Heart.prototype = Object.create(Treasure.prototype);
+Heart.prototype.constructor = Heart;
+Heart.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x + 21, this.y - 5, 60, 102);
+}
 
 // 现在实现你自己的玩家类
 // 这个类需要一个 update() 函数， render() 函数和一个 handleInput()函数
@@ -151,30 +160,7 @@ Player.prototype.update = function() {
 
     //发生碰撞时先暂停游戏，然后在上面文字区域提示玩家发生碰撞，再将角色归附原位，最后继续游戏
     if ( this.canMove && this.hasCollisionWith(allEnemies) ) {
-        var _this = this;
-        this.canMove = false;
-        Engine.pauseGame(); //暂停游戏
-
-        this.chances -= 1;
-        controller.updateChances();
-
-        //如果剩余机会大于0，则重置角色位置，减去一滴血，再继续游戏
-        //如果剩余机会为0，则提示Game Over，重置所有元素和记分板，再重新开始游戏
-        if (this.chances > 0) {
-            msgTxt.innerText = "Oops! Collide with a bug!"
-            setTimeout(function(){
-                controller.resetMsg();
-                _this.initLocation();
-                Engine.continueGame();
-            }, 1000);
-        } else {
-            msgTxt.innerText = "Game Over";
-            setTimeout(function(){
-                _this.initLocation();
-                _this.chances = 3;
-                Engine.restartGame();
-            }, 1000);
-        }
+        controller.handleCollisionWithEnemy(this);
     }
 };
 
@@ -204,8 +190,6 @@ Player.prototype.hasCollisionWith = function(array) {
             return true;
 
         } else if ((obj instanceof Treasure) && this.x === obj.x && this.y === obj.y) {
-            // 如果是Treasure类，则需要将array中的该元素重置为null
-            array[i] = null;
 
             if (obj instanceof BlueGem) {
                 // 蓝宝石可以让时间变慢
@@ -214,7 +198,23 @@ Player.prototype.hasCollisionWith = function(array) {
                 setTimeout(function() {
                     Engine.setTimeSpeed(1);
                 }, 5000);
+
+            } else if (obj instanceof GreenGem) {
+                // 绿宝石可以减少一个敌人
+                allEnemies = allEnemies.slice(0, allEnemies.length - 1);
+
+            } else if (obj instanceof OrangeGem) {
+                // 橙色宝石可以将所有敌人移到屏幕外面去
+                allEnemies.forEach(function(enemy) {
+                    enemy.x = -100;
+                });
+            } else if ( (obj instanceof Heart) && this.chances < 5) {
+                this.increaseChancesBy(1);
             }
+
+            // 如果是Treasure类，则需要将array中的该元素重置为null
+            array[i] = null;
+
             return true;
         }
     }
@@ -225,6 +225,12 @@ Player.prototype.hasCollisionWith = function(array) {
 Player.prototype.render = function() {
     // -50是为了修正玩家的纵坐标显示
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y - 50);
+};
+
+// 改变玩家生命值的函数，碰到敌人时，传入参数-1
+Player.prototype.increaseChancesBy = function(d) {
+    this.chances += d;
+    controller.updateChances(this);
 };
 
 Player.prototype.handleInput = function(direction) {
@@ -252,22 +258,10 @@ Player.prototype.handleInput = function(direction) {
             if (this.y > 0) {
                 this.y -= cellHeight;
 
-                //如果到了最上面的那条河，就记录成功一次，并重归原位
-                //到了最上面，会停留一下子，此时将canMove置为false
                 if (this.y <= 0) {
-                    this.canMove = false;
-
-                    this.score += 10;
-                    controller.updateScore();
-                    msgTxt.innerText = "Good job!";
-
-                    var _this = this;
-                    setTimeout(function() {
-                        _this.initLocation();
-                    }, 500);
-                    setTimeout(function() {
-                        controller.resetMsg(); //0.5秒后让角色归位，再过0.5秒还原文字区域
-                    }, 1000);
+                    // 到达最上面的河了
+                    _this = this;
+                    controller.handleCrossingRiver(_this);
                 }
             }
             break;
@@ -281,9 +275,18 @@ Player.prototype.handleInput = function(direction) {
     }
 
     // 如果移动后和障碍物碰到一起去了，就回到刚才的位置，相当于不能朝障碍物移动
-    if(this.hasCollisionWith(allObstacles)) {
+    if ( this.hasCollisionWith(allObstacles) ) {
         this.x = lastX;
         this.y = lastY;
     }
-    this.hasCollisionWith(allTreasure);
+    // 如果是移动后吃到一个宝物，我们会将allTreasure数组中对应元素赋值为null，这时将其剔除
+    if ( this.hasCollisionWith(allTreasure) ) {
+        for(var i = 0; i < allTreasure.length; i ++) {
+            if (allTreasure[i] === null && i !== allTreasure.length - 1) {
+                allTreasure.splice(i, 2, allTreasure[i+1]);
+            } else if (allTreasure[i] === null && i === allTreasure.length - 1) {
+                allTreasure = allTreasure.slice(0, allTreasure.length - 1);
+            }
+        }
+    }
 };
