@@ -24,6 +24,9 @@ var Engine = (function(global) {
     // 自定义elapsedTime变量，用来记录总时常，便于控制游戏进程
     var elapsedTime;
 
+    // 自定义变量用来控制时间流逝的快慢，默认值是1;
+    var timeSpeed = 1;
+
     canvas.width = 505;
     canvas.height = 560;    //文档给的值是606，但好像用不着这么大，大了会造成屏幕滚动
     doc.body.appendChild(canvas);
@@ -35,7 +38,7 @@ var Engine = (function(global) {
          * 就问你屌不屌！
          */
         var now = Date.now(),
-            dt = (now - lastTime) / 1000.0;
+            dt = (now - lastTime) / 1000.0 * timeSpeed;
 
         /* 调用我们的 update / render 函数， 传递事件间隙给 update 函数
          * 因为这样可以使动画更加顺畅。
@@ -173,6 +176,11 @@ var Engine = (function(global) {
         return elapsedTime;
     }
 
+    function setTimeSpeed(speed) {
+        // speed值越大，代表时间流逝的越快，设为1可恢复默认速度
+        timeSpeed = speed;
+    }
+
     /* 紧接着我们来加载我们知道的需要来绘制我们游戏关卡的图片。然后把 init 方法设置为回调函数。
      * 那么党这些图片都已经加载完毕的时候游戏就会开始。
      */
@@ -203,6 +211,7 @@ var Engine = (function(global) {
         continueGame: continueGame,
         restartGame: restartGame,
 
-        getElapsedTime: getElapsedTime
+        getElapsedTime: getElapsedTime,
+        setTimeSpeed: setTimeSpeed
     }
 })(this);

@@ -2,7 +2,7 @@
 const cellWidth = 101;
 const cellHeight = 83;
 
-// 用来控制游戏进程的变量
+// 用来控制游戏进程的对象
 var controller = {};
 
 //下面是用来计分统计的变量
@@ -41,6 +41,7 @@ controller.updateChances = function() {
 controller.addElements(3, Enemy, allEnemies, 1);
 controller.addElements(2, Obstacle, allObstacles);
 controller.addElements(1, GreenGem, allTreasure);
+controller.addElements(1, BlueGem, allTreasure);
 
 // 这段代码监听游戏玩家的键盘点击事件并且代表将按键的关键数字送到 Player.handleInput()
 // 方法里面。你不需要再更改这段代码了。

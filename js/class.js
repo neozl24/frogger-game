@@ -1,3 +1,18 @@
+//下面是类的继承结构
+/*
++-- Enemy
+|
++-- Entity --+-- Obstacle
+|            |
+|            +-- Treasure --+-- BlueGem
+|                           +-- GreenGem
+|                           +-- OrangeGem
+|                           +-- Heart
+|
+|
++-- Player
+*/
+
 // 这是玩家要躲避的敌人类
 var Enemy = function(level) {
     this.level = level;
@@ -41,21 +56,20 @@ Entity.prototype.initLocation = function() {
 
     var col, row;
 
-    // 通过下面的循环，保证新生成的静态元素不会和目前已有的静态元素重叠
+    // 通过下面的循环，保证新生成的静态元素不会和目前已有的静态元素或玩家重叠
     do {
         col = Math.floor( Math.random() * 5);
         row = Math.floor( Math.random() * 4);
-        if (!Entity.isOccupied[row][col]) {
-            break;
-        }
-    } while (true);
-    Entity.isOccupied[row][col] = true;
+        this.x = cellWidth * col;
+        this.y = cellHeight * (row + 1);
 
-    this.x = cellWidth * col;
-    this.y = cellHeight * (row + 1);
+    } while (Entity.isOccupied[row][col] ||
+        (this.x === player.x && this.y === player.y)
+    );
+    Entity.isOccupied[row][col] = true;
 }
 
-// 创建一个二维数组，用来标记格子是否被障碍物或道具占据，如果是，则无法在此生成新的静态元素
+// 创建一个二维数组，用来标记格子是否被已有静态元素占据，如果是，则无法在此生成新的静态元素
 Entity.isOccupied = (function() {
     var matrix = [];
     for (var i = 0; i < 4; i ++) {
@@ -124,6 +138,7 @@ var Player = function() {
     this.initLocation();
 }
 
+// initLocation不仅在初始化时调用，在游戏中只要角色回到初始位置，就调用这个函数
 Player.prototype.initLocation = function() {
     this.x = cellWidth * 2;
     this.y = cellHeight * 5;
@@ -182,14 +197,23 @@ Player.prototype.hasCollisionWith = function(array) {
         }
 
         // 65这个数字是根据角色和甲虫的宽度量出来的，这时实际图片刚刚开始重叠
-        if ( (obj instanceof Enemy) && (this.x - obj.x) < 65 && (this.x - obj.x) > -65
-            && (this.y - obj.y) === 0 ) {
+        if ((obj instanceof Enemy) && Math.abs(this.x - obj.x) < 65 && this.y === obj.y) {
             return true;
-        } else if ((obj instanceof Entity) && this.x === obj.x && this.y === obj.y) {
-            // 如果是Entity类，就检查横纵坐标是不是都完全相等
-            // 然后，再检查如果是Treasure类，则需要将array中的该元素重置为null
-            if (obj instanceof Treasure) {
-                array[i] = null;
+
+        } else if ((obj instanceof Obstacle) && this.x === obj.x && this.y === obj.y) {
+            return true;
+
+        } else if ((obj instanceof Treasure) && this.x === obj.x && this.y === obj.y) {
+            // 如果是Treasure类，则需要将array中的该元素重置为null
+            array[i] = null;
+
+            if (obj instanceof BlueGem) {
+                // 蓝宝石可以让时间变慢
+                Engine.setTimeSpeed(0.2);
+                // 5秒之后恢复正常
+                setTimeout(function() {
+                    Engine.setTimeSpeed(1);
+                }, 5000);
             }
             return true;
         }
@@ -210,30 +234,23 @@ Player.prototype.handleInput = function(direction) {
         return;
     }
 
+    var lastX = this.x, lastY = this.y;
+
     //若移动后和障碍物发生碰撞，则还原到碰撞前的位置，等同于无法移动到障碍物所在处
     switch (direction) {
         case 'left':
             if (this.x >= cellWidth) {
                 this.x -= cellWidth;
-                if (this.hasCollisionWith(allObstacles)) {
-                    this.x += cellWidth;
-                }
             }
             break;
         case 'right':
             if (this.x < cellWidth * 4) {
                 this.x += cellWidth;
-                if (this.hasCollisionWith(allObstacles)) {
-                    this.x -= cellWidth;
-                }
             }
             break;
         case 'up':
             if (this.y > 0) {
                 this.y -= cellHeight;
-                if (this.hasCollisionWith(allObstacles)) {
-                    this.y += cellHeight;
-                }
 
                 //如果到了最上面的那条河，就记录成功一次，并重归原位
                 //到了最上面，会停留一下子，此时将canMove置为false
@@ -257,13 +274,16 @@ Player.prototype.handleInput = function(direction) {
         case 'down':
             if (this.y < cellHeight * 5) {
                 this.y += cellHeight;
-                if (this.hasCollisionWith(allObstacles)) {
-                    this.y -= cellHeight;
-                }
             }
             break;
         default:
             return;
+    }
+
+    // 如果移动后和障碍物碰到一起去了，就回到刚才的位置，相当于不能朝障碍物移动
+    if(this.hasCollisionWith(allObstacles)) {
+        this.x = lastX;
+        this.y = lastY;
     }
     this.hasCollisionWith(allTreasure);
 };
