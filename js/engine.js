@@ -151,7 +151,7 @@ var Engine = (function(global) {
     function reset() {
         // Engine所掌管的游戏变量只有时间，其它的都交给controller去做了
         elapsedTime = 0;
-        this.setTimeSpeed(1);
+        setTimeSpeed(1);
     }
 
     // 自定义函数用来获取游戏总时长，单位是秒

@@ -14,17 +14,6 @@ var controller = (function() {
         "enemyLevel": 1
     };
 
-    // 这个用来标记进度条的倒计时效果
-    var countdownId;
-
-    // 游戏循环控制各个元素的数量，增删，速度提升等等
-    // 这个变量是游戏循环的id，用作clearInterval()的参数
-    var gameLoopId;
-
-    // 我们将游戏分为一个一个的阶段，用变量stage来表示
-    // stage的值决定了什么时候增加敌人，提升敌人等级，生成静态元素等等
-    var stage = 0;
-
     // 创建一个二维数组，用来标记格子是否被已有静态元素占据，如果是，则无法在此生成新的静态元素
     var isOccupied = (function() {
         var matrix = [];
@@ -159,19 +148,23 @@ var controller = (function() {
         updateScore(p);
         resetMsg();
 
-        // 清楚上一局的倒计时效果（如果还没结束的话）和游戏循环
+        // 清除上一局的倒计时效果（如果还没结束的话）和游戏循环
         clearInterval(countdownId);
+        clearTimeout(restoreId);
         progressBar.style.width = 0;
 
         stopLoop();
 
+        // 执行初始化函数，生成初始元素
         initElements(   initialSettings["treasureNum"],
                         initialSettings["obstacleNum"],
                         initialSettings["enemyNum"],
                         initialSettings["enemyLevel"]   );
-        Engine.reset();
-        stage = 0;
 
+        // 执行Engine的函数，使时间流速和计时恢复默认状态
+        Engine.reset();
+
+        stage = 0;
         // 此函数随着游戏进程自动控制敌人、障碍物、宝物这三项元素
         startLoop(p);
     }
@@ -190,6 +183,14 @@ var controller = (function() {
         addObstacle(obstacleNum);
         addEnemy(enemyNum, level);
     };
+
+    // 我们将游戏分为一个一个的阶段，用变量stage来表示
+    // stage的值决定了什么时候增加敌人，提升敌人等级，生成静态元素等等
+    var stage = 0;
+
+    // 游戏循环控制各个元素的数量，增删，速度提升等等
+    // 这个变量是游戏循环的id，用作clearInterval()的参数
+    var gameLoopId;
 
     // 开始游戏逻辑循环，根据时间和玩家当前分数来控制敌人的数量和等级，以及障碍物和宝物的增减
     var startLoop = function(p) {
@@ -297,12 +298,18 @@ var controller = (function() {
         }
     };
 
+    // countdownId用来标记进度条的倒计时效果
+    var countdownId;
+    // restoreId用来标记进度条恢复触发器效果
+    var restoreId;
+
     // 蓝宝石触发的效果，让时间变慢，持续一小段时间
     var obtainBlueGem = function(p) {
         Engine.setTimeSpeed(0.2);
 
-        // 如果短时间内吃到两个蓝宝石，需要先将上一个产生的倒计时效果清楚
+        // 如果短时间内吃到两个蓝宝石，需要先将上一个产生的倒计时和恢复器效果清除
         clearInterval(countdownId);
+        clearTimeout(restoreId);
 
         msgTxt.innerText = "Time Slowing Down";
 
@@ -315,13 +322,16 @@ var controller = (function() {
         var width = totalWidth;
         var unitWidth = Math.ceil( totalWidth  * dt / actionTime);
 
+        progressBar.style.width = width + "px";
+
         countdownId = setInterval(function() {
             width -= unitWidth;
+            width = Math.max(width, 0);
             progressBar.style.width = width + "px";
         }, dt);
 
         // 将游戏时间恢复正常
-        setTimeout(function() {
+        restoreId = setTimeout(function() {
             Engine.setTimeSpeed(1);
             clearInterval(countdownId);
             resetMsg();
