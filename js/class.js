@@ -45,7 +45,7 @@ Enemy.prototype.update = function(dt) {
 
 // 此为游戏必须的函数，用来在屏幕上画出敌人，几个数字用来调整大小和坐标偏移
 Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x + 10, this.y - 40, 80, 136);
+    ctx.drawImage(Resources.get(this.sprite), this.x + 20, this.y - 20, 60, 102);
 };
 
 // Entity为后面障碍物类和宝物类的父类
@@ -193,7 +193,7 @@ Player.prototype.hasCollisionWith = function(array) {
         }
 
         // 65这个数字是根据角色和甲虫的宽度量出来的，这时实际图片刚刚开始重叠
-        if ((obj instanceof Enemy) && Math.abs(this.x - obj.x) < 65 && this.y === obj.y) {
+        if ((obj instanceof Enemy) && Math.abs(this.x - obj.x) < 48 && this.y === obj.y) {
             return true;
 
         } else if ((obj instanceof Obstacle) && this.x === obj.x && this.y === obj.y) {

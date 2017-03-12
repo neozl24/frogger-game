@@ -119,6 +119,10 @@ var controller = (function() {
     }
 
     var removeRock = function(num) {
+        if (allObstacles.length === 0) {
+            return;
+        }
+
         var randomIndex = Math.floor(Math.random() * allObstacles.length);
 
         // 先调整isOccupied二维数组中对应的元素为false
@@ -193,7 +197,7 @@ var controller = (function() {
         // 先记录上一次的stage
         var lastStage = stage;
 
-        // 每隔2秒检查一次，游戏处于哪个stage了
+        // 每隔1秒检查一次，游戏处于哪个stage了
         // 只有player.score和Engine.getTime()两个值都达标，才能进入下一个stage
         gameLoopId = setInterval(function() {
             /* 一般情况下，我们希望stage值由游戏时间决定，每隔5秒提升一档
@@ -224,7 +228,7 @@ var controller = (function() {
                 }
             }
             lastStage = stage;
-        }, 2000);
+        }, 1000);
     };
 
     var stopLoop = function(p) {
@@ -367,7 +371,7 @@ var controller = (function() {
         }, 1000);
     };
 
-    // 钥匙可以消除一个石头，同时得到少量分数
+    // 钥匙可以消除一个石头，同时得到少量分数。如果没有石头，则只获得同样多的分数。
     var obtainKey = function(p) {
         removeRock(1);
         p.score += 20;
