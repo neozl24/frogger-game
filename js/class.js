@@ -27,7 +27,7 @@ var Enemy = function(level) {
 Enemy.prototype.initLocation = function() {
     this.x = -cellWidth;
     this.y = cellHeight * ( Math.ceil( Math.random() * 4) );
-    this.speed = (25 + this.level * 5) * (3 + Math.random() * 4);
+    this.speed = (35 + this.level) * (2 + Math.random() * 3);
 }
 
 // 此为游戏必须的函数，用来更新敌人的位置
@@ -150,7 +150,7 @@ Star.prototype.constructor = Star;
 // 这个类需要一个 update() 函数， render() 函数和一个 handleInput()函数
 var Player = function() {
     this.sprite = 'images/char-boy.png';
-    this.chances = 3;
+    this.chances = 3;   // 记录玩家当前所剩机会（即生命值）
     this.score = 0;
     this.initLocation();
 }
@@ -226,8 +226,13 @@ Player.prototype.hasCollisionWith = function(array) {
                 controller.obtainStar(this);
             }
 
-            // 如果是Treasure类，则需要将array中的该元素重置为null
+            // 如果是Treasure类，则需要将allTreasure中的对应元素重置为null
             array[i] = null;
+
+            // 同时将isOccupied二维数组中对应的格子元素置为false;
+            var row = this.y / cellHeight - 1,
+                col = this.x / cellWidth ;
+            controller.isOccupied[row][col] = false;
 
             return true;
         }

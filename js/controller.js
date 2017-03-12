@@ -10,12 +10,20 @@ var controller = (function() {
     var initialSettings = {
         "treasureNum": 2,
         "obstacleNum": 2,
-        "enemyNum": 3,
+        "enemyNum": 4,
         "enemyLevel": 1
     };
 
     // 这个用来标记进度条的倒计时效果
-    var countdown;
+    var countdownId;
+
+    // 游戏循环控制各个元素的数量，增删，速度提升等等
+    // 这个变量是游戏循环的id，用作clearInterval()的参数
+    var gameLoopId;
+
+    // 我们将游戏分为一个一个的阶段，用变量stage来表示
+    // stage的值决定了什么时候增加敌人，提升敌人等级，生成静态元素等等
+    var stage = 0;
 
     // 创建一个二维数组，用来标记格子是否被已有静态元素占据，如果是，则无法在此生成新的静态元素
     var isOccupied = (function() {
@@ -37,7 +45,26 @@ var controller = (function() {
         return matrix;
     })();
 
+    // 这个函数用来求isOccupied二维数组中有多少个true
+    // 它的返回值用来决定能否继续添加静态元素
+    var getOccupiedNum = function() {
+        var num = 0;
+        isOccupied.forEach(function(eachRow) {
+            eachRow.forEach(function(eachCell) {
+                if (eachCell === true) {
+                    num += 1;
+                }
+            });
+        });
+        return num;
+    };
+
     var addEnemy = function(num, level) {
+
+        // 如果allEnemies不为空，则新加入的敌人保持和之前的敌人为相同等级
+        if (allEnemies.length > 0) {
+            level = allEnemies[0].level;
+        }
         for (var i = 0; i < num; i++) {
             allEnemies.push(new Enemy(level));
         }
@@ -45,18 +72,24 @@ var controller = (function() {
 
     var addObstacle = function(num) {
         for (var i = 0; i < num; i++) {
-            allObstacles.push(new Obstacle());
+            if (getOccupiedNum() < 10) {
+                allObstacles.push(new Obstacle());
+            }
         }
     }
 
     var addTreasure = function(num, ClassName) {
         for (var i = 0; i < num; i++) {
-            allTreasure.push(new ClassName());
+            if (getOccupiedNum() < 16) {
+                allTreasure.push(new ClassName());
+            }
         }
     }
 
     // 按各种宝物的概率权重，随机生成若干个宝物
     var addRandomTreasure = function(num) {
+
+        // 这里设置各种宝物出现的概率权重
         var treasureList = [
             { ClassName: BlueGem, weight: 20 },
             { ClassName: GreenGem, weight: 10 },
@@ -87,6 +120,12 @@ var controller = (function() {
 
     var removeRock = function(num) {
         var randomIndex = Math.floor(Math.random() * allObstacles.length);
+
+        // 先调整isOccupied二维数组中对应的元素为false
+        var row = allObstacles[randomIndex].y / cellHeight - 1,
+            col = allObstacles[randomIndex].x / cellWidth;
+        isOccupied[row][col] = false;
+
         allObstacles[randomIndex] = null;
         allObstacles = takeOutNullOrUndefined(allObstacles);
     };
@@ -116,11 +155,21 @@ var controller = (function() {
         updateScore(p);
         resetMsg();
 
-        initElements(  initialSettings["treasureNum"],
-                            initialSettings["obstacleNum"],
-                            initialSettings["enemyNum"],
-                            initialSettings["enemyLevel"]   );
+        // 清楚上一局的倒计时效果（如果还没结束的话）和游戏循环
+        clearInterval(countdownId);
+        progressBar.style.width = 0;
+
+        stopLoop();
+
+        initElements(   initialSettings["treasureNum"],
+                        initialSettings["obstacleNum"],
+                        initialSettings["enemyNum"],
+                        initialSettings["enemyLevel"]   );
         Engine.reset();
+        stage = 0;
+
+        // 此函数随着游戏进程自动控制敌人、障碍物、宝物这三项元素
+        startLoop(p);
     }
 
     // 初始化游戏元素
@@ -138,13 +187,69 @@ var controller = (function() {
         addEnemy(enemyNum, level);
     };
 
+    // 开始游戏逻辑循环，根据时间和玩家当前分数来控制敌人的数量和等级，以及障碍物和宝物的增减
+    var startLoop = function(p) {
+
+        // 先记录上一次的stage
+        var lastStage = stage;
+
+        // 每隔2秒检查一次，游戏处于哪个stage了
+        // 只有player.score和Engine.getTime()两个值都达标，才能进入下一个stage
+        gameLoopId = setInterval(function() {
+            /* 一般情况下，我们希望stage值由游戏时间决定，每隔5秒提升一档
+             * 只有玩家分数太低，才会导致stage停留不动，例如玩家在出发点挂机的情况
+             */
+            stage = Math.floor(Math.min( Engine.getTime() / 5.0 , p.score / 10.0));
+            if (stage !== lastStage) {
+                console.log(stage);
+                allEnemies.forEach(function(enemy) {
+                    enemy.level += 1;
+                });
+                addRandomTreasure(1);
+
+                if (stage % 3 === 0) {
+                    addObstacle(1);
+                }
+                if (stage % 4 === 0) {
+                    addEnemy(1, allEnemies[0].level);
+                }
+                if (stage % 5 === 0) {
+                    addTreasure(1, Key);
+                }
+                if (stage % 6 === 0) {
+                    addTreasure(1, Heart);
+                }
+                if (stage % 7 === 0) {
+                    addTreasure(1, GreenGem);
+                }
+            }
+            lastStage = stage;
+        }, 2000);
+    };
+
+    var stopLoop = function(p) {
+        clearInterval(gameLoopId);
+    }
+
+    // 暂停游戏
+    var pauseGame = function(p) {
+        p.canMove = false;          // 保证角色不受键盘响应
+        Engine.setTimeSpeed(0);     // 相当于暂停动画
+    }
+
+    // 继续游戏
+    var continueGame = function(p) {
+        p.canMove = true;           // 恢复键盘响应
+        Engine.setTimeSpeed(1);     // 恢复动画速度
+    }
+
     // 如果到了最上面的那条河，就记录成功一次，并重归原位
     // 到了最上面，会停留一下子，此时将canMove置为false
     var handleCrossingRiver = function(p) {
 
         p.canMove = false;
 
-        p.score += 10;
+        p.score += (10 + stage);    // 游戏阶段越往后，单次过河的分数越高
         updateScore(p);
 
         var congratsWords = [   "Good Job!", "Nice Move!", ": P",
@@ -162,8 +267,8 @@ var controller = (function() {
 
     // 碰到敌人所触发的效果
     var handleCollisionWithEnemy = function(p) {
-        p.canMove = false;
-        Engine.pauseGame(); //暂停游戏
+        // 碰到敌人时会短暂地暂停游戏，好让玩家看清楚发生了什么
+        pauseGame(p);
 
         p.chances -= 1;
         updateChances(p);
@@ -177,13 +282,13 @@ var controller = (function() {
             setTimeout(function(){
                 resetMsg();
                 p.initLocation();
-                Engine.continueGame();
+                continueGame(p);
             }, 1000);
         } else {
             msgTxt.innerText = "Game Over";
             setTimeout(function(){
                 restart(p);
-                Engine.continueGame();
+                continueGame(p);
             }, 1000);
         }
     };
@@ -193,7 +298,7 @@ var controller = (function() {
         Engine.setTimeSpeed(0.2);
 
         // 如果短时间内吃到两个蓝宝石，需要先将上一个产生的倒计时效果清楚
-        clearInterval(countdown);
+        clearInterval(countdownId);
 
         msgTxt.innerText = "Time Slowing Down";
 
@@ -206,7 +311,7 @@ var controller = (function() {
         var width = totalWidth;
         var unitWidth = Math.ceil( totalWidth  * dt / actionTime);
 
-        countdown = setInterval(function() {
+        countdownId = setInterval(function() {
             width -= unitWidth;
             progressBar.style.width = width + "px";
         }, dt);
@@ -214,15 +319,15 @@ var controller = (function() {
         // 将游戏时间恢复正常
         setTimeout(function() {
             Engine.setTimeSpeed(1);
-            clearInterval(countdown);
-            resetMsg()
+            clearInterval(countdownId);
+            resetMsg();
         }, actionTime);
     };
 
     // 碰到绿宝石可以减少一个敌人，如果当前只剩一个敌人，则效果改为得到大量分数
     var obtainGreenGem = function(p) {
         if (allEnemies.length <= 1) {
-            p.score += 30;
+            p.score += 50;
             updateScore(p);
             msgTxt.innerText = "50 Scores Awarded!";
         } else {
@@ -253,9 +358,9 @@ var controller = (function() {
             updateChances(p);
             msgTxt.innerText = "One More Life!";
         } else {
-            p.score += 30;
+            p.score += (30 + 3 * stage);
             updateScore(p);
-            msgTxt.innerText = "30 Extra Scores";
+            msgTxt.innerText = p.score + "Extra Scores";
         }
         setTimeout(function() {
             resetMsg();
@@ -275,9 +380,9 @@ var controller = (function() {
 
     // 星星可以得到大量分数
     var obtainStar = function(p) {
-        p.score += 50;
+        p.score += (50 + 5 * stage);
         updateScore(p);
-        msgTxt.innerText = "Lucky! 50 More Scores!";
+        msgTxt.innerText = "Lucky! Much More Scores!";
         setTimeout(function() {
             resetMsg();
         }, 1000);

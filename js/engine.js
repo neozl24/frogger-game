@@ -154,20 +154,8 @@ var Engine = (function(global) {
         this.setTimeSpeed(1);
     }
 
-    // 自定义暂停功能
-    function pauseGame() {
-        setTimeSpeed(0);     // 将timeSpeed设置成0，就起到了暂停游戏的作用
-        player.canMove = false;     // 同时暂停键盘响应，固定人物角色
-    }
-
-    // 自定义继续游戏的功能
-    function continueGame() {
-        setTimeSpeed(1);
-        player.canMove = true;
-    }
-
-    // 自定义函数用来获取游戏总时长
-    function getElapsedTime() {
+    // 自定义函数用来获取游戏总时长，单位是秒
+    function getTime() {
         return elapsedTime;
     }
 
@@ -203,11 +191,9 @@ var Engine = (function(global) {
 
     //把自定义的暂停及继续功能暴露出来
     return {
-        pauseGame: pauseGame,
-        continueGame: continueGame,
         reset: reset,
 
-        getElapsedTime: getElapsedTime,
+        getTime: getTime,
         setTimeSpeed: setTimeSpeed
     }
 })(this);
