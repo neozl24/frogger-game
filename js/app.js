@@ -2,19 +2,19 @@
 const cellWidth = 101;
 const cellHeight = 83;
 
-// 把所有敌人的对象都放进一个叫 allEnemies 的数组里面
-// 把玩家对象放进一个叫 player 的变量里面
+// 把玩家对象放进一个叫 player 的变量里面，这个赋值是必须的
 var player = new Player();
 
+// 用三个数组分别装载各项游戏元素，这组赋值是必须的
 var allEnemies = [];
 var allObstacles = [];
 var allTreasure = [];
 
-// 初始化游戏元素
-controller.addEnemy(3, 1);
-controller.addObstacle(2);
-controller.addRandomTreasure(3);
-
+// 这里可以设置游戏开始时的元素，不设定时取默认值，这组赋值不是必要的
+controller.initialSettings["treasureNum"] = 2;
+controller.initialSettings["obstacleNum"] = 2;
+controller.initialSettings["enemyNum"] = 3;
+controller.initialSettings["enemyLevel"] = 1;
 
 // 这段代码监听游戏玩家的键盘点击事件并且代表将按键的关键数字送到 Player.handleInput()
 // 方法里面。你不需要再更改这段代码了。

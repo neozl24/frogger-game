@@ -38,10 +38,27 @@ body {
     padding-left: 10px
 }
 #msg {
-    left: 130px;
+    left: 110px;
     width: 240px;
 }
 #chances {
-    right: 0;
+    right: 60px;
     padding-right: 10px;
+}
+.button-toggle {
+    right: 0;
+    width: 40px;
+    height: 40px;
+    margin: 10px;
+    border: none;
+    border-radius: 3px;
+    background-color: transparent;
+}
+.button-toggle:hover {
+    background-color: black;
+    opacity: 0.4;
+}
+.lineLook {
+    margin: 6px;
+    border-bottom: 3px solid white;
 }

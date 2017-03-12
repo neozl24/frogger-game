@@ -6,6 +6,17 @@ var controller = (function() {
         chancesTxt = document.getElementById('chances'),
         progressBar = document.getElementById('progress-bar');
 
+    // 用来设定游戏开始时各元素的数量的对象
+    var initialSettings = {
+        "treasureNum": 2,
+        "obstacleNum": 2,
+        "enemyNum": 3,
+        "enemyLevel": 1
+    };
+
+    // 这个用来标记进度条的倒计时效果
+    var countdown;
+
     var addEnemy = function(num, level) {
         for (var i = 0; i < num; i++) {
             allEnemies.push(new Enemy(level));
@@ -29,7 +40,7 @@ var controller = (function() {
         var treasureList = [
             { ClassName: BlueGem, weight: 20 },
             { ClassName: GreenGem, weight: 10 },
-            { ClassName: OrangeGem, weight: 25 },
+            { ClassName: OrangeGem, weight: 15 },
             { ClassName: Heart, weight: 10 },
             { ClassName: Key, weight: 10 },
             { ClassName: Star, weight: 5 },
@@ -75,6 +86,34 @@ var controller = (function() {
         }
     };
 
+    // 重启游戏的函数，注意要传入player实例作为参数
+    var restart = function(p) {
+        p.initLocation();
+        p.chances = 3;
+        p.score = 0;
+        this.updateChances(p);
+        this.updateScore(p);
+        this.resetMsg();
+
+        this.initElements(  initialSettings["treasureNum"],
+                            initialSettings["obstacleNum"],
+                            initialSettings["enemyNum"],
+                            initialSettings["enemyLevel"]   );
+        Engine.reset();
+    }
+
+    // 初始化游戏元素
+    var initElements = function(treasureNum, obstacleNum, enemyNum, level) {
+        // 先将几个数组置空
+        allEnemies = [];
+        allObstacles = [];
+        allTreasure = [];
+
+        this.addRandomTreasure(treasureNum);
+        this.addObstacle(obstacleNum);
+        this.addEnemy(enemyNum, level);
+    };
+
     // 如果到了最上面的那条河，就记录成功一次，并重归原位
     // 到了最上面，会停留一下子，此时将canMove置为false
     var handleCrossingRiver = function(p) {
@@ -112,16 +151,16 @@ var controller = (function() {
         } else {
             msgTxt.innerText = "Game Over";
             setTimeout(function(){
-                p.initLocation();
-                p.chances = 3;
-                p.score = 0;
-                Engine.restartGame();
+                _this.restart(p);
             }, 1000);
         }
     };
 
     var slowTimeTemporarily = function() {
         Engine.setTimeSpeed(0.2);
+
+        // 如果短时间内吃到两个蓝宝石，需要先将上一个产生的倒计时效果清楚
+        clearInterval(this.countdown);
 
         // 有效时间
         var actionTime = 5000;
@@ -131,14 +170,15 @@ var controller = (function() {
         var totalWidth = progressBar.parentNode.offsetWidth;
         var width = totalWidth;
 
-        setInterval(function() {
+        this.countdown = setInterval(function() {
             width -= totalWidth * (dt / actionTime);
             progressBar.style.width = width + "px";
         }, dt);
 
+        // 将游戏时间恢复正常
         setTimeout(function() {
             Engine.setTimeSpeed(1);
-            clearInterval();
+            clearInterval(countdown);
         }, actionTime);
     };
 
@@ -162,6 +202,10 @@ var controller = (function() {
         resetMsg: resetMsg,
         updateScore: updateScore,
         updateChances: updateChances,
+
+        restart: restart,
+        initElements: initElements,
+        initialSettings: initialSettings,
 
         handleCrossingRiver: handleCrossingRiver,
         handleCollisionWithEnemy: handleCollisionWithEnemy,

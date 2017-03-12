@@ -27,8 +27,8 @@ var Engine = (function(global) {
     // 自定义变量用来控制时间流逝的快慢，默认值是1;
     var timeSpeed = 1;
 
-    canvas.width = 505;
-    canvas.height = 560;    //文档给的值是606，但好像用不着这么大，大了会造成屏幕滚动
+    canvas.width = cellWidth * 5;
+    canvas.height = cellHeight * 6.8;
     doc.body.appendChild(canvas);
 
     /* 这个函数是整个游戏的主入口，负责适当的调用 update / render 函数 */
@@ -61,7 +61,7 @@ var Engine = (function(global) {
      * 做一次就够了
      */
     function init() {
-        reset();
+        controller.restart(player);   // 第一次启动游戏时也调用这个函数
         lastTime = Date.now();
         main();
     }
@@ -148,12 +148,9 @@ var Engine = (function(global) {
      * 从新开始游戏的按钮，也可以是一个游戏结束的画面，或者其它类似的设计。
      */
     function reset() {
+        // Engine所掌管的游戏变量只有时间，其它的都交给controller去做了
         elapsedTime = 0;
-
-        //重置信息板
-        controller.updateScore(player);
-        controller.resetMsg();
-        controller.updateChances(player);
+        this.setTimeSpeed(1);
     }
 
     // 自定义暂停功能
@@ -166,12 +163,6 @@ var Engine = (function(global) {
         update = function(dt) {
             updateEntities(dt);
         }
-    }
-
-    // 自定义重新开始游戏功能
-    function restartGame() {
-        reset();
-        continueGame();
     }
 
     // 自定义函数用来获取游戏总时长
@@ -213,7 +204,7 @@ var Engine = (function(global) {
     return {
         pauseGame: pauseGame,
         continueGame: continueGame,
-        restartGame: restartGame,
+        reset: reset,
 
         getElapsedTime: getElapsedTime,
         setTimeSpeed: setTimeSpeed
