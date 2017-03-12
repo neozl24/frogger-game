@@ -27,3 +27,8 @@ document.addEventListener('keyup', function(e) {
     };
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+var button = document.getElementById("settings");
+button.onclick = function() {
+    controller.restart(player);
+};

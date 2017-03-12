@@ -17,6 +17,26 @@ var controller = (function() {
     // 这个用来标记进度条的倒计时效果
     var countdown;
 
+    // 创建一个二维数组，用来标记格子是否被已有静态元素占据，如果是，则无法在此生成新的静态元素
+    var isOccupied = (function() {
+        var matrix = [];
+
+        // 这个二维数组有一个方法，可以重置自己
+        matrix.reset = function() {
+            for (let i = 0; i < 4; i++) {
+                matrix[i] = [];
+                for (let j = 0; j < 5; j++) {
+                    matrix[i][j] = false;
+                }
+            }
+        };
+
+        // 执行重置函数就能完成初始化
+        matrix.reset();
+
+        return matrix;
+    })();
+
     var addEnemy = function(num, level) {
         for (var i = 0; i < num; i++) {
             allEnemies.push(new Enemy(level));
@@ -99,7 +119,7 @@ var controller = (function() {
                             initialSettings["obstacleNum"],
                             initialSettings["enemyNum"],
                             initialSettings["enemyLevel"]   );
-        Engine.reset();
+        // Engine.reset();
     }
 
     // 初始化游戏元素
@@ -108,6 +128,9 @@ var controller = (function() {
         allEnemies = [];
         allObstacles = [];
         allTreasure = [];
+
+        // 重置用来标记格子是否被占用的二维数组
+        isOccupied.reset();
 
         this.addRandomTreasure(treasureNum);
         this.addObstacle(obstacleNum);
@@ -193,6 +216,8 @@ var controller = (function() {
     }
 
     return {
+        isOccupied: isOccupied,
+
         addEnemy: addEnemy,
         addObstacle: addObstacle,
         addTreasure: addTreasure,

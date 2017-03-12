@@ -65,23 +65,11 @@ Entity.prototype.initLocation = function() {
         this.x = cellWidth * col;
         this.y = cellHeight * (row + 1);
 
-    } while (Entity.isOccupied[row][col] ||
+    } while (controller.isOccupied[row][col] ||
         (this.x === player.x && this.y === player.y)
     );
-    Entity.isOccupied[row][col] = true;
+    controller.isOccupied[row][col] = true;
 }
-
-// 创建一个二维数组，用来标记格子是否被已有静态元素占据，如果是，则无法在此生成新的静态元素
-Entity.isOccupied = (function() {
-    var matrix = [];
-    for (var i = 0; i < 4; i ++) {
-        matrix[i] = [];
-        for (var j = 0; j < 5; j ++) {
-            matrix[i][j] = false;
-        }
-    }
-    return matrix;
-})();
 
 // 障碍物类是Entity类的子类，它的主要特点是玩家无法移动到障碍物所在区域
 var Obstacle = function() {
