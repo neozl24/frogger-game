@@ -186,7 +186,7 @@ Player.prototype.hasCollisionWith = function(array) {
     for (let i = 0; i < array.length; i++) {
         var obj = array[i];
 
-        //确保数组成员有横纵坐标值，如果没有则跳入下一个循环
+        //确保该数组成员有横纵坐标值，如果没有则跳入下一个循环
         if (obj === undefined || obj === null ||
             !obj.hasOwnProperty('x') || !obj.hasOwnProperty('y')) {
             continue;
@@ -203,33 +203,27 @@ Player.prototype.hasCollisionWith = function(array) {
 
             if (obj instanceof BlueGem) {
                 // 蓝宝石可以让时间变慢
-                controller.slowTimeTemporarily();
+                controller.obtainBlueGem(this);
 
             } else if (obj instanceof GreenGem) {
                 // 绿宝石可以减少一个敌人，如果当前只剩一个敌人，则效果改为得到大量分数
-                if (allEnemies.length === 1) {
-                    this.increaseScore(50);
-                } else {
-                    allEnemies = allEnemies.slice(0, allEnemies.length - 1);
-                }
+                controller.obtainGreenGem(this);
 
             } else if (obj instanceof OrangeGem) {
                 // 橙色宝石可以将所有敌人移到屏幕左侧以外去
-                allEnemies.forEach(function(enemy) {
-                    enemy.x = -100;
-                });
+                controller.obtainOrangeGem(this);
+
             } else if ( (obj instanceof Heart) && this.chances < 5) {
                 // 桃心可以补充一点生命
-                this.increaseChancesBy(1);
+                controller.obtainHeart(this);
 
             } else if (obj instanceof Key) {
                 // 钥匙可以消除一个石头，同时得到少量分数
-                controller.removeRock();
-                this.increaseScore(20);
+                controller.obtainKey(this);
 
             } else if (obj instanceof Star) {
                 // 星星可以得到大量分数
-                this.increaseScore(50);
+                controller.obtainStar(this);
             }
 
             // 如果是Treasure类，则需要将array中的该元素重置为null
@@ -246,17 +240,6 @@ Player.prototype.render = function() {
     // -50是为了修正玩家的纵坐标显示
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y - 50);
 };
-
-// 改变玩家生命值的函数，碰到敌人时，传入参数-1
-Player.prototype.increaseChancesBy = function(d) {
-    this.chances += d;
-    controller.updateChances(this);
-};
-
-Player.prototype.increaseScore = function(d) {
-    this.score += d;
-    controller.updateScore(this);
-}
 
 Player.prototype.handleInput = function(direction) {
     //到达河边，或者和敌人发生碰撞时，为了让玩家看清发生了什么，会让角色短暂地固定在事发地
@@ -305,6 +288,6 @@ Player.prototype.handleInput = function(direction) {
     }
     // 如果是移动后吃到一个宝物，我们会将allTreasure数组中对应元素赋值为null，这时将其剔除
     if ( this.hasCollisionWith(allTreasure) ) {
-        controller.takeOutNullElements(allTreasure);
+        allTreasure = controller.takeOutNullOrUndefined(allTreasure);
     }
 };

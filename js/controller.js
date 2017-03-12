@@ -81,18 +81,19 @@ var controller = (function() {
                     targetClass = treasureList[j+1].ClassName;
                 }
             }
-            this.addTreasure(1, targetClass);
+            addTreasure(1, targetClass);
         }
     }
 
     var removeRock = function(num) {
-        var randomIndex = Math.floor(Math.random(allObstacles.length));
+        var randomIndex = Math.floor(Math.random() * allObstacles.length);
         allObstacles[randomIndex] = null;
-        this.takeOutNullElements(allObstacles);
+        allObstacles = takeOutNullOrUndefined(allObstacles);
     };
 
     var resetMsg = function() {
         msgTxt.innerText = "Move to the river above";
+        msgTxt.style.color = "white";
     };
 
     var updateScore = function(p) {
@@ -111,15 +112,15 @@ var controller = (function() {
         p.initLocation();
         p.chances = 3;
         p.score = 0;
-        this.updateChances(p);
-        this.updateScore(p);
-        this.resetMsg();
+        updateChances(p);
+        updateScore(p);
+        resetMsg();
 
-        this.initElements(  initialSettings["treasureNum"],
+        initElements(  initialSettings["treasureNum"],
                             initialSettings["obstacleNum"],
                             initialSettings["enemyNum"],
                             initialSettings["enemyLevel"]   );
-        // Engine.reset();
+        Engine.reset();
     }
 
     // 初始化游戏元素
@@ -132,9 +133,9 @@ var controller = (function() {
         // 重置用来标记格子是否被占用的二维数组
         isOccupied.reset();
 
-        this.addRandomTreasure(treasureNum);
-        this.addObstacle(obstacleNum);
-        this.addEnemy(enemyNum, level);
+        addRandomTreasure(treasureNum);
+        addObstacle(obstacleNum);
+        addEnemy(enemyNum, level);
     };
 
     // 如果到了最上面的那条河，就记录成功一次，并重归原位
@@ -144,57 +145,69 @@ var controller = (function() {
         p.canMove = false;
 
         p.score += 10;
-        this.updateScore(p);
-        msgTxt.innerText = "Good job!";
+        updateScore(p);
+
+        var congratsWords = [   "Good Job!", "Nice Move!", ": P",
+                                "Well Done!", "You Need Water!"  ];
+        var randomIndex = Math.floor(Math.random() * congratsWords.length);
+        msgTxt.innerText = congratsWords[randomIndex];
 
         setTimeout(function() {
             p.initLocation();
         }, 500);
         setTimeout(function() {
-            controller.resetMsg(); //0.5秒后让角色归位，再过0.5秒还原文字区域
+            resetMsg(); //0.5秒后让角色归位，再过0.5秒还原文字区域
         }, 1000);
     }
 
+    // 碰到敌人所触发的效果
     var handleCollisionWithEnemy = function(p) {
         p.canMove = false;
         Engine.pauseGame(); //暂停游戏
 
-        p.increaseChancesBy(-1);
+        p.chances -= 1;
+        updateChances(p);
 
-        var _this = this;
+        msgTxt.style.color = "#FF1133";
+
         //如果剩余机会大于0，则重置角色位置，减去一滴血，再继续游戏
         //如果剩余机会为0，则提示Game Over，重置所有元素和记分板，再重新开始游戏
         if (p.chances > 0) {
             msgTxt.innerText = "Oops! Collide with a bug!"
             setTimeout(function(){
-                _this.resetMsg();
+                resetMsg();
                 p.initLocation();
                 Engine.continueGame();
             }, 1000);
         } else {
             msgTxt.innerText = "Game Over";
             setTimeout(function(){
-                _this.restart(p);
+                restart(p);
+                Engine.continueGame();
             }, 1000);
         }
     };
 
-    var slowTimeTemporarily = function() {
+    // 蓝宝石触发的效果，让时间变慢，持续一小段时间
+    var obtainBlueGem = function(p) {
         Engine.setTimeSpeed(0.2);
 
         // 如果短时间内吃到两个蓝宝石，需要先将上一个产生的倒计时效果清楚
-        clearInterval(this.countdown);
+        clearInterval(countdown);
+
+        msgTxt.innerText = "Time Slowing Down";
 
         // 有效时间
         var actionTime = 5000;
         // 渲染的时间间隔，会影响进度条动画的平顺
-        var dt = 20;
+        var dt = 10;
 
         var totalWidth = progressBar.parentNode.offsetWidth;
         var width = totalWidth;
+        var unitWidth = Math.ceil( totalWidth  * dt / actionTime);
 
-        this.countdown = setInterval(function() {
-            width -= totalWidth * (dt / actionTime);
+        countdown = setInterval(function() {
+            width -= unitWidth;
             progressBar.style.width = width + "px";
         }, dt);
 
@@ -202,41 +215,103 @@ var controller = (function() {
         setTimeout(function() {
             Engine.setTimeSpeed(1);
             clearInterval(countdown);
+            resetMsg()
         }, actionTime);
     };
 
-    var takeOutNullElements = function(array) {
+    // 碰到绿宝石可以减少一个敌人，如果当前只剩一个敌人，则效果改为得到大量分数
+    var obtainGreenGem = function(p) {
+        if (allEnemies.length <= 1) {
+            p.score += 30;
+            updateScore(p);
+            msgTxt.innerText = "50 Scores Awarded!";
+        } else {
+            allEnemies = allEnemies.slice(0, allEnemies.length - 1);
+            msgTxt.innerText = "One Bug Eliminated!";
+        }
+
+        setTimeout(function() {
+            resetMsg();
+        }, 1000);
+    }
+
+    // 橙色宝石可以将所有敌人移到屏幕左侧以外去
+    var obtainOrangeGem = function(p) {
+        allEnemies.forEach(function(enemy) {
+            enemy.x = -100;
+        });
+        msgTxt.innerText = "Push Bugs Away!!"
+        setTimeout(function() {
+            resetMsg();
+        }, 1000);
+    };
+
+    // 得到桃心，恢复一点生命
+    var obtainHeart = function(p) {
+        if (p.chances < 5) {
+            p.chances += 1;
+            updateChances(p);
+            msgTxt.innerText = "One More Life!";
+        } else {
+            p.score += 30;
+            updateScore(p);
+            msgTxt.innerText = "30 Extra Scores";
+        }
+        setTimeout(function() {
+            resetMsg();
+        }, 1000);
+    };
+
+    // 钥匙可以消除一个石头，同时得到少量分数
+    var obtainKey = function(p) {
+        removeRock(1);
+        p.score += 20;
+        updateScore(p);
+        msgTxt.innerText = "Remove a Rock";
+        setTimeout(function() {
+            resetMsg();
+        }, 1000);
+    };
+
+    // 星星可以得到大量分数
+    var obtainStar = function(p) {
+        p.score += 50;
+        updateScore(p);
+        msgTxt.innerText = "Lucky! 50 More Scores!";
+        setTimeout(function() {
+            resetMsg();
+        }, 1000);
+    };
+
+    //这是一个功能函数，返回值去除了原数组中的null或undefined元素
+    var takeOutNullOrUndefined = function(array) {
         var newArray = [];
         for(var i = 0, j = 0; i < array.length; i ++) {
-            if (array[i] !== null) {
+            if (array[i] !== null && array[i] !== undefined) {
                 newArray[j] = array[i];
                 j ++;
             }
         }
+        return newArray;
     }
 
+    // controller对象暴露的这些方法，按名字可理解其作用
+    // 注意其中有一些需要传入player实例对象作为参数
     return {
-        isOccupied: isOccupied,
-
-        addEnemy: addEnemy,
-        addObstacle: addObstacle,
-        addTreasure: addTreasure,
-        addRandomTreasure: addRandomTreasure,
-        removeRock: removeRock,
-
-        resetMsg: resetMsg,
-        updateScore: updateScore,
-        updateChances: updateChances,
+        isOccupied: isOccupied,     // 二维数组对象
 
         restart: restart,
-        initElements: initElements,
-        initialSettings: initialSettings,
+        initialSettings: initialSettings,   //保存游戏初始设置的对象
 
         handleCrossingRiver: handleCrossingRiver,
         handleCollisionWithEnemy: handleCollisionWithEnemy,
+        obtainBlueGem: obtainBlueGem,
+        obtainGreenGem: obtainGreenGem,
+        obtainOrangeGem: obtainOrangeGem,
+        obtainKey: obtainKey,
+        obtainHeart: obtainHeart,
+        obtainStar: obtainStar,
 
-        slowTimeTemporarily: slowTimeTemporarily,
-
-        takeOutNullElements: takeOutNullElements
+        takeOutNullOrUndefined: takeOutNullOrUndefined
     }
 })();

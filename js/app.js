@@ -11,7 +11,7 @@ var allObstacles = [];
 var allTreasure = [];
 
 // 这里可以设置游戏开始时的元素，不设定时取默认值，这组赋值不是必要的
-controller.initialSettings["treasureNum"] = 2;
+controller.initialSettings["treasureNum"] = 9;
 controller.initialSettings["obstacleNum"] = 2;
 controller.initialSettings["enemyNum"] = 3;
 controller.initialSettings["enemyLevel"] = 1;

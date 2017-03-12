@@ -22,6 +22,7 @@ var Engine = (function(global) {
         lastTime;
 
     // 自定义elapsedTime变量，用来记录总时常，便于控制游戏进程
+    // 敌人等级的提升，道具的出现和消失，取决于这个变量和玩家当前分数
     var elapsedTime;
 
     // 自定义变量用来控制时间流逝的快慢，默认值是1;
@@ -155,14 +156,14 @@ var Engine = (function(global) {
 
     // 自定义暂停功能
     function pauseGame() {
-        update = function() {}; //将updata函数临时改成空函数，就起到了暂停游戏的作用
+        setTimeSpeed(0);     // 将timeSpeed设置成0，就起到了暂停游戏的作用
+        player.canMove = false;     // 同时暂停键盘响应，固定人物角色
     }
 
     // 自定义继续游戏的功能
     function continueGame() {
-        update = function(dt) {
-            updateEntities(dt);
-        }
+        setTimeSpeed(1);
+        player.canMove = true;
     }
 
     // 自定义函数用来获取游戏总时长

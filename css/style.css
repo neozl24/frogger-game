@@ -23,6 +23,7 @@ body {
 }
 #progress-bar {
     position: absolute;
+    left: -1px;
     width: 0;
     height: 100%;
     z-index: 1;
@@ -32,13 +33,14 @@ body {
 .txt {
     z-index: 2;
     position: absolute;
+    text-shadow: 1px 1px #000000;
 }
 #score {
     left: 0;
     padding-left: 10px
 }
 #msg {
-    left: 110px;
+    left: 115px;
     width: 240px;
 }
 #chances {
@@ -61,4 +63,5 @@ body {
 .lineLook {
     margin: 6px;
     border-bottom: 3px solid white;
+    box-shadow: 1px 1px #000000;
 }
