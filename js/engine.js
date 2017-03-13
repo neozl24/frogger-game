@@ -1,5 +1,5 @@
 /* Engine.js
-* 这个文件提供了游戏循环玩耍的功能（更新敌人和渲染）
+ * 这个文件提供了游戏循环玩耍的功能（更新敌人和渲染）
  * 在屏幕上画出出事的游戏面板，然后调用玩家和敌人对象的 update / render 函数（在 app.js 中定义的）
  *
  * 一个游戏引擎的工作过程就是不停的绘制整个游戏屏幕，和小时候你们做的 flipbook 有点像。当
@@ -21,22 +21,22 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
-    // 自定义elapsedTime变量，用来记录总时常，便于控制游戏进程
-    // 敌人等级的提升，道具的出现和消失，取决于这个变量和玩家当前分数
+    /* 自定义elapsedTime变量，用来记录总时常，便于控制游戏进程
+     * 敌人等级的提升，道具的出现和消失，取决于这个变量和玩家当前分数
+     */
     var elapsedTime;
 
     // 自定义变量用来控制时间流逝的快慢，默认值是1;
     var timeSpeed = 1;
 
-    canvas.width = cellWidth * 5;
-    canvas.height = cellHeight * 6.8;
+    canvas.width = CELL_WIDTH * 5;
+    canvas.height = CELL_HEIGHT * 6.8;
     doc.body.appendChild(canvas);
 
     /* 这个函数是整个游戏的主入口，负责适当的调用 update / render 函数 */
     function main() {
         /* 如果你想要更平滑的动画过度就需要获取时间间隙。因为每个人的电脑处理指令的
          * 速度是不一样的，我们需要一个对每个人都一样的常数（而不管他们的电脑有多快）
-         * 就问你屌不屌！
          */
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0 * timeSpeed;
@@ -50,6 +50,7 @@ var Engine = (function(global) {
         /* 设置我们的 lastTime 变量，它会被用来决定 main 函数下次被调用的事件。 */
         lastTime = now;
 
+        // 内部累计时长，注意dt受到timeSpeed影响，因此它也一样
         elapsedTime += dt;
 
         /* 在浏览准备好调用重绘下一个帧的时候，用浏览器的 requestAnimationFrame 函数
@@ -58,11 +59,13 @@ var Engine = (function(global) {
         win.requestAnimationFrame(main);
     }
 
-    /* 这个函数调用一些初始化工作，特别是设置游戏必须的 lastTime 变量，这些工作只用
-     * 做一次就够了
+    /* 这个函数调用一些初始化工作，特别是设置游戏必须的 lastTime 变量，
+     * 这些工作只用做一次就够了
+     * 而且init()函数的执行发生在所有图像资源加载完成之后
      */
     function init() {
-        controller.restart(player);   // 第一次启动游戏时也调用这个函数
+        Controller.addEventListener(player);
+        Controller.restart(player);   // 第一次启动游戏时也调用这个函数
         lastTime = Date.now();
         main();
     }
@@ -114,7 +117,7 @@ var Engine = (function(global) {
                  * 第二个和第三个分别是起始点的x和y坐标。我们用我们事先写好的资源管理工具来获取
                  * 我们需要的图片，这样我们可以享受缓存图片的好处，因为我们会反复的用到这些图片
                  */
-                ctx.drawImage(Resources.get(rowImages[row]), col * cellWidth, row * cellHeight - 40);
+                ctx.drawImage(Resources.get(rowImages[row]), col * CELL_WIDTH, row * CELL_HEIGHT - 40);
             }
         }
 
@@ -149,24 +152,27 @@ var Engine = (function(global) {
      * 从新开始游戏的按钮，也可以是一个游戏结束的画面，或者其它类似的设计。
      */
     function reset() {
-        // Engine所掌管的游戏变量只有时间，其它的都交给controller去做了
+        // Engine所掌管的游戏变量只有时间，其它的都交给Controller去做了
         elapsedTime = 0;
         setTimeSpeed(1);
     }
 
-    // 自定义函数用来获取游戏总时长，单位是秒
+    /* 自定义函数用来获取游戏总时长，单位是秒
+     */
     function getTime() {
         return elapsedTime;
     }
 
-    // 自定义函数用来控制时间流逝的快慢，影响的不仅是敌人的速度，内部计时elapsedTime也受影响
+    /* 自定义函数用来控制时间流逝的快慢
+     * 影响的不仅是敌人的速度，内部计时elapsedTime也受影响
+     */
     function setTimeSpeed(speed) {
         // speed值越大，代表时间流逝的越快，设为1可恢复默认速度
         timeSpeed = speed;
     }
 
     /* 紧接着我们来加载我们知道的需要来绘制我们游戏关卡的图片。然后把 init 方法设置为回调函数。
-     * 那么党这些图片都已经加载完毕的时候游戏就会开始。
+     * 那么当这些图片都已经加载完毕的时候游戏就会开始。
      */
     Resources.load([
         'images/stone-block.png',
@@ -189,7 +195,7 @@ var Engine = (function(global) {
      */
     global.ctx = ctx;
 
-    //把自定义的暂停及继续功能暴露出来
+    //把自定义的几个功能暴露出来
     return {
         reset: reset,
 

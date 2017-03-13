@@ -41,7 +41,7 @@
                  * 在未来再次加载这个图片的时候我们就可以简单的返回即可。
                  */
                 resourceCache[url] = img;
-                /* 一旦我们的图片已经被加载和缓存，调用所有我们已经定义的回调函数。
+                /* 一旦我们的图片已经被全部加载和缓存，调用所有我们已经定义的回调函数。
                  */
                 if(isReady()) {
                     readyCallbacks.forEach(function(func) { func(); });

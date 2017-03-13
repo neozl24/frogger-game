@@ -1,10 +1,12 @@
 // 用来控制游戏进程的对象
-var controller = (function() {
+var Controller = (function() {
     //下面是用来计分统计的DOM元素
-    var scoreTxt = document.getElementById('score'),
-        msgTxt = document.getElementById('msg'),
-        chancesTxt = document.getElementById('chances'),
-        progressBar = document.getElementById('progress-bar');
+    var doc = document,
+        scoreTxt = doc.getElementById('score'),
+        msgTxt = doc.getElementById('msg'),
+        chancesTxt = doc.getElementById('chances'),
+        progressBar = doc.getElementById('progress-bar'),
+        button = doc.getElementById('settings');
 
     // 用来设定游戏开始时各元素的数量的对象
     var initialSettings = {
@@ -15,17 +17,29 @@ var controller = (function() {
     };
 
     // 创建一个二维数组，用来标记格子是否被已有静态元素占据，如果是，则无法在此生成新的静态元素
-    var isOccupied = (function() {
+    var pavement = (function() {
         var matrix = [];
 
-        // 这个二维数组有一个方法，可以重置自己
+        // 这个二维数组的私有方法，可以重置自己
         matrix.reset = function() {
-            for (let i = 0; i < 4; i++) {
+            for (var i = 0; i < 4; i++) {
                 matrix[i] = [];
-                for (let j = 0; j < 5; j++) {
+                for (var j = 0; j < 5; j++) {
                     matrix[i][j] = false;
                 }
             }
+        };
+
+        // 这个函数用来求pavement二维数组中有多少个true
+        // 它的返回值用来决定能否继续添加静态元素
+        matrix.getOccupiedNum = function() {
+            var num = 0;
+            this.forEach(function(eachRow) {
+                eachRow.forEach(function(eachCell) {
+                    num += (eachCell ? 1 : 0);
+                });
+            });
+            return num;
         };
 
         // 执行重置函数就能完成初始化
@@ -33,20 +47,6 @@ var controller = (function() {
 
         return matrix;
     })();
-
-    // 这个函数用来求isOccupied二维数组中有多少个true
-    // 它的返回值用来决定能否继续添加静态元素
-    var getOccupiedNum = function() {
-        var num = 0;
-        isOccupied.forEach(function(eachRow) {
-            eachRow.forEach(function(eachCell) {
-                if (eachCell === true) {
-                    num += 1;
-                }
-            });
-        });
-        return num;
-    };
 
     var addEnemy = function(num, level) {
 
@@ -61,7 +61,7 @@ var controller = (function() {
 
     var addObstacle = function(num) {
         for (var i = 0; i < num; i++) {
-            if (getOccupiedNum() < 10) {
+            if (pavement.getOccupiedNum() < 10) {
                 allObstacles.push(new Obstacle());
             }
         }
@@ -69,7 +69,7 @@ var controller = (function() {
 
     var addTreasure = function(num, ClassName) {
         for (var i = 0; i < num; i++) {
-            if (getOccupiedNum() < 16) {
+            if (pavement.getOccupiedNum() < 16) {
                 allTreasure.push(new ClassName());
             }
         }
@@ -80,24 +80,26 @@ var controller = (function() {
 
         // 这里设置各种宝物出现的概率权重
         var treasureList = [
-            { ClassName: BlueGem, weight: 20 },
-            { ClassName: GreenGem, weight: 10 },
-            { ClassName: OrangeGem, weight: 15 },
-            { ClassName: Heart, weight: 10 },
-            { ClassName: Key, weight: 10 },
-            { ClassName: Star, weight: 5 },
+            {ClassName: BlueGem, weight: 20},
+            {ClassName: GreenGem, weight: 10},
+            {ClassName: OrangeGem, weight: 15},
+            {ClassName: Heart, weight: 10},
+            {ClassName: Key, weight: 10},
+            {ClassName: Star, weight: 5},
         ];
+
+        var i, j;
         var totalWeight = 0;
-        for (let i = 0; i < treasureList.length; i++) {
+        for (i = 0; i < treasureList.length; i++) {
             totalWeight += treasureList[i].weight;
         }
 
         var randomNum, currentTotalWeight, targetClass;
-        for (let i = 0; i < num; i++) {
+        for (i = 0; i < num; i++) {
             randomNum = Math.ceil( Math.random() * totalWeight);
             targetClass = treasureList[0].ClassName;
             currentTotalWeight = 0;
-            for (let j = 0; j < treasureList.length - 1; j++) {
+            for (j = 0; j < treasureList.length - 1; j++) {
                 currentTotalWeight += treasureList[j].weight;
                 if (currentTotalWeight < randomNum) {
                     targetClass = treasureList[j+1].ClassName;
@@ -114,28 +116,28 @@ var controller = (function() {
 
         var randomIndex = Math.floor(Math.random() * allObstacles.length);
 
-        // 先调整isOccupied二维数组中对应的元素为false
-        var row = allObstacles[randomIndex].y / cellHeight - 1,
-            col = allObstacles[randomIndex].x / cellWidth;
-        isOccupied[row][col] = false;
+        // 先调整pavement二维数组中对应的元素为false
+        var row = allObstacles[randomIndex].y / CELL_HEIGHT - 1,
+            col = allObstacles[randomIndex].x / CELL_WIDTH;
+        pavement[row][col] = false;
 
         allObstacles[randomIndex] = null;
         allObstacles = takeOutNullOrUndefined(allObstacles);
     };
 
     var resetMsg = function() {
-        msgTxt.innerText = "Move to the river above";
-        msgTxt.style.color = "white";
+        msgTxt.innerText = 'Move to the river above';
+        msgTxt.style.color = 'white';
     };
 
     var updateScore = function(p) {
-        scoreTxt.innerText = "Score: " + p.score;
+        scoreTxt.innerText = 'Score: ' + p.score;
     };
 
     var updateChances = function(p) {
-        chancesTxt.innerText = "";
-        for(let i = 0; i < p.chances; i ++) {
-            chancesTxt.innerText += "♥";
+        chancesTxt.innerText = '';
+        for(var i = 0; i < p.chances; i ++) {
+            chancesTxt.innerText += '♥';
         }
     };
 
@@ -156,16 +158,16 @@ var controller = (function() {
         stopLoop();
 
         // 执行初始化函数，生成初始元素
-        initElements(   initialSettings["treasureNum"],
-                        initialSettings["obstacleNum"],
-                        initialSettings["enemyNum"],
-                        initialSettings["enemyLevel"]   );
+        initElements(   initialSettings['treasureNum'],
+                        initialSettings['obstacleNum'],
+                        initialSettings['enemyNum'],
+                        initialSettings['enemyLevel']   );
 
         // 执行Engine的函数，使时间流速和计时恢复默认状态
         Engine.reset();
 
+        //先重置游戏阶段stage，再开启游戏逻辑循环
         stage = 0;
-        // 此函数随着游戏进程自动控制敌人、障碍物、宝物这三项元素
         startLoop(p);
     }
 
@@ -177,7 +179,7 @@ var controller = (function() {
         allTreasure = [];
 
         // 重置用来标记格子是否被占用的二维数组
-        isOccupied.reset();
+        pavement.reset();
 
         addRandomTreasure(treasureNum);
         addObstacle(obstacleNum);
@@ -189,22 +191,21 @@ var controller = (function() {
     var stage = 0;
 
     // 游戏循环控制各个元素的数量，增删，速度提升等等
-    // 这个变量是游戏循环的id，用作clearInterval()的参数
+    // 这个变量是游戏逻辑循环的id，用作clearInterval()的参数
     var gameLoopId;
 
-    // 开始游戏逻辑循环，根据时间和玩家当前分数来控制敌人的数量和等级，以及障碍物和宝物的增减
+    // 游戏逻辑循环函数，根据时间和玩家当前分数来控制敌人的数量和等级，以及障碍物和宝物的增减
     var startLoop = function(p) {
 
         // 先记录上一次的stage
         var lastStage = stage;
 
-        // 每隔1秒检查一次，游戏处于哪个stage了
         // 只有player.score和Engine.getTime()两个值都达标，才能进入下一个stage
         gameLoopId = setInterval(function() {
             /* 一般情况下，我们希望stage值由游戏时间决定，每隔5秒提升一档
              * 只有玩家分数太低，才会导致stage停留不动，例如玩家在出发点挂机的情况
              */
-            stage = Math.floor(Math.min( Engine.getTime() / 5.0 , p.score / 10.0));
+            stage = Math.floor(Math.min(Engine.getTime()/5.0, p.score/10.0));
             if (stage !== lastStage) {
                 console.log(stage);
                 allEnemies.forEach(function(enemy) {
@@ -229,7 +230,7 @@ var controller = (function() {
                 }
             }
             lastStage = stage;
-        }, 1000);
+        }, 1000);   // 每隔1秒检查一次，游戏处于哪个stage了
     };
 
     var stopLoop = function(p) {
@@ -257,8 +258,13 @@ var controller = (function() {
         p.score += (10 + stage);    // 游戏阶段越往后，单次过河的分数越高
         updateScore(p);
 
-        var congratsWords = [   "Good Job!", "Nice Move!", ": P",
-                                "Well Done!", "You Need Water!"  ];
+        var congratsWords = [
+            'Good Job!',
+            'Nice Move!',
+            ': P',
+            'Well Done!',
+            'You Need Water!'
+        ];
         var randomIndex = Math.floor(Math.random() * congratsWords.length);
         msgTxt.innerText = congratsWords[randomIndex];
 
@@ -278,19 +284,19 @@ var controller = (function() {
         p.chances -= 1;
         updateChances(p);
 
-        msgTxt.style.color = "#FF1133";
+        msgTxt.style.color = '#ff1133';
 
         //如果剩余机会大于0，则重置角色位置，减去一滴血，再继续游戏
         //如果剩余机会为0，则提示Game Over，重置所有元素和记分板，再重新开始游戏
         if (p.chances > 0) {
-            msgTxt.innerText = "Oops! Collide with a bug!"
+            msgTxt.innerText = 'Oops! Collide with a bug!'
             setTimeout(function(){
                 resetMsg();
                 p.initLocation();
                 continueGame(p);
             }, 1000);
         } else {
-            msgTxt.innerText = "Game Over";
+            msgTxt.innerText = 'Game Over';
             setTimeout(function(){
                 restart(p);
                 continueGame(p);
@@ -311,7 +317,7 @@ var controller = (function() {
         clearInterval(countdownId);
         clearTimeout(restoreId);
 
-        msgTxt.innerText = "Time Slowing Down";
+        msgTxt.innerText = 'Time Slowing Down';
 
         // 有效时间
         var actionTime = 5000;
@@ -322,12 +328,12 @@ var controller = (function() {
         var width = totalWidth;
         var unitWidth = Math.ceil( totalWidth  * dt / actionTime);
 
-        progressBar.style.width = width + "px";
+        progressBar.style.width = width + 'px';
 
         countdownId = setInterval(function() {
             width -= unitWidth;
             width = Math.max(width, 0);
-            progressBar.style.width = width + "px";
+            progressBar.style.width = width + 'px';
         }, dt);
 
         // 将游戏时间恢复正常
@@ -343,10 +349,10 @@ var controller = (function() {
         if (allEnemies.length <= 1) {
             p.score += 50;
             updateScore(p);
-            msgTxt.innerText = "50 Scores Awarded!";
+            msgTxt.innerText = '50 Scores Awarded!';
         } else {
             allEnemies = allEnemies.slice(0, allEnemies.length - 1);
-            msgTxt.innerText = "One Bug Eliminated!";
+            msgTxt.innerText = 'One Bug Eliminated!';
         }
 
         setTimeout(function() {
@@ -359,7 +365,7 @@ var controller = (function() {
         allEnemies.forEach(function(enemy) {
             enemy.x = -100;
         });
-        msgTxt.innerText = "Push Bugs Away!!"
+        msgTxt.innerText = 'Push Bugs Away!!'
         setTimeout(function() {
             resetMsg();
         }, 1000);
@@ -370,11 +376,11 @@ var controller = (function() {
         if (p.chances < 5) {
             p.chances += 1;
             updateChances(p);
-            msgTxt.innerText = "One More Life!";
+            msgTxt.innerText = 'One More Life!';
         } else {
             p.score += (30 + 3 * stage);
             updateScore(p);
-            msgTxt.innerText = p.score + "Extra Scores";
+            msgTxt.innerText = p.score + 'Extra Scores';
         }
         setTimeout(function() {
             resetMsg();
@@ -386,7 +392,7 @@ var controller = (function() {
         removeRock(1);
         p.score += 20;
         updateScore(p);
-        msgTxt.innerText = "Remove a Rock";
+        msgTxt.innerText = 'Remove a Rock';
         setTimeout(function() {
             resetMsg();
         }, 1000);
@@ -396,7 +402,7 @@ var controller = (function() {
     var obtainStar = function(p) {
         p.score += (50 + 5 * stage);
         updateScore(p);
-        msgTxt.innerText = "Lucky! Much More Scores!";
+        msgTxt.innerText = 'Lucky! Much More Scores!';
         setTimeout(function() {
             resetMsg();
         }, 1000);
@@ -406,6 +412,7 @@ var controller = (function() {
     var takeOutNullOrUndefined = function(array) {
         var newArray = [];
         for(var i = 0, j = 0; i < array.length; i ++) {
+            // 如果元素不是null或undefined，就移到新数组来
             if (array[i] !== null && array[i] !== undefined) {
                 newArray[j] = array[i];
                 j ++;
@@ -414,10 +421,29 @@ var controller = (function() {
         return newArray;
     }
 
-    // controller对象暴露的这些方法，按名字可理解其作用
+    var addEventListener = function(p) {
+        /* 这段代码监听游戏玩家的键盘点击事件，并且代表将按键的关键数字
+         * 送到 Player.handleInput()方法里面。
+         */
+        document.addEventListener('keyup', function(e) {
+            var allowedKeys = {
+                37: 'left',
+                38: 'up',
+                39: 'right',
+                40: 'down'
+            };
+            player.handleInput(allowedKeys[e.keyCode]);
+        });
+
+        button.onclick = function(p) {
+            restart(p);
+        };
+    };
+
+    // Controller对象暴露的这些方法，按名字可理解其作用
     // 注意其中有一些需要传入player实例对象作为参数
     return {
-        isOccupied: isOccupied,     // 二维数组对象
+        pavement: pavement,     // 二维数组对象
 
         restart: restart,
         initialSettings: initialSettings,   //保存游戏初始设置的对象
@@ -431,6 +457,8 @@ var controller = (function() {
         obtainHeart: obtainHeart,
         obtainStar: obtainStar,
 
-        takeOutNullOrUndefined: takeOutNullOrUndefined
+        takeOutNullOrUndefined: takeOutNullOrUndefined,
+
+        addEventListener: addEventListener
     }
 })();
