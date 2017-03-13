@@ -1,6 +1,6 @@
 /* Engine.js
  * 这个文件提供了游戏循环玩耍的功能（更新敌人和渲染）
- * 在屏幕上画出出事的游戏面板，然后调用玩家和敌人对象的 update / render 函数（在 app.js 中定义的）
+ * 在屏幕上画出出事的游戏面板，然后调用玩家和敌人对象的 update / render 函数
  *
  * 一个游戏引擎的工作过程就是不停的绘制整个游戏屏幕，和小时候你们做的 flipbook 有点像。当
  * 玩家在屏幕上移动的时候，看上去就是图片在移动或者被重绘。但这都是表面现象。实际上是整个屏幕
@@ -21,12 +21,10 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
-    /* 自定义elapsedTime变量，用来记录总时常，便于控制游戏进程
-     * 敌人等级的提升，道具的出现和消失，取决于这个变量和玩家当前分数
-     */
+    /* 自定义变量，用来记录总时长，便于控制游戏进程，游戏重启时被置为 0 */
     var elapsedTime;
 
-    // 自定义变量用来控制时间流逝的快慢，默认值是1;
+    /* 自定义变量用来控制时间流逝的快慢，值越大，代表时间流逝的越快，默认值是1 */
     var timeSpeed = 1;
 
     canvas.width = CELL_WIDTH * 5;
@@ -50,7 +48,7 @@ var Engine = (function(global) {
         /* 设置我们的 lastTime 变量，它会被用来决定 main 函数下次被调用的事件。 */
         lastTime = now;
 
-        // 内部累计时长，注意dt受到timeSpeed影响，因此它也一样
+        /* 内部累计时长，注意dt受到timeSpeed影响，因此它也一样 */
         elapsedTime += dt;
 
         /* 在浏览准备好调用重绘下一个帧的时候，用浏览器的 requestAnimationFrame 函数
@@ -59,13 +57,13 @@ var Engine = (function(global) {
         win.requestAnimationFrame(main);
     }
 
-    /* 这个函数调用一些初始化工作，特别是设置游戏必须的 lastTime 变量，
+    /* 这个函数完成一些初始化工作，特别是设置游戏必须的 lastTime 变量，
      * 这些工作只用做一次就够了
      * 而且init()函数的执行发生在所有图像资源加载完成之后
      */
     function init() {
         Controller.addEventListener(player);
-        Controller.restart(player);   // 第一次启动游戏时也调用这个函数
+        Controller.restart(player);
         lastTime = Date.now();
         main();
     }
@@ -103,7 +101,7 @@ var Engine = (function(global) {
                 'images/stone-block.png',   // 第一行石头
                 'images/stone-block.png',   // 第二行石头
                 'images/stone-block.png',   // 第三行石头
-                'images/stone-block.png',   // 第四行石头（个人认为不需要两行草地）
+                'images/stone-block.png',   // 第四行石头
                 'images/grass-block.png'    // 第一行草地
             ],
             numRows = 6,
@@ -117,42 +115,38 @@ var Engine = (function(global) {
                  * 第二个和第三个分别是起始点的x和y坐标。我们用我们事先写好的资源管理工具来获取
                  * 我们需要的图片，这样我们可以享受缓存图片的好处，因为我们会反复的用到这些图片
                  */
-                ctx.drawImage(Resources.get(rowImages[row]), col * CELL_WIDTH, row * CELL_HEIGHT - 40);
+                ctx.drawImage(Resources.get(rowImages[row]),
+                              col * CELL_WIDTH,
+                              row * CELL_HEIGHT - 40);
             }
         }
 
         renderEntities();
     }
 
-    /* 这个函数会在每个时间间隙被 render 函数调用。他的目的是分别调用你在 enemy 和 player
-     * 对象中定义的 render 方法。
+    /* 这个函数会在每个时间间隙被 render 函数调用。
+     * 目的是分别调用你在 enemy 和 player对象中定义的 render 方法。
      */
     function renderEntities() {
-        /* 遍历在 allEnemies 数组中存放的作于对象然后调用你事先定义的 render 函数 */
+        /* 遍历在各数组中存放的对象，然后调用你事先定义的 render 函数 */
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
         allObstacles.forEach(function(obstacle) {
-            // 玩家碰到钥匙时，会将一个障碍物对象置为null，随后数组会剔出此对象
-            if (obstacle !== null) {
-                obstacle.render();
-            }
+            obstacle.render();
         });
         allTreasure.forEach(function(treasure) {
-            // 因为玩家碰到宝物后，宝物消失，因此allTreasure数组中的该对象会赋值为null
-            if (treasure !== null) {
-                treasure.render();
-            }
+            treasure.render();
         });
 
         player.render();
     }
 
-    /* 这个函数现在没干任何事，但是这会是一个好地方让你来处理游戏重置的逻辑。可能是一个
-     * 从新开始游戏的按钮，也可以是一个游戏结束的画面，或者其它类似的设计。
+    /* 这个函数用来重置Engine，在游戏重启时调用。
+     * Engine所掌管的游戏变量只有时间，其它的都交给Controller去做了。
+     * 因此这里只用将计时器归零，然后让时间流速恢复正常就可以了。
      */
     function reset() {
-        // Engine所掌管的游戏变量只有时间，其它的都交给Controller去做了
         elapsedTime = 0;
         setTimeSpeed(1);
     }
@@ -167,7 +161,6 @@ var Engine = (function(global) {
      * 影响的不仅是敌人的速度，内部计时elapsedTime也受影响
      */
     function setTimeSpeed(speed) {
-        // speed值越大，代表时间流逝的越快，设为1可恢复默认速度
         timeSpeed = speed;
     }
 
@@ -195,10 +188,9 @@ var Engine = (function(global) {
      */
     global.ctx = ctx;
 
-    //把自定义的几个功能暴露出来
+    /* Engine提供的API，用来设置时间流速，获取计时结果，或者重置内部时间变量 */
     return {
         reset: reset,
-
         getTime: getTime,
         setTimeSpeed: setTimeSpeed
     }

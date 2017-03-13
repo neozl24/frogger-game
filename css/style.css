@@ -43,8 +43,8 @@ body {
     left: 115px;
     width: 240px;
 }
-#chances {
-    right: 60px;
+#life {
+    right: 50px;
     padding-right: 10px;
 }
 .button-toggle {
