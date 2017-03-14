@@ -191,7 +191,7 @@ var Controller = (function() {
         resetMsg();
 
         /* 结束上一局的游戏循环 */
-        stopLoop();
+        clearInterval(gameLoopId);
 
         /* 清除上一局的蓝宝石倒计时效果（如果还没结束的话），并将进度条还原
          * 使时间流速恢复默认状态，并使 Engine内部计时器清零重置
@@ -283,11 +283,6 @@ var Controller = (function() {
 
         }, 1000);
     };
-
-    /* 停止游戏逻辑循环，传入player实例作为参数 */
-    var stopLoop = function(p) {
-        clearInterval(gameLoopId);
-    }
 
     /* 暂停游戏，传入player实例作为参数。此时角色不受键盘响应 */
     var pauseGame = function(p) {
@@ -515,8 +510,36 @@ var Controller = (function() {
         });
 
         /* 添加菜单中的点击响应事件 */
-        var button = doc.getElementById('settings');
-        button.onclick = function() {
+        var menuButton = doc.getElementById('btn-menu');
+        var menu = doc.getElementById('menu');
+        var isMenuHidden = true;
+        var showMenu = function() {
+            menu.style.height = '183px';
+            menu.style.borderBottom = '2px solid #251';
+            isMenuHidden = false;
+        };
+        var hideMenu = function() {
+            menu.style.height = 0;
+            menu.style.borderBottom = '0';
+            isMenuHidden = true;
+        };
+        menuButton.onclick = function(e) {
+            /* 点击菜单按钮时，点击事件停止向上传递 */
+            e.stopPropagation();
+            if (isMenuHidden) {
+                showMenu();
+            } else {
+                hideMenu();
+            }
+        };
+        /* 点击屏幕中除菜单按钮外的其它区域都会让菜单栏隐藏 */
+        doc.onclick = function() {
+            hideMenu();
+        }
+
+        /* 点击重启按钮会重启游戏 */
+        var restartButton = doc.getElementById('btn-restart');
+        restartButton.onclick = function() {
             restart(p);
         };
     };

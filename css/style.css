@@ -1,6 +1,7 @@
 * {
     margin: 0;
     padding: 0;
+    list-style: none;
 }
 
 body {
@@ -13,7 +14,6 @@ body {
     font: 18px/60px sans-serif;
     background-color: #263;
     position: relative;
-    overflow: hidden;
 }
 
 .info-panel {
@@ -22,6 +22,7 @@ body {
     margin: 0 auto;
     color: white;
     position: relative;
+    background-color: inherit;
 }
 
 .progress-bar {
@@ -55,7 +56,7 @@ body {
     padding-right: 10px;
 }
 
-.button-toggle {
+.btn-menu {
     right: 0;
     width: 40px;
     height: 40px;
@@ -65,7 +66,7 @@ body {
     background-color: transparent;
 }
 
-.button-toggle:hover {
+.btn-toggle:hover {
     background-color: black;
     opacity: 0.4;
 }
@@ -74,4 +75,24 @@ body {
     margin: 6px;
     border-bottom: 3px solid white;
     box-shadow: 1px 1px #000;
+}
+
+.list {
+    position: absolute;
+    right: 0;
+    top: 60px;
+    width: 100px;
+    height: 0;
+    margin-top: -1px;
+    background-color: inherit;
+    overflow: hidden;
+    transition: 0.3s ease-out;
+}
+
+.btn-option {
+    height: 60px;
+    border-top: 2px solid #251;
+    text-shadow: 1px 1px #000;
+    cursor: default;
+    user-select: none;
 }
