@@ -35,15 +35,15 @@ body {
     position: absolute;
     text-shadow: 1px 1px #000000;
 }
-#score {
+.score {
     left: 0;
     padding-left: 10px
 }
-#msg {
+.msg {
     left: 115px;
     width: 240px;
 }
-#life {
+.life {
     right: 50px;
     padding-right: 10px;
 }
@@ -60,7 +60,7 @@ body {
     background-color: black;
     opacity: 0.4;
 }
-.lineLook {
+.line {
     margin: 6px;
     border-bottom: 3px solid white;
     box-shadow: 1px 1px #000000;
