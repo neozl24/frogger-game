@@ -512,6 +512,7 @@ var Controller = (function() {
         /* 添加菜单中的点击响应事件 */
         var menuButton = doc.getElementById('btn-menu');
         var menu = doc.getElementById('menu');
+        /* 定义一个变量用来标记菜单栏当前是否隐藏 */
         var isMenuHidden = true;
         var showMenu = function() {
             menu.style.height = '183px';
@@ -536,6 +537,32 @@ var Controller = (function() {
         doc.onclick = function() {
             hideMenu();
         }
+
+        /* 鼠标放在角色列表按钮上会弹出二级菜单，供玩家自定义角色外观 */
+        var characterListButton = doc.getElementById('btn-character')
+        var selectionList = doc.getElementById('selection-list');
+        // selectionList.offsetLeft = menu.offsetLeft;
+        // console.log(menu.offsetLeft);
+
+        /* 定义一个变量用来标记角色菜单栏当前是否隐藏 */
+        var isSelectionListHidden = true;
+        var showSelectionList = function() {
+            selectionList.style.width = '305px';
+            selectionList.style.border = '2px solid #251';
+            iisSelectionListHidden = false;
+        };
+        var hideSelectionList = function() {
+            selectionList.style.width = '0';
+            selectionList.style.borderLeft = '0';
+            selectionList.style.borderRight = '0';
+            iisSelectionListHidden = false;
+        };
+        characterListButton.onmouseover = function() {
+            showSelectionList();
+        };
+        characterListButton.onmouseout = function() {
+            hideSelectionList();
+        };
 
         /* 点击重启按钮会重启游戏 */
         var restartButton = doc.getElementById('btn-restart');
