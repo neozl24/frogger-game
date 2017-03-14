@@ -538,10 +538,9 @@ var Controller = (function() {
             hideMenu();
         };
 
-        /* 鼠标放在角色列表按钮上会弹出二级菜单，供玩家自定义角色外观 */
-        var characterListButton = doc.getElementById('btn-character');
+        /* 鼠标放在角色按钮上，会弹出二级菜单，供玩家自定义角色外观 */
+        var roleListButton = doc.getElementById('btn-role');
         var selectionList = doc.getElementById('selection-list');
-
         /* 定义一个变量用来标记角色菜单栏当前是否隐藏 */
         var isSelectionListHidden = true;
         var showSelectionList = function() {
@@ -552,19 +551,42 @@ var Controller = (function() {
             selectionList.style.width = '0';
             isSelectionListHidden = false;
         };
-        characterListButton.onmouseover = function() {
+        /* 鼠标移到角色按钮上，或者移到由它弹出的二级菜单上，二级菜单都会处于显示状态 */
+        roleListButton.onmouseover = function() {
             showSelectionList();
-        };
-        characterListButton.onmouseout = function() {
-            hideSelectionList();
         };
         selectionList.onmouseover = function() {
             showSelectionList();
         };
-
+        /* 鼠标离开角色列表按钮，而且也离开了由它弹出的二级菜单，二级菜单就会处于隐藏状态 */
+        roleListButton.onmouseout = function() {
+            hideSelectionList();
+        };
         selectionList.onmouseout = function() {
             hideSelectionList();
         };
+
+        /* 初始化角色菜单中的图像 */
+        var roleImages = [
+            'images/char-boy.png',
+            'images/char-cat-girl.png',
+            'images/char-horn-girl.png',
+            'images/char-pink-girl.png',
+            'images/char-princess-girl.png'
+        ];
+
+        /* 在角色菜单栏点击图片，会将玩家形象改变成相应的样子 */
+        for (var i = 0; i < roleImages.length; i++) {
+            var img = doc.getElementById('role-' + i);
+            img.src = roleImages[i];
+            /* 用立即执行的方式，解决异步调用中 i的值不对的问题 */
+            (function(index) {
+                img.onclick = function() {
+                    p.sprite = roleImages[index];
+                    hideSelectionList();
+                }
+            })(i);
+        }
 
         /* 点击重启按钮会重启游戏 */
         var restartButton = doc.getElementById('btn-restart');
