@@ -197,5 +197,5 @@ var Engine = (function(global) {
         reset: reset,
         getTime: getTime,
         setTimeSpeed: setTimeSpeed
-    }
+    };
 })(this);

@@ -30,10 +30,10 @@ var Controller = (function() {
 
     /* 用来设定游戏开始时各元素的数量的对象 */
     var initialSettings = {
-        "treasureNum": 2,
-        "obstacleNum": 2,
-        "enemyNum": 5,
-        "enemyLevel": 1
+        treasureNum: 2,
+        obstacleNum: 2,
+        enemyNum: 5,
+        enemyLevel: 1
     };
 
     /* 创建一个二维数组，用来标记格子是否被已有静态元素占据。
@@ -84,7 +84,7 @@ var Controller = (function() {
         for (var i = 0; i < num; i++) {
             allEnemies.push(new Enemy(level));
         }
-    }
+    };
 
     /* 添加障碍物，新增数量作为参数传递，如果路面中已有大量格子被占据，则取消添加 */
     var addObstacle = function(num) {
@@ -93,7 +93,7 @@ var Controller = (function() {
                 allObstacles.push(new Obstacle());
             }
         }
-    }
+    };
 
     /* 添加宝物，新增数量作为参数传递，如果路面中已有大量格子被占据，则取消添加 */
     var addTreasure = function(num, ClassName) {
@@ -102,7 +102,7 @@ var Controller = (function() {
                 allTreasure.push(new ClassName());
             }
         }
-    }
+    };
 
     /* 按各种宝物的概率权重，随机生成若干个宝物，生成数量作为参数传递 */
     var addRandomTreasure = function(num) {
@@ -141,7 +141,7 @@ var Controller = (function() {
             }
             addTreasure(1, targetClass);
         }
-    }
+    };
 
     /* 随机移除石块，如果游戏中没有石块了，则直接返回 */
     var removeRock = function() {
@@ -203,15 +203,15 @@ var Controller = (function() {
         Engine.reset();
 
         /* 初始化游戏元素 */
-        initElements(   initialSettings['treasureNum'],
-                        initialSettings['obstacleNum'],
-                        initialSettings['enemyNum'],
-                        initialSettings['enemyLevel']   );
+        initElements(   initialSettings.treasureNum,
+                        initialSettings.obstacleNum,
+                        initialSettings.enemyNum,
+                        initialSettings.enemyLevel   );
 
         /* 先重置游戏阶段为0，再开启游戏逻辑循环 */
         stage = 0;
         startLoop(p);
-    }
+    };
 
     /* 该函数用来初始化游戏元素 */
     var initElements = function(treasureNum, obstacleNum, enemyNum, level) {
@@ -293,13 +293,13 @@ var Controller = (function() {
          * 由于时间静止，玩家的得分在此期间也不能发生变化，所以stage变量也不会变。
          */
         Engine.setTimeSpeed(0);
-    }
+    };
 
     /* 继续游戏，恢复键盘响应，恢复时间流速，传入player实例作为参数 */
     var continueGame = function(p) {
         p.canMove = true;
         Engine.setTimeSpeed(1);
-    }
+    };
 
     /* 到达河边的处理函数，传入player实例作为参数。
      * 如果到了最上面的那条河，增加得分，给出提示信息。
@@ -332,7 +332,7 @@ var Controller = (function() {
         setTimeout(function() {
             resetMsg();
         }, 1000);
-    }
+    };
 
     /* 碰撞敌人的处理函数，传入player实例作为参数。
      * 所有元素会静止一小段时间，好让玩家看清发碰撞的发生
@@ -349,7 +349,7 @@ var Controller = (function() {
          * 如果剩余生命值为 0，则提示Game Over，并重新开始游戏。
          */
         if (p.lives > 0) {
-            msgTxt.innerText = 'Oops! Collide with a bug!'
+            msgTxt.innerText = 'Oops! Collide with a bug!';
             setTimeout(function(){
                 resetMsg();
                 p.initLocation();
@@ -427,14 +427,14 @@ var Controller = (function() {
         setTimeout(function() {
             resetMsg();
         }, 1000);
-    }
+    };
 
     /* 橙色宝石可以将所有敌人移到屏幕左侧以外去，传入player实例作为参数 */
     var obtainOrangeGem = function(p) {
         allEnemies.forEach(function(enemy) {
             enemy.x = -100;
         });
-        msgTxt.innerText = 'Push Bugs Away!!'
+        msgTxt.innerText = 'Push Bugs Away!!';
         setTimeout(function() {
             resetMsg();
         }, 1000);
@@ -493,7 +493,7 @@ var Controller = (function() {
             }
         }
         return newArray;
-    }
+    };
 
     /* 添加各种事件响应，只需在游戏启动时执行一次，传入player实例作为参数 */
     var addEventListener = function(p) {
@@ -536,31 +536,33 @@ var Controller = (function() {
         /* 点击屏幕中除菜单按钮外的其它区域都会让菜单栏隐藏 */
         doc.onclick = function() {
             hideMenu();
-        }
+        };
 
         /* 鼠标放在角色列表按钮上会弹出二级菜单，供玩家自定义角色外观 */
-        var characterListButton = doc.getElementById('btn-character')
+        var characterListButton = doc.getElementById('btn-character');
         var selectionList = doc.getElementById('selection-list');
-        // selectionList.offsetLeft = menu.offsetLeft;
-        // console.log(menu.offsetLeft);
 
         /* 定义一个变量用来标记角色菜单栏当前是否隐藏 */
         var isSelectionListHidden = true;
         var showSelectionList = function() {
-            selectionList.style.width = '305px';
-            selectionList.style.border = '2px solid #251';
-            iisSelectionListHidden = false;
+            selectionList.style.width = '310px';
+            isSelectionListHidden = false;
         };
         var hideSelectionList = function() {
             selectionList.style.width = '0';
-            selectionList.style.borderLeft = '0';
-            selectionList.style.borderRight = '0';
-            iisSelectionListHidden = false;
+            isSelectionListHidden = false;
         };
         characterListButton.onmouseover = function() {
             showSelectionList();
         };
         characterListButton.onmouseout = function() {
+            hideSelectionList();
+        };
+        selectionList.onmouseover = function() {
+            showSelectionList();
+        };
+
+        selectionList.onmouseout = function() {
             hideSelectionList();
         };
 
@@ -599,5 +601,5 @@ var Controller = (function() {
 
         /* 添加事件响应，只需要调用一次 */
         addEventListener: addEventListener
-    }
+    };
 })();

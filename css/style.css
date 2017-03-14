@@ -101,9 +101,11 @@ body {
 .selection-list {
     position: absolute;
     top: 121px;
-    right: 98px;
+    right: 99px;
     width: 0;
     height: 100%;
+    border-top: 2px solid #251;
+    border-bottom: 2px solid #251;
     background-color: #263;
     overflow: hidden;
     transition: 0.2s;
@@ -113,5 +115,11 @@ body {
     display: inline-block;
     float: right;
     width: 60px;
-    border-right: 1px solid #251;
+    border-left: 2px solid #251;
+}
+
+.character-image {
+    width: 100%;
+    height: 100%;
+    margin-top: -50%;
 }

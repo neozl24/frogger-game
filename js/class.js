@@ -40,7 +40,7 @@ Enemy.prototype.initLocation = function() {
 
     /* 敌人的速度区间会随等级变化 */
     this.speed = (35 + this.level) * (2 + Math.random() * 3);
-}
+};
 
 /* 此函数用来更新敌人的位置，参数 dt 表示时间间隙 */
 Enemy.prototype.update = function(dt) {
@@ -63,7 +63,7 @@ Enemy.prototype.render = function() {
 /* Entity类为障碍物类和宝物类的父类 */
 var Entity = function() {
     this.initLocation();
-}
+};
 
 /* 子类可能需要在多种情形下重设坐标，而不仅仅是初始化时 */
 Entity.prototype.initLocation = function() {
@@ -83,13 +83,13 @@ Entity.prototype.initLocation = function() {
         (this.x === player.x && this.y === player.y)
     );
     Controller.pavement[row][col] = true;
-}
+};
 
 /* Obstacle类是Entity类的子类，它的主要特点是玩家无法移动到障碍物所在区域 */
 var Obstacle = function() {
     Entity.call(this);
     this.sprite = 'images/Rock.png';
-}
+};
 
 Obstacle.prototype = Object.create(Entity.prototype);
 Obstacle.prototype.constructor = Obstacle;
@@ -97,14 +97,14 @@ Obstacle.prototype.constructor = Obstacle;
 /* 障碍物在绘制时的大小和方位，我们进行了修正 */
 Obstacle.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x + 10, this.y - 40, 80, 136);
-}
+};
 
 /* Treasure类也是Entity类的子类，包含宝石、生命符等静态元素
  * 玩家移动到所在格子之后会导致其消失，并触发效果
  */
 var Treasure = function() {
     Entity.call(this);
-}
+};
 
 Treasure.prototype = Object.create(Entity.prototype);
 Treasure.prototype.constructor = Treasure;
@@ -112,13 +112,13 @@ Treasure.prototype.constructor = Treasure;
 /* 宝物在绘制时的大小和方位，同样进行了修正 */
 Treasure.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x + 21, this.y - 15, 60, 102);
-}
+};
 
 /* Treasure类的子类 */
 var BlueGem = function() {
     Treasure.call(this);
     this.sprite = 'images/Gem Blue.png';
-}
+};
 BlueGem.prototype = Object.create(Treasure.prototype);
 BlueGem.prototype.constructor = BlueGem;
 
@@ -126,7 +126,7 @@ BlueGem.prototype.constructor = BlueGem;
 var GreenGem = function() {
     Treasure.call(this);
     this.sprite = 'images/Gem Green.png';
-}
+};
 GreenGem.prototype = Object.create(Treasure.prototype);
 GreenGem.prototype.constructor = GreenGem;
 
@@ -134,7 +134,7 @@ GreenGem.prototype.constructor = GreenGem;
 var OrangeGem = function() {
     Treasure.call(this);
     this.sprite = 'images/Gem Orange.png';
-}
+};
 OrangeGem.prototype = Object.create(Treasure.prototype);
 OrangeGem.prototype.constructor = OrangeGem;
 
@@ -142,29 +142,29 @@ OrangeGem.prototype.constructor = OrangeGem;
 var Heart = function() {
     Treasure.call(this);
     this.sprite = 'images/Heart.png';
-}
+};
 Heart.prototype = Object.create(Treasure.prototype);
 Heart.prototype.constructor = Heart;
 Heart.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x + 21, this.y - 5, 60, 102);
-}
+};
 
 /* Treasure类的子类 */
 var Key = function() {
     Treasure.call(this);
     this.sprite = 'images/Key.png';
-}
+};
 Key.prototype = Object.create(Treasure.prototype);
 Key.prototype.constructor = Key;
 Key.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x + 12, this.y - 30, 80, 136);
-}
+};
 
 /* Treasure类的子类 */
 var Star = function() {
     Treasure.call(this);
     this.sprite = 'images/Star.png';
-}
+};
 Star.prototype = Object.create(Treasure.prototype);
 Star.prototype.constructor = Star;
 
@@ -181,13 +181,13 @@ var Player = function() {
     this.canMove = true;
 
     this.initLocation();
-}
+};
 
 /* initLocation不仅在初始化时调用，在游戏中只要角色回到初始位置，就调用这个函数 */
 Player.prototype.initLocation = function() {
     this.x = CELL_WIDTH * 2;
     this.y = CELL_HEIGHT * 5;
-}
+};
 
 /* 因为update函数会不断地被 Engine调用，所以我们只在这里检测是否与移动物体（敌人）发生碰撞。
  * 是否与静态物体(宝物等)发生碰撞，这个检测放到handleInput函数里，因为只有下达命令后才需检测
