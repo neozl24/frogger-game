@@ -2,51 +2,59 @@
     margin: 0;
     padding: 0;
 }
+
 body {
     text-align: center;
 }
+
 .top-bar {
     height: 60px;
     line-height: 60px;
-    background-color: #206030;
+    font: 18px/60px sans-serif;
+    background-color: #263;
     position: relative;
     overflow: hidden;
 }
+
 .info-panel {
     width: 505px;
     height: 100%;
     margin: 0 auto;
-    font-size: 18px;
-    font-family: sans-serif;
     color: white;
     position: relative;
 }
-#progress-bar {
+
+.progress-bar {
     position: absolute;
     left: -1px;
     width: 0;
     height: 100%;
     z-index: 1;
-    background-color: #2244AA;
-    border-right: 1px solid #113399;
+    background-color: #24a;
+    border-right: 1px solid #139;
 }
+
 .txt {
     z-index: 2;
     position: absolute;
-    text-shadow: 1px 1px #000000;
+    text-shadow: 1px 1px #000;
 }
+
 .score {
     left: 0;
-    padding-left: 10px
+    padding-left: 10px;
 }
+
 .msg {
     left: 115px;
     width: 240px;
 }
+
 .life {
     right: 50px;
     padding-right: 10px;
 }
+
 .button-toggle {
     right: 0;
     width: 40px;
@@ -56,12 +64,14 @@ body {
     border-radius: 3px;
     background-color: transparent;
 }
+
 .button-toggle:hover {
     background-color: black;
     opacity: 0.4;
 }
+
 .line {
     margin: 6px;
     border-bottom: 3px solid white;
-    box-shadow: 1px 1px #000000;
+    box-shadow: 1px 1px #000;
 }

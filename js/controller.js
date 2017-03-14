@@ -348,7 +348,7 @@ var Controller = (function() {
 
         p.lives -= 1;
         updateLives(p);
-        msgTxt.style.color = '#ff1133';
+        msgTxt.style.color = '#f13';
 
         /* 如果剩余生命值大于 0，则重置角色位置，减去一滴血，再继续游戏。
          * 如果剩余生命值为 0，则提示Game Over，并重新开始游戏。
