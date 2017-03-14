@@ -499,7 +499,7 @@ var Controller = (function() {
     var addEventListener = function(p) {
 
         /* 监听游戏玩家的键盘点击事件 */
-        document.addEventListener('keyup', function(e) {
+        doc.addEventListener('keyup', function(e) {
             var allowedKeys = {
                 37: 'left',
                 38: 'up',
@@ -512,17 +512,21 @@ var Controller = (function() {
         /* 添加菜单中的点击响应事件 */
         var menuButton = doc.getElementById('btn-menu');
         var menu = doc.getElementById('menu');
-        /* 定义一个变量用来标记菜单栏当前是否隐藏 */
+        /* 定义一个变量，用来标记菜单栏是否隐藏 */
         var isMenuHidden = true;
         var showMenu = function() {
             menu.style.height = '183px';
             menu.style.borderBottom = '2px solid #251';
             isMenuHidden = false;
+            /* 菜单栏出现时，游戏暂停 */
+            pauseGame(p);
         };
         var hideMenu = function() {
             menu.style.height = 0;
             menu.style.borderBottom = '0';
             isMenuHidden = true;
+            /* 菜单栏隐藏时，游戏继续 */
+            continueGame(p);
         };
         menuButton.onclick = function(e) {
             /* 点击菜单按钮时，点击事件停止向上传递 */
@@ -541,7 +545,7 @@ var Controller = (function() {
         /* 鼠标放在角色按钮上，会弹出二级菜单，供玩家自定义角色外观 */
         var roleListButton = doc.getElementById('btn-role');
         var selectionList = doc.getElementById('selection-list');
-        /* 定义一个变量用来标记角色菜单栏当前是否隐藏 */
+        /* 定义一个变量，用来标记角色选择栏是否隐藏 */
         var isSelectionListHidden = true;
         var showSelectionList = function() {
             selectionList.style.width = '310px';
@@ -551,6 +555,7 @@ var Controller = (function() {
             selectionList.style.width = '0';
             isSelectionListHidden = false;
         };
+
         /* 鼠标移到角色按钮上，或者移到由它弹出的二级菜单上，二级菜单都会处于显示状态 */
         roleListButton.onmouseover = function() {
             showSelectionList();
@@ -584,7 +589,7 @@ var Controller = (function() {
                 img.onclick = function() {
                     p.sprite = roleImages[index];
                     hideSelectionList();
-                }
+                };
             })(i);
         }
 
