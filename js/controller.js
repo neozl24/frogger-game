@@ -175,12 +175,15 @@ var Controller = (function(global) {
         player.initLocation();
         player.lives = 3;
         player.score = 0;
+        player.canMove = true;
         DomManager.updateLives();
         DomManager.updateScore();
         DomManager.resetMsg();
 
+        DomManager.hideMenu();
+
         /* 结束上一局的游戏循环 */
-        global.clearInterval(gameLoopId);
+        stopLoop();
 
         /* 清除上一局的蓝宝石倒计时效果（如果还没结束的话） */
         stopCountdown();
@@ -198,6 +201,81 @@ var Controller = (function(global) {
         /* 先重置游戏阶段为0，再开启游戏逻辑循环 */
         stage = 0;
         startLoop();
+    };
+
+    /* 暂停游戏，此时角色不受键盘响应 */
+    var pauseGame = function() {
+        player.canMove = false;
+
+        /* 让时间流速为0，相当于暂停动画，
+         * 但实际上浏览器依然在不断渲染，只是每次渲染的图画都一样而已。
+         * 由于时间静止，玩家的得分在此期间也不能发生变化，所以stage变量也不会变。
+         */
+        Engine.setTimeSpeed(0);
+
+        /* 暂停倒计时器
+         * 注意倒计时器是按照真实时间来计时的，不受Engine里的时间影响，
+         * 因此基于Engine实现的暂停或者时间减缓，都对倒计时器的运行不起作用
+         */
+        pauseCountdown();
+    };
+
+    /* 继续游戏，恢复键盘响应，恢复时间流速，
+     * 并启动倒计时器，如果 leftTime 大于0的话，则继续上一次没有结束的效果
+     */
+    var continueGame = function() {
+        player.canMove = true;
+        Engine.setTimeSpeed(1);
+
+        startCountdown();
+    };
+
+    /* 停止游戏，判断玩家的分数能否进入排行榜，玩家点击确定后再重启游戏 */
+    var endGame = function() {
+        stopLoop();
+        stopCountdown();
+
+        DomManager.setMsg('Game Over');
+
+        /* 下面的这层逻辑做成异步，是因为我们的游戏结束发生在player的update函数中，
+         * 所以输入框弹出的时候，玩家最后移动的一步动画的render函数还没有执行，
+         * 因此我们加入一小段延时，让这部分处理发生在走出这一步后
+         */
+        global.setTimeout(function() {
+
+            /* 先读取存储在本地的 topList，如果没有则新建空数组 */
+            var topList = (Util.StorageGetter('topList') || []);
+
+            if (topList.length < 10 || player.score > topList[9].score) {
+                /* 如果记录不足10条，或者本次成绩超过了之前的最后一位，则更新榜单 */
+                var name = prompt('Welcome to the TOP 10 club !\n' +
+                    'Please leave your name :');
+                if (name === null) {
+                    name = "Unnamed Hero";
+                }
+                var record = {
+                    name: name,
+                    score: player.score
+                };
+
+                /* 先添加本次记录，再按照分数对榜单上对所有记录进行排序 */
+                topList.push(record);
+                topList.sort(function(recordA, recordB) {
+                    return recordB.score - recordA.score;
+                });
+
+                topList = topList.slice(0, 10);
+                Util.StorageSetter('topList', topList);
+
+            } else {
+                alert('Try harder next time!');
+            }
+            
+            restartGame();
+        }, 10);
+
+
+        // restartGame();
     };
 
     /* 该函数用来初始化游戏元素 */
@@ -244,7 +322,7 @@ var Controller = (function(global) {
             stage = Math.floor(Math.min(Engine.getTime() / 5.0, player.score / 10.0));
 
             if (stage !== lastStage) {
-                console.log(stage);
+                // console.log(stage);
                 allEnemies.forEach(function(enemy) {
                     enemy.level += 1;
                 });
@@ -271,31 +349,9 @@ var Controller = (function(global) {
         }, 1000);
     };
 
-    /* 暂停游戏，此时角色不受键盘响应 */
-    var pauseGame = function() {
-        player.canMove = false;
-
-        /* 让时间流速为0，相当于暂停动画，
-         * 但实际上浏览器依然在不断渲染，只是每次渲染的图画都一样而已。
-         * 由于时间静止，玩家的得分在此期间也不能发生变化，所以stage变量也不会变。
-         */
-        Engine.setTimeSpeed(0);
-
-        /* 暂停倒计时器
-         * 注意倒计时器是按照真实时间来计时的，不受Engine里的时间影响，
-         * 因此基于Engine实现的暂停或者时间减缓，都对倒计时器的运行不起作用
-         */
-        pauseCountdown();
-    };
-
-    /* 继续游戏，恢复键盘响应，恢复时间流速，
-     * 并启动倒计时器，如果 leftTime 大于0的话，则继续上一次没有结束的效果
-     */
-    var continueGame = function() {
-        player.canMove = true;
-        Engine.setTimeSpeed(1);
-
-        startCountdown();
+    /* 结束游戏循环 */
+    var stopLoop = function() {
+        global.clearInterval(gameLoopId);
     };
 
     /* 如果到了最上面的那条河，增加得分，给出提示信息。
@@ -352,11 +408,7 @@ var Controller = (function(global) {
             }, 1000);
 
         } else {
-            DomManager.setMsg('Game Over');
-            global.setTimeout(function() {
-                restartGame();
-                continueGame();
-            }, 1000);
+            endGame();
         }
     };
 

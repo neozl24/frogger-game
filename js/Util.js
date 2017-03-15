@@ -6,7 +6,7 @@
 
 /* jshint undef: false, unused: false, strict: false */
 
-var Util = (function() {
+var Util = (function(global) {
 
     /* 功能函数，返回值是参数数组去掉了null或undefined之后的结果 */
     var takeOutNullOrUndefined = function(array) {
@@ -21,7 +21,20 @@ var Util = (function() {
         return newArray;
     };
 
-    return {
-        takeOutNullOrUndefined: takeOutNullOrUndefined
+    var prefix = 'frogger_game_';
+    /* localStorage是以字符串形式存储的，所以JSON对象要先转化才能存取，读取同理 */
+    var StorageGetter = function(key) {
+        var stringValue = global.localStorage.getItem(prefix + key);
+        return JSON.parse(stringValue);
     };
-})();
+    var StorageSetter = function(key, value) {
+        var stringValue = JSON.stringify(value);
+        return global.localStorage.setItem(prefix + key, stringValue);
+    };
+
+    return {
+        takeOutNullOrUndefined: takeOutNullOrUndefined,
+        StorageGetter: StorageGetter,
+        StorageSetter: StorageSetter
+    };
+})(this);

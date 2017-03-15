@@ -14,7 +14,13 @@ DomManager = (function(global) {
         msgTxt = doc.getElementById('msg'),
         lifeTxt = doc.getElementById('life'),
         progressBar = doc.getElementById('progress-bar'),
-        topBar = doc.getElementById('top-bar');
+        topBar = doc.getElementById('top-bar'),
+        menuButton = doc.getElementById('btn-menu'),
+        menu = doc.getElementById('menu'),
+        recordButton = doc.getElementById('btn-record'),
+        roleListButton = doc.getElementById('btn-role'),
+        selectionList = doc.getElementById('selection-list'),
+        restartButton = doc.getElementById('btn-restart');
 
     /* 重置上方中央的信息栏，参数为空 */
     var resetMsg = function() {
@@ -53,6 +59,36 @@ DomManager = (function(global) {
         progressBar.style.width = (topBar.offsetWidth * ratio) + 'px';
     };
 
+    /* 添加菜单中的点击响应事件 */
+    /* 定义一个变量，用来标记菜单栏是否隐藏 */
+    var isMenuHidden = true;
+    var showMenu = function() {
+        menu.style.height = '183px';
+        menu.style.borderBottom = '2px solid #251';
+        isMenuHidden = false;
+        /* 菜单栏出现时，游戏暂停 */
+        Controller.pauseGame();
+    };
+
+    /* 鼠标放在角色按钮上，会弹出二级菜单，供玩家自定义角色外观 */
+    /* 定义一个变量，用来标记角色选择栏是否隐藏 */
+    var isSelectionListHidden = true;
+    var showSelectionList = function() {
+        selectionList.style.width = '310px';
+        isSelectionListHidden = false;
+    };
+    var hideSelectionList = function() {
+        selectionList.style.width = '0';
+        isSelectionListHidden = false;
+    };
+    var hideMenu = function() {
+        menu.style.height = 0;
+        menu.style.borderBottom = '0';
+        isMenuHidden = true;
+        /* 菜单栏隐藏时，游戏继续 */
+        Controller.continueGame();
+    };
+
     /* 添加各种事件响应，只需在游戏启动时执行一次，由Engine.init()调用 */
     var addEventListener = function() {
 
@@ -67,25 +103,6 @@ DomManager = (function(global) {
             player.handleInput(allowedKeys[e.keyCode]);
         });
 
-        /* 添加菜单中的点击响应事件 */
-        var menuButton = doc.getElementById('btn-menu');
-        var menu = doc.getElementById('menu');
-        /* 定义一个变量，用来标记菜单栏是否隐藏 */
-        var isMenuHidden = true;
-        var showMenu = function() {
-            menu.style.height = '183px';
-            menu.style.borderBottom = '2px solid #251';
-            isMenuHidden = false;
-            /* 菜单栏出现时，游戏暂停 */
-            Controller.pauseGame();
-        };
-        var hideMenu = function() {
-            menu.style.height = 0;
-            menu.style.borderBottom = '0';
-            isMenuHidden = true;
-            /* 菜单栏隐藏时，游戏继续 */
-            Controller.continueGame();
-        };
         menuButton.onclick = function(e) {
             /* 点击菜单按钮时，点击事件停止向上传递 */
             e.stopPropagation();
@@ -95,24 +112,16 @@ DomManager = (function(global) {
                 hideMenu();
             }
         };
+
         /* 除菜单按钮和下面的角色按钮外，点击屏幕中的其它区域都会让菜单栏隐藏 */
         doc.onclick = function() {
             hideMenu();
             hideSelectionList();
         };
 
-        /* 鼠标放在角色按钮上，会弹出二级菜单，供玩家自定义角色外观 */
-        var roleListButton = doc.getElementById('btn-role');
-        var selectionList = doc.getElementById('selection-list');
-        /* 定义一个变量，用来标记角色选择栏是否隐藏 */
-        var isSelectionListHidden = true;
-        var showSelectionList = function() {
-            selectionList.style.width = '310px';
-            isSelectionListHidden = false;
-        };
-        var hideSelectionList = function() {
-            selectionList.style.width = '0';
-            isSelectionListHidden = false;
+        /* 点击记录按钮时，弹出Top 10排行榜 */
+        recordButton.onclick = function() {
+            console.log(Util.StorageGetter('topList'));
         };
 
         /* 点击角色按钮时，点击事件停止向上传递 */
@@ -158,7 +167,6 @@ DomManager = (function(global) {
         }
 
         /* 点击重启按钮会重启游戏 */
-        var restartButton = doc.getElementById('btn-restart');
         restartButton.onclick = function() {
             Controller.restartGame();
         };
@@ -172,6 +180,8 @@ DomManager = (function(global) {
         updateLives: updateLives,
 
         setProgressBarLength: setProgressBarLength,
+
+        hideMenu: hideMenu,
 
         addEventListener: addEventListener
     };
