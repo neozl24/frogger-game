@@ -14,9 +14,6 @@
  * 7.提供工具函数API，例如剔出一个数组中的空元素
  * 8.添加系统响应事件，由Engine.init()函数负责调用
  *
- * 为了和player实例对象解耦（方便以后添加多人模式），所有的函数都不会直接调用全局player变量，
- * 而是采取传参的方式，对相关player进行操作。本文件中多以 p来表示 player参数。
- * 因此调用的时候注意，可能需要将player作为参数传进来。
  */
 
 var Controller = (function(global) {
@@ -168,27 +165,27 @@ var Controller = (function(global) {
     };
 
     /* 更新上方左边的得分栏，player实例作为参数传递 */
-    var updateScore = function(p) {
-        scoreTxt.innerText = 'Score: ' + p.score;
+    var updateScore = function() {
+        scoreTxt.innerText = 'Score: ' + player.score;
     };
 
     /* 更新上方右边的生命值栏，player实例作为参数传递 */
-    var updateLives = function(p) {
+    var updateLives = function() {
         lifeTxt.innerText = '';
-        for(var i = 0; i < p.lives; i ++) {
+        for(var i = 0; i < player.lives; i ++) {
             lifeTxt.innerText += '♥';
         }
     };
 
     /* 重启游戏的函数，传入player实例作为参数 */
-    var restart = function(p) {
+    var restart = function() {
 
         /* 先将player实例还原成初始状态，然后重置上方面板信息 */
-        p.initLocation();
-        p.lives = 3;
-        p.score = 0;
-        updateLives(p);
-        updateScore(p);
+        player.initLocation();
+        player.lives = 3;
+        player.score = 0;
+        updateLives();
+        updateScore();
         resetMsg();
 
         /* 结束上一局的游戏循环 */
@@ -208,7 +205,7 @@ var Controller = (function(global) {
 
         /* 先重置游戏阶段为0，再开启游戏逻辑循环 */
         stage = 0;
-        startLoop(p);
+        startLoop();
     };
 
     /* 该函数用来初始化游戏元素 */
@@ -236,7 +233,7 @@ var Controller = (function(global) {
     var gameLoopId;
 
     /* 游戏逻辑循环函数，根据游戏时间和玩家当前分数，来控制各项元素的增减以及等级变化 */
-    var startLoop = function(p) {
+    var startLoop = function() {
 
         /* 先记录上一个stage */
         var lastStage = stage;
@@ -252,7 +249,7 @@ var Controller = (function(global) {
              * 只有玩家分数太低，平均每 5秒的得分不到10分的情况下，stage才由分数决定
              * 个别情况会导致stage停留不动，例如玩家在出发点挂机。
              */
-            stage = Math.floor(Math.min(Engine.getTime()/5.0, p.score/10.0));
+            stage = Math.floor(Math.min(Engine.getTime()/5.0, player.score/10.0));
 
             if (stage !== lastStage) {
                 console.log(stage);
@@ -282,9 +279,9 @@ var Controller = (function(global) {
         }, 1000);
     };
 
-    /* 暂停游戏，传入player实例作为参数。此时角色不受键盘响应 */
-    var pauseGame = function(p) {
-        p.canMove = false;
+    /* 暂停游戏，此时角色不受键盘响应 */
+    var pauseGame = function() {
+        player.canMove = false;
 
         /* 让时间流速为0，相当于暂停动画，
          * 但实际上浏览器依然在不断渲染，只是每次渲染的图画都一样而已。
@@ -300,27 +297,26 @@ var Controller = (function(global) {
         global.clearInterval(countdownId);
     };
 
-    /* 继续游戏，恢复键盘响应，恢复时间流速，传入player实例作为参数 */
-    var continueGame = function(p) {
-        p.canMove = true;
+    /* 继续游戏，恢复键盘响应，恢复时间流速 */
+    var continueGame = function() {
+        player.canMove = true;
         Engine.setTimeSpeed(1);
 
         /* 如果暂停之前的进度条长度还没有缩减到 0，那么就继续缩减，时间变缓效果仍将继续 */
         shortenProgressBar(progressBar.offsetWidth);
     };
 
-    /* 到达河边的处理函数，传入player实例作为参数。
-     * 如果到了最上面的那条河，增加得分，给出提示信息。
+    /* 如果到了最上面的那条河，增加得分，给出提示信息。
      * 这时玩家的角色会停留一小段时间，好让玩家看清除，角色确实到达河边。
      * 该期间其它角色正常，只是玩家角色被固定住，同时不受键盘响应。
      * 随后角色回到初始位置，键盘恢复响应。
      */
-    var crossRiver = function(p) {
-        p.canMove = false;
+    var crossRiver = function() {
+        player.canMove = false;
 
         /* 游戏阶段越往后，单次过河的分数越高 */
-        p.score += (10 + stage);
-        updateScore(p);
+        player.score += (10 + stage);
+        updateScore();
 
         var congratsWords = [
             'Good Job!',
@@ -334,41 +330,40 @@ var Controller = (function(global) {
 
         /* 0.5秒后让角色归位并恢复键盘响应，再过 0.5秒还原文字区域 */
         global.setTimeout(function() {
-            p.initLocation();
-            p.canMove = true;
+            player.initLocation();
+            player.canMove = true;
         }, 500);
         global.setTimeout(function() {
             resetMsg();
         }, 1000);
     };
 
-    /* 碰撞敌人的处理函数，传入player实例作为参数。
-     * 所有元素会静止一小段时间，好让玩家看清发碰撞的发生
+    /* 碰撞到敌人时，所有元素会静止一小段时间，好让玩家看清发碰撞的发生
      * 减去玩家一点生命，然后再判断玩家剩余生命是否为 0，并作进一步处理
      */
-    var collideWithEnemy = function(p) {
-        pauseGame(p);
+    var collideWithEnemy = function() {
+        pauseGame();
 
-        p.lives -= 1;
-        updateLives(p);
+        player.lives -= 1;
+        updateLives();
         msgTxt.style.color = '#f13';
 
         /* 如果剩余生命值大于 0，则重置角色位置，减去一滴血，再继续游戏。
          * 如果剩余生命值为 0，则提示Game Over，并重新开始游戏。
          */
-        if (p.lives > 0) {
+        if (player.lives > 0) {
             msgTxt.innerText = 'Oops! Collide with a bug!';
             global.setTimeout(function(){
                 resetMsg();
-                p.initLocation();
-                continueGame(p);
+                player.initLocation();
+                continueGame();
             }, 1000);
 
         } else {
             msgTxt.innerText = 'Game Over';
             global.setTimeout(function(){
-                restart(p);
-                continueGame(p);
+                restart();
+                continueGame();
             }, 1000);
         }
     };
@@ -381,11 +376,11 @@ var Controller = (function(global) {
      */
     var countdownId;
 
-    /* 得到蓝宝石，让时间变慢，持续一小段时间，传入player实例作为参数
+    /* 得到蓝宝石，让时间变慢，持续一小段时间。
      * 让时间变慢的具体做法就是启动进度条缩减函数，这个函数启动了一个倒计时器，
      * 不断缩减进度条长度，直到其长度为 0，时间流速才恢复正常
      */
-    var obtainBlueGem = function(p) {
+    var obtainBlueGem = function() {
 
         /* 如果连续吃到两个蓝宝石，需要先将上一个产生的倒计时器清除 */
         global.clearInterval(countdownId);
@@ -432,13 +427,11 @@ var Controller = (function(global) {
         }, dt);
     };
 
-    /* 得到绿宝石的处理函数，传入player实例作为参数。
-     * 可以减少一个敌人，如果当前只剩一个敌人，则效果改为得到大量分数。
-     */
-    var obtainGreenGem = function(p) {
+    /* 得到绿宝石，减少一个敌人，如果当前只剩一个敌人，则效果改为得到大量分数 */
+    var obtainGreenGem = function() {
         if (allEnemies.length <= 1) {
-            p.score += 50;
-            updateScore(p);
+            player.score += 50;
+            updateScore();
             msgTxt.innerText = '50 Scores Awarded!';
         } else {
             allEnemies = allEnemies.slice(0, allEnemies.length - 1);
@@ -450,8 +443,8 @@ var Controller = (function(global) {
         }, 1000);
     };
 
-    /* 橙色宝石可以将所有敌人移到屏幕左侧以外去，传入player实例作为参数 */
-    var obtainOrangeGem = function(p) {
+    /* 橙色宝石可以将所有敌人移到屏幕左侧以外去 */
+    var obtainOrangeGem = function() {
         allEnemies.forEach(function(enemy) {
             enemy.x = -100;
         });
@@ -461,42 +454,37 @@ var Controller = (function(global) {
         }, 1000);
     };
 
-    /* 得到桃心的处理函数，传入player实例作为参数。
-     * 恢复一点生命。如果生命达到上限，则改为获得一定量的分数。
-     */
-    var obtainHeart = function(p) {
-        if (p.lives < 5) {
-            p.lives += 1;
-            updateLives(p);
+    /* 得到桃心，恢复一点生命。如果生命达到上限，则改为获得一定量的分数 */
+    var obtainHeart = function() {
+        if (player.lives < 5) {
+            player.lives += 1;
+            updateLives();
             msgTxt.innerText = 'One More Life!';
         } else {
-            p.score += (30 + 3 * stage);
-            updateScore(p);
-            msgTxt.innerText = p.score + 'Extra Scores';
+            player.score += (30 + 3 * stage);
+            updateScore();
+            msgTxt.innerText = player.score + 'Extra Scores';
         }
         setTimeout(function() {
             resetMsg();
         }, 1000);
     };
 
-    /* 得到钥匙的处理函数，传入player实例作为参数。
-     * 消除一个石头，同时得到少量分数。
-     * 如果游戏中已经没有石头，则只能获得同样多的分数。
-     */
-    var obtainKey = function(p) {
+    /* 得到钥匙时，消除一个石头（如果屏幕上还有石头的话），同时得到少量分数 */
+    var obtainKey = function() {
         removeRock();
-        p.score += 20;
-        updateScore(p);
+        player.score += 20;
+        updateScore();
         msgTxt.innerText = 'Remove a Rock';
         setTimeout(function() {
             resetMsg();
         }, 1000);
     };
 
-    /* 星星可以得到大量分数，传入player实例作为参数 */
-    var obtainStar = function(p) {
-        p.score += (50 + 5 * stage);
-        updateScore(p);
+    /* 得到星星可以获得大量分数 */
+    var obtainStar = function() {
+        player.score += (50 + 5 * stage);
+        updateScore();
         msgTxt.innerText = 'Lucky! Much More Scores!';
         setTimeout(function() {
             resetMsg();
@@ -516,8 +504,8 @@ var Controller = (function(global) {
         return newArray;
     };
 
-    /* 添加各种事件响应，只需在游戏启动时执行一次，传入player实例作为参数 */
-    var addEventListener = function(p) {
+    /* 添加各种事件响应，只需在游戏启动时执行一次 */
+    var addEventListener = function() {
 
         /* 监听游戏玩家的键盘点击事件 */
         doc.addEventListener('keyup', function(e) {
@@ -527,7 +515,7 @@ var Controller = (function(global) {
                 39: 'right',
                 40: 'down'
             };
-            p.handleInput(allowedKeys[e.keyCode]);
+            player.handleInput(allowedKeys[e.keyCode]);
         });
 
         /* 添加菜单中的点击响应事件 */
@@ -540,14 +528,14 @@ var Controller = (function(global) {
             menu.style.borderBottom = '2px solid #251';
             isMenuHidden = false;
             /* 菜单栏出现时，游戏暂停 */
-            pauseGame(p);
+            pauseGame();
         };
         var hideMenu = function() {
             menu.style.height = 0;
             menu.style.borderBottom = '0';
             isMenuHidden = true;
             /* 菜单栏隐藏时，游戏继续 */
-            continueGame(p);
+            continueGame();
         };
         menuButton.onclick = function(e) {
             /* 点击菜单按钮时，点击事件停止向上传递 */
@@ -609,7 +597,7 @@ var Controller = (function(global) {
             /* 用立即执行的方式，解决异步调用中 i的值不对的问题 */
             (function(index) {
                 img.onclick = function() {
-                    p.sprite = roleImages[index];
+                    player.sprite = roleImages[index];
                     hideSelectionList();
                 };
             })(i);
@@ -618,13 +606,11 @@ var Controller = (function(global) {
         /* 点击重启按钮会重启游戏 */
         var restartButton = doc.getElementById('btn-restart');
         restartButton.onclick = function() {
-            restart(p);
+            restart();
         };
     };
 
-    /* Controller对象暴露的这些方法，按名字可理解其作用
-     * 注意其中有一些需要传入player实例对象作为参数
-     */
+    /* Controller对象暴露的这些方法，按名字可理解其作用 */
     return {
         /* 二维数组对象，表示中间区域的占用情况 */
         pavement: pavement,

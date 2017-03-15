@@ -198,7 +198,7 @@ Player.prototype.update = function() {
      * 再将角色归附原位，最后继续游戏
      */
     if ( this.canMove && this.hasCollisionWith(allEnemies) ) {
-        Controller.collideWithEnemy(this);
+        Controller.collideWithEnemy();
     }
 };
 
@@ -241,22 +241,22 @@ Player.prototype.hasCollisionWith = function(array) {
         } else if ((obj instanceof Treasure) &&
                     this.x === obj.x && this.y === obj.y) {
             if (obj instanceof BlueGem) {
-                Controller.obtainBlueGem(this);
+                Controller.obtainBlueGem();
 
             } else if (obj instanceof GreenGem) {
-                Controller.obtainGreenGem(this);
+                Controller.obtainGreenGem();
 
             } else if (obj instanceof OrangeGem) {
-                Controller.obtainOrangeGem(this);
+                Controller.obtainOrangeGem();
 
             } else if ((obj instanceof Heart) && this.lives < 5) {
-                Controller.obtainHeart(this);
+                Controller.obtainHeart();
 
             } else if (obj instanceof Key) {
-                Controller.obtainKey(this);
+                Controller.obtainKey();
 
             } else if (obj instanceof Star) {
-                Controller.obtainStar(this);
+                Controller.obtainStar();
             }
 
             /* 如果是碰撞到了Treasure类，则需要在这里对事件直接进行处理。
@@ -313,7 +313,7 @@ Player.prototype.handleInput = function(direction) {
 
                 if (this.y <= 0) {
                     /* 到达最上面的河了，交由Controller处理 */
-                    Controller.crossRiver(this);
+                    Controller.crossRiver();
                 }
             }
             break;
