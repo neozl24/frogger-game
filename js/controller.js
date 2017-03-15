@@ -80,7 +80,7 @@ var Controller = (function(global) {
     /* 添加障碍物，新增数量作为参数传递，如果路面中已有大量格子被占据，则取消添加 */
     var addObstacle = function(num) {
         for (var i = 0; i < num; i++) {
-            if (pavement.getOccupiedNum() <= 16) {
+            if (pavement.getOccupiedNum() <= 10) {
                 allObstacles.push(new Obstacle());
             }
         }
@@ -89,7 +89,7 @@ var Controller = (function(global) {
     /* 添加宝物，新增数量作为参数传递，如果路面中已有大量格子被占据，则取消添加 */
     var addTreasure = function(num, ClassName) {
         for (var i = 0; i < num; i++) {
-            if (pavement.getOccupiedNum() <= 10) {
+            if (pavement.getOccupiedNum() <= 16) {
                 allTreasure.push(new ClassName());
             }
         }
