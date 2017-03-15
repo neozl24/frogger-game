@@ -268,7 +268,7 @@ Player.prototype.hasCollisionWith = function(array) {
              */
             array[i] = null;
             /* 注意这一行是赋值给allTreasure，而不是array，否则对allTreasure无效 */
-            allTreasure = Controller.takeOutNullOrUndefined(array);
+            allTreasure = Util.takeOutNullOrUndefined(array);
             var row = this.y / CELL_HEIGHT - 1,
                 col = this.x / CELL_WIDTH ;
             Controller.pavement[row][col] = false;

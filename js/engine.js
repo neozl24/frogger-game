@@ -1,4 +1,5 @@
 /* Engine.js
+ *
  * 这个文件提供了游戏循环玩耍的功能（更新敌人和渲染）
  * 在屏幕上画出出事的游戏面板，然后调用玩家和敌人对象的 update / render 函数
  *
@@ -65,8 +66,8 @@ var Engine = (function(global) {
      * 而且init()函数的执行发生在所有图像资源加载完成之后
      */
     function init() {
-        Controller.addEventListener(player);
-        Controller.restart(player);
+        Controller.restartGame();
+        DomManager.addEventListener();
         lastTime = Date.now();
         main();
     }
