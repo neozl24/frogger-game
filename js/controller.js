@@ -16,6 +16,8 @@
  *
  */
 
+/* jshint undef: false, unused: false, strict: false */
+
 var Controller = (function(global) {
 
     /* 下面这些DOM元素用来反应游戏状态 */
@@ -106,13 +108,30 @@ var Controller = (function(global) {
     var addRandomTreasure = function(num) {
 
         /* 这里设置各种宝物出现的概率权重 */
-        var treasureList = [
-            {ClassName: BlueGem, weight: 20},
-            {ClassName: GreenGem, weight: 10},
-            {ClassName: OrangeGem, weight: 15},
-            {ClassName: Heart, weight: 10},
-            {ClassName: Key, weight: 10},
-            {ClassName: Star, weight: 5},
+        var treasureList = [{
+                ClassName: BlueGem,
+                weight: 20
+            },
+            {
+                ClassName: GreenGem,
+                weight: 10
+            },
+            {
+                ClassName: OrangeGem,
+                weight: 15
+            },
+            {
+                ClassName: Heart,
+                weight: 10
+            },
+            {
+                ClassName: Key,
+                weight: 10
+            },
+            {
+                ClassName: Star,
+                weight: 5
+            },
         ];
 
         var i, j;
@@ -123,7 +142,7 @@ var Controller = (function(global) {
 
         var randomNum, currentTotalWeight, targetClass;
         for (i = 0; i < num; i++) {
-            randomNum = Math.ceil( Math.random() * totalWeight);
+            randomNum = Math.ceil(Math.random() * totalWeight);
             targetClass = treasureList[0].ClassName;
             currentTotalWeight = 0;
 
@@ -134,7 +153,7 @@ var Controller = (function(global) {
             for (j = 0; j < treasureList.length - 1; j++) {
                 currentTotalWeight += treasureList[j].weight;
                 if (currentTotalWeight < randomNum) {
-                    targetClass = treasureList[j+1].ClassName;
+                    targetClass = treasureList[j + 1].ClassName;
                 }
             }
             addTreasure(1, targetClass);
@@ -172,7 +191,7 @@ var Controller = (function(global) {
     /* 更新上方右边的生命值栏，player实例作为参数传递 */
     var updateLives = function() {
         lifeTxt.innerText = '';
-        for(var i = 0; i < player.lives; i ++) {
+        for (var i = 0; i < player.lives; i++) {
             lifeTxt.innerText += '♥';
         }
     };
@@ -198,10 +217,10 @@ var Controller = (function(global) {
         Engine.reset();
 
         /* 初始化游戏元素 */
-        initElements(   initialSettings.treasureNum,
-                        initialSettings.obstacleNum,
-                        initialSettings.enemyNum,
-                        initialSettings.enemyLevel   );
+        initElements(initialSettings.treasureNum,
+            initialSettings.obstacleNum,
+            initialSettings.enemyNum,
+            initialSettings.enemyLevel);
 
         /* 先重置游戏阶段为0，再开启游戏逻辑循环 */
         stage = 0;
@@ -249,7 +268,7 @@ var Controller = (function(global) {
              * 只有玩家分数太低，平均每 5秒的得分不到10分的情况下，stage才由分数决定
              * 个别情况会导致stage停留不动，例如玩家在出发点挂机。
              */
-            stage = Math.floor(Math.min(Engine.getTime()/5.0, player.score/10.0));
+            stage = Math.floor(Math.min(Engine.getTime() / 5.0, player.score / 10.0));
 
             if (stage !== lastStage) {
                 console.log(stage);
@@ -353,7 +372,7 @@ var Controller = (function(global) {
          */
         if (player.lives > 0) {
             msgTxt.innerText = 'Oops! Collide with a bug!';
-            global.setTimeout(function(){
+            global.setTimeout(function() {
                 resetMsg();
                 player.initLocation();
                 continueGame();
@@ -361,7 +380,7 @@ var Controller = (function(global) {
 
         } else {
             msgTxt.innerText = 'Game Over';
-            global.setTimeout(function(){
+            global.setTimeout(function() {
                 restart();
                 continueGame();
             }, 1000);
@@ -410,7 +429,7 @@ var Controller = (function(global) {
         var dt = 10;
 
         var totalWidth = topBar.offsetWidth;
-        var unitWidth = Math.ceil( totalWidth  * dt / actionTime);
+        var unitWidth = Math.ceil(totalWidth * dt / actionTime);
 
         var width = initialWidth;
 
@@ -494,11 +513,11 @@ var Controller = (function(global) {
     /* 功能函数，返回值是参数数组去掉了null或undefined之后的结果 */
     var takeOutNullOrUndefined = function(array) {
         var newArray = [];
-        for(var i = 0, j = 0; i < array.length; i ++) {
+        for (var i = 0, j = 0; i < array.length; i++) {
             /* 如果元素不是null或undefined，就移到新数组来 */
             if (array[i] !== null && array[i] !== undefined) {
                 newArray[j] = array[i];
-                j ++;
+                j++;
             }
         }
         return newArray;

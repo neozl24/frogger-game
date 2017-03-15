@@ -26,6 +26,8 @@
  *
  */
 
+/* jshint undef: false, unused: false, strict: false */
+
 /* 用来界定格子大小的常量 */
 var CELL_WIDTH = 101;
 var CELL_HEIGHT = 83;

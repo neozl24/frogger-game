@@ -22,6 +22,8 @@
  *
  */
 
+/* jshint undef: false, unused: false, strict: false */
+
 /* 这是玩家要躲避的敌人类 */
 var Enemy = function(level) {
     this.level = level;
