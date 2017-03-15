@@ -19,14 +19,15 @@
  * 因此调用的时候注意，可能需要将player作为参数传进来。
  */
 
-var Controller = (function() {
+var Controller = (function(global) {
 
     /* 下面这些DOM元素用来反应游戏状态 */
-    var doc = document,
+    var doc = global.document,
         scoreTxt = doc.getElementById('score'),
         msgTxt = doc.getElementById('msg'),
         lifeTxt = doc.getElementById('life'),
-        progressBar = doc.getElementById('progress-bar');
+        progressBar = doc.getElementById('progress-bar'),
+        topBar = doc.getElementById('top-bar');
 
     /* 用来设定游戏开始时各元素的数量的对象 */
     var initialSettings = {
@@ -98,7 +99,7 @@ var Controller = (function() {
     /* 添加宝物，新增数量作为参数传递，如果路面中已有大量格子被占据，则取消添加 */
     var addTreasure = function(num, ClassName) {
         for (var i = 0; i < num; i++) {
-            if (pavement.getOccupiedNum() <= 12) {
+            if (pavement.getOccupiedNum() <= 10) {
                 allTreasure.push(new ClassName());
             }
         }
@@ -191,15 +192,12 @@ var Controller = (function() {
         resetMsg();
 
         /* 结束上一局的游戏循环 */
-        clearInterval(gameLoopId);
+        global.clearInterval(gameLoopId);
 
-        /* 清除上一局的蓝宝石倒计时效果（如果还没结束的话），并将进度条还原
-         * 使时间流速恢复默认状态，并使 Engine内部计时器清零重置
-         */
-        clearInterval(countdownId);
-        clearTimeout(restoreId);
+        /* 清除上一局的蓝宝石倒计时效果（如果还没结束的话） */
+        global.clearInterval(countdownId);
         progressBar.style.width = 0;
-
+        /* 使时间流速恢复默认状态，并使 Engine内部计时器清零重置 */
         Engine.reset();
 
         /* 初始化游戏元素 */
@@ -293,12 +291,22 @@ var Controller = (function() {
          * 由于时间静止，玩家的得分在此期间也不能发生变化，所以stage变量也不会变。
          */
         Engine.setTimeSpeed(0);
+
+        /* 同时要清除进度条缩减的倒计时器
+         * 否则进度条会继续缩减，直到减为 0时，自动触发时间恢复的效果
+         * 注意倒计时器是按照真实时间来计时的，不受Engine里的时间影响，
+         * 因此基于Engine实现的暂停或者时间减缓，都对倒计时器的运行不起作用
+         */
+        global.clearInterval(countdownId);
     };
 
     /* 继续游戏，恢复键盘响应，恢复时间流速，传入player实例作为参数 */
     var continueGame = function(p) {
         p.canMove = true;
         Engine.setTimeSpeed(1);
+
+        /* 如果暂停之前的进度条长度还没有缩减到 0，那么就继续缩减，时间变缓效果仍将继续 */
+        shortenProgressBar(progressBar.offsetWidth);
     };
 
     /* 到达河边的处理函数，传入player实例作为参数。
@@ -325,11 +333,11 @@ var Controller = (function() {
         msgTxt.innerText = congratsWords[randomIndex];
 
         /* 0.5秒后让角色归位并恢复键盘响应，再过 0.5秒还原文字区域 */
-        setTimeout(function() {
+        global.setTimeout(function() {
             p.initLocation();
             p.canMove = true;
         }, 500);
-        setTimeout(function() {
+        global.setTimeout(function() {
             resetMsg();
         }, 1000);
     };
@@ -350,7 +358,7 @@ var Controller = (function() {
          */
         if (p.lives > 0) {
             msgTxt.innerText = 'Oops! Collide with a bug!';
-            setTimeout(function(){
+            global.setTimeout(function(){
                 resetMsg();
                 p.initLocation();
                 continueGame(p);
@@ -358,7 +366,7 @@ var Controller = (function() {
 
         } else {
             msgTxt.innerText = 'Game Over';
-            setTimeout(function(){
+            global.setTimeout(function(){
                 restart(p);
                 continueGame(p);
             }, 1000);
@@ -366,22 +374,39 @@ var Controller = (function() {
     };
 
     /* countdownId 用来标记进度条的倒计时器，是setInterval函数的返回值。
-     * restoreId 用来标记进度条的恢复器，是setTimeout函数的返回值。
      * 在一个蓝宝石的效果还没结束，又碰到另一个蓝宝石时，就需要将上一次的
-     * 倒计时器和恢复器清空，此时这两个id变量就会被clear函数调用。
-     * 重启游戏时，也是这样清空蓝宝石效果。
+     * 倒计时器清空，此时这个id变量就会被clear函数调用。
+     * 暂停游戏时，要清空倒计时器，恢复游戏时再继续让倒计时器运行
+     * 重启游戏时，要确保上一局的蓝宝石效果已经清空，因此也要清空倒计时器。
      */
     var countdownId;
-    var restoreId;
 
-    /* 得到蓝宝石，让时间变慢，持续一小段时间，传入player实例作为参数 */
+    /* 得到蓝宝石，让时间变慢，持续一小段时间，传入player实例作为参数
+     * 让时间变慢的具体做法就是启动进度条缩减函数，这个函数启动了一个倒计时器，
+     * 不断缩减进度条长度，直到其长度为 0，时间流速才恢复正常
+     */
     var obtainBlueGem = function(p) {
+
+        /* 如果连续吃到两个蓝宝石，需要先将上一个产生的倒计时器清除 */
+        global.clearInterval(countdownId);
+
+        /* 让进度条从最大值开始缩减，当它长度变为 0时，时间流速恢复正常 */
+        shortenProgressBar(topBar.offsetWidth);
+    };
+
+    /* 缩短上方的蓝色进度条，蓝色进度条的起始长度作为参数传递
+     * 当蓝色进度条的长度减到 0 或是被直接置为 0 时，都会导致倒计时器终止，时间流速恢复正常
+     * 因此，只要给这个函数一个大于 0 的参数并执行，就自动开始时间减速效果
+     * 游戏的暂停和恢复也是这个原理，暂停时清除倒计时器，但是进度条长度停留在了暂停时的位置
+     * 而游戏恢复时，将刚才的进度条长度作为参数重新传递，倒计时器又继续从刚才的地方启动
+     * 这样就使暂停游戏不影响时间减速的效果，核心就在于进度条长度————这个传递信息的关键！
+     */
+    var shortenProgressBar = function(initialWidth) {
+
+        /* 先计算进度条的起始长度 */
+        progressBar.style.width = initialWidth + 'px';
+
         Engine.setTimeSpeed(0.2);
-
-        /* 如果连续吃到两个蓝宝石，需要先将上一个产生的倒计时器和恢复器清除 */
-        clearInterval(countdownId);
-        clearTimeout(restoreId);
-
         msgTxt.innerText = 'Time Slowing Down';
 
         /* 有效时间 */
@@ -389,26 +414,22 @@ var Controller = (function() {
         /* 渲染的时间间隔，会影响进度条动画的平顺 */
         var dt = 10;
 
-        var totalWidth = progressBar.parentNode.offsetWidth;
-        var width = totalWidth;
+        var totalWidth = topBar.offsetWidth;
         var unitWidth = Math.ceil( totalWidth  * dt / actionTime);
 
-        /* 先将进度条充满整个上方父元素 */
-        progressBar.style.width = width + 'px';
+        var width = initialWidth;
 
-        /* 倒计时器，逐步将进度条缩短 */
+        /* 倒计时器，逐步将进度条缩短，直到为 0，才触发时间流速恢复正常 */
         countdownId = setInterval(function() {
             width -= unitWidth;
             width = Math.max(width, 0);
             progressBar.style.width = width + 'px';
+            if (width <= 0) {
+                Engine.setTimeSpeed(1);
+                resetMsg();
+                global.clearInterval(countdownId);
+            }
         }, dt);
-
-        /* 恢复器，将游戏时间恢复正常。恢复器内部会自动停止倒计时器 */
-        restoreId = setTimeout(function() {
-            Engine.setTimeSpeed(1);
-            clearInterval(countdownId);
-            resetMsg();
-        }, actionTime);
     };
 
     /* 得到绿宝石的处理函数，传入player实例作为参数。
@@ -540,6 +561,7 @@ var Controller = (function() {
         /* 点击屏幕中除菜单按钮外的其它区域都会让菜单栏隐藏 */
         doc.onclick = function() {
             hideMenu();
+            hideSelectionList();
         };
 
         /* 鼠标放在角色按钮上，会弹出二级菜单，供玩家自定义角色外观 */
@@ -629,4 +651,4 @@ var Controller = (function() {
         /* 添加事件响应，只需要调用一次 */
         addEventListener: addEventListener
     };
-})();
+})(this);

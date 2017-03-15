@@ -30,6 +30,7 @@ var Engine = (function(global) {
     canvas.width = CELL_WIDTH * 5;
     canvas.height = CELL_HEIGHT * 6.8;
     doc.body.appendChild(canvas);
+    canvas.style.marginTop = '-11px';
 
     /* 这个函数是整个游戏的主入口，负责适当的调用 update / render 函数 */
     function main() {
