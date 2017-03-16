@@ -10,8 +10,8 @@
  * 2.保持游戏的逻辑循环，从而不断生成新的元素，或者提升敌人等级，这个循环可以停止和重启
  * 3.增删游戏元素，不过这部分接口并不暴露在外，由内部函数调用
  * 4.提供处理游戏事件的API，包括碰到敌人和宝物之后的逻辑
- * 5.随着玩家的游戏进程，通知 DomManager更新DOM元素
- * 6.提供一个二维数组pavement用来表示画面中间区域的占用情况，可以被外部访问
+ * 5.随着玩家的游戏进程，通知 DomManager更新 DOM元素
+ * 6.提供一个二维数组对象 pavement，用来表示画面中间区域的占用情况，可以被外部访问
  *
  */
 
@@ -186,7 +186,7 @@ var Controller = (function(global) {
         stopLoop();
 
         /* 清除上一局的蓝宝石倒计时效果（如果还没结束的话） */
-        stopCountdown();
+        stopTimer();
         DomManager.setProgressBarLength(0);
 
         /* 使时间流速恢复默认状态，并使 Engine内部计时器清零重置 */
@@ -217,7 +217,7 @@ var Controller = (function(global) {
          * 注意倒计时器是按照真实时间来计时的，不受Engine里的时间影响，
          * 因此基于Engine实现的暂停或者时间减缓，都对倒计时器的运行不起作用
          */
-        pauseCountdown();
+        pauseTimer();
     };
 
     /* 继续游戏，恢复键盘响应，恢复时间流速，
@@ -227,13 +227,13 @@ var Controller = (function(global) {
         player.canMove = true;
         Engine.setTimeSpeed(1);
 
-        startCountdown();
+        startTimer();
     };
 
     /* 停止游戏，判断玩家的分数能否进入排行榜，玩家点击确定后再重启游戏 */
     var endGame = function() {
         stopLoop();
-        stopCountdown();
+        stopTimer();
 
         DomManager.setMsg('Game Over');
 
@@ -270,7 +270,7 @@ var Controller = (function(global) {
             } else {
                 alert('Try harder next time!');
             }
-            
+
             restartGame();
         }, 10);
 
@@ -308,11 +308,14 @@ var Controller = (function(global) {
         /* 先记录上一个stage */
         var lastStage = stage;
 
+        /* 每次执行下面的setInterval时，都需要将上一次的结果清除掉 */
+        global.clearInterval(gameLoopId);
+
         /* 这个setInterval函数每隔1秒检查stage值是否有变化，
-         * 如果有，则准备新增元素，并提升敌人等级。
+         * 如果有变化，则准备新增元素，并提升敌人等级。
          * 将它的返回值存储下来，方便之后clearInterval调用，从而停止游戏逻辑循环
          */
-        gameLoopId = setInterval(function() {
+        gameLoopId = global.setInterval(function() {
 
             /* 只有player.score和Engine.getTime()两个值都达标，才能进入下一个stage
              * 一般情况下，我们希望stage值由游戏时间决定，每隔 5秒提升一档。
@@ -412,26 +415,24 @@ var Controller = (function(global) {
         }
     };
 
-    /* countdownId 用来标记进度条的倒计时器，是setInterval函数的返回值。
+    /* timerId 用来标记进度条的倒计时器，是setInterval函数的返回值。
      * 在一个蓝宝石的效果还没结束，又碰到另一个蓝宝石时，就需要先将上一次的
      * 倒计时器清空，此时这个id变量就会被clearInterval函数调用。
      * 暂停游戏时，要清空倒计时器；恢复游戏时再继续让倒计时器运行
      * 重启游戏时，要确保上一局的蓝宝石倒计时效果已经失效，因此也要清空倒计时器。
      */
-    var countdownId;
+    var timerId;
 
     /* 得到蓝宝石，让时间变慢，持续一小段时间。
      * 让时间变慢就是启动一个倒计时器，不断减少leftTime，当其为0时，时间流速恢复正常
      */
     var obtainBlueGem = function() {
 
-        /* 如果连续吃到两个蓝宝石，需要先将上一个产生的倒计时器清除 */
-        stopCountdown();
-
         /* 这个倒计时器就像一个旧式闹钟，要上发条才能动
-         * 这里设定leftTime就相当于给其上发条，不能超过5000，即 5秒 */
+         * 这里设定leftTime就相当于给其上发条，不能超过5000，即 5秒
+         */
         leftTime = 5000;
-        startCountdown();
+        startTimer();
     };
 
 
@@ -441,7 +442,7 @@ var Controller = (function(global) {
     /* 启动倒计时器，核心就是启动 setInterval()函数，不断更新 leftTime，直到其减为 0,
      * 每一次减少后，都通知 DomManager同比例地反映到进度条的长度上去
      */
-    var startCountdown = function() {
+    var startTimer = function() {
         Engine.setTimeSpeed(0.2);
         DomManager.setMsg('Time Slowing Down');
 
@@ -451,27 +452,30 @@ var Controller = (function(global) {
         /* 渲染的时间间隔，会影响进度条动画的平顺 */
         var dt = 10;
 
+        /* 每次启动setInterval之前，需要将上一次的循环清除 */
+        global.clearInterval(timerId);
+
         /* 倒计时器，leftTime逐步减少，直到为 0，才触发时间流速恢复正常 */
-        countdownId = setInterval(function() {
+        timerId = global.setInterval(function() {
             leftTime -= dt;
             leftTime = Math.max(leftTime - dt, 0);
             DomManager.setProgressBarLength(leftTime / maxTime);
             if (leftTime <= 0) {
                 Engine.setTimeSpeed(1);
                 DomManager.resetMsg();
-                global.clearInterval(countdownId);
+                global.clearInterval(timerId);
             }
         }, dt);
     };
 
     /* 暂停倒计时器，游戏暂停时执行 */
-    var pauseCountdown = function() {
-        global.clearInterval(countdownId);
+    var pauseTimer = function() {
+        global.clearInterval(timerId);
     };
 
     /* 停止倒计时器，游戏重启时执行 */
-    var stopCountdown = function() {
-        global.clearInterval(countdownId);
+    var stopTimer = function() {
+        global.clearInterval(timerId);
         leftTime = 0;
         DomManager.setProgressBarLength(0);
     };

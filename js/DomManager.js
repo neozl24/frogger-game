@@ -83,7 +83,7 @@ DomManager = (function(global) {
     };
     var hideMenu = function() {
         menu.style.height = 0;
-        menu.style.borderBottom = '0';
+        menu.style.borderBottom = 0;
         isMenuHidden = true;
         /* 菜单栏隐藏时，游戏继续 */
         Controller.continueGame();
