@@ -69,6 +69,13 @@ DomManager = (function(global) {
         /* 菜单栏出现时，游戏暂停 */
         Controller.pauseGame();
     };
+    var hideMenu = function() {
+        menu.style.height = 0;
+        menu.style.borderBottom = 0;
+        isMenuHidden = true;
+        /* 菜单栏隐藏时，游戏继续 */
+        Controller.continueGame();
+    };
 
     /* 鼠标放在角色按钮上，会弹出二级菜单，供玩家自定义角色外观 */
     /* 定义一个变量，用来标记角色选择栏是否隐藏 */
@@ -80,13 +87,6 @@ DomManager = (function(global) {
     var hideSelectionList = function() {
         selectionList.style.width = '0';
         isSelectionListHidden = false;
-    };
-    var hideMenu = function() {
-        menu.style.height = 0;
-        menu.style.borderBottom = 0;
-        isMenuHidden = true;
-        /* 菜单栏隐藏时，游戏继续 */
-        Controller.continueGame();
     };
 
     /* 添加各种事件响应，只需在游戏启动时执行一次，由Engine.init()调用 */

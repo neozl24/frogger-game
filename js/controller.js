@@ -227,7 +227,9 @@ var Controller = (function(global) {
         player.canMove = true;
         Engine.setTimeSpeed(1);
 
-        startTimer();
+        if (leftTime > 0) {
+            startTimer();
+        }
     };
 
     /* 停止游戏，判断玩家的分数能否进入排行榜，玩家点击确定后再重启游戏 */

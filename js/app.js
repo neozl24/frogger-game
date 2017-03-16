@@ -31,7 +31,7 @@
 
 /* jshint undef: false, unused: false, strict: false */
 
-/* 用来界定格子大小的全局常量，这组赋值是必须的 */
+/* 用来界定格子大小的全局常量，玩家不可修改，这组赋值是必须的 */
 var CELL_WIDTH = 101;
 var CELL_HEIGHT = 83;
 
@@ -43,8 +43,8 @@ var allEnemies = [];
 var allObstacles = [];
 var allTreasure = [];
 
-/* 这里可以设置游戏开始时的元素，不设定时取默认值，这组赋值不是必要的 */
-Controller.initialSettings.treasureNum = 2;
-Controller.initialSettings.obstacleNum = 2;
-Controller.initialSettings.enemyNum = 5;
-Controller.initialSettings.enemyLevel = 1;
+/* 这里可以自定义设置游戏开始时的元素，不赋值时取默认值，这组赋值不是必要的 */
+// Controller.initialSettings.treasureNum = 2;
+// Controller.initialSettings.obstacleNum = 2;
+// Controller.initialSettings.enemyNum = 5;
+// Controller.initialSettings.enemyLevel = 1;
