@@ -38,7 +38,7 @@ var Enemy = function(level) {
  */
 Enemy.prototype.initLocation = function() {
     this.x = -CELL_WIDTH;
-    this.y = CELL_HEIGHT * ( Math.ceil( Math.random() * 4) );
+    this.y = CELL_HEIGHT * (Math.ceil(Math.random() * 4));
 
     /* 敌人的速度区间会随等级变化 */
     this.speed = (35 + this.level) * (2 + Math.random() * 3);
@@ -76,8 +76,8 @@ Entity.prototype.initLocation = function() {
      * 通过Controller.pavement这个二维变量，得知目前已有静态元素的位置信息。
      */
     do {
-        col = Math.floor( Math.random() * 5);
-        row = Math.floor( Math.random() * 4);
+        col = Math.floor(Math.random() * 5);
+        row = Math.floor(Math.random() * 4);
         this.x = CELL_WIDTH * col;
         this.y = CELL_HEIGHT * (row + 1);
 
@@ -199,7 +199,7 @@ Player.prototype.update = function() {
     /* 发生碰撞时先暂停游戏，然后在上面文字区域提示玩家发生碰撞，
      * 再将角色归附原位，最后继续游戏
      */
-    if ( this.canMove && this.hasCollisionWith(allEnemies) ) {
+    if (this.canMove && this.hasCollisionWith(allEnemies)) {
         Controller.collideWithEnemy();
     }
 };
@@ -213,7 +213,7 @@ Player.prototype.update = function() {
 Player.prototype.hasCollisionWith = function(array) {
 
     /* 确保参数是Array对象 */
-    if ( !(array instanceof Array) ) {
+    if (!(array instanceof Array)) {
         console.log('not an array!');
         return false;
     }
@@ -237,11 +237,11 @@ Player.prototype.hasCollisionWith = function(array) {
             return true;
 
         } else if ((obj instanceof Obstacle) &&
-                    this.x === obj.x && this.y === obj.y) {
+            this.x === obj.x && this.y === obj.y) {
             return true;
 
         } else if ((obj instanceof Treasure) &&
-                    this.x === obj.x && this.y === obj.y) {
+            this.x === obj.x && this.y === obj.y) {
             if (obj instanceof BlueGem) {
                 Controller.obtainBlueGem();
 
@@ -270,7 +270,7 @@ Player.prototype.hasCollisionWith = function(array) {
             /* 注意这一行是赋值给allTreasure，而不是array，否则对allTreasure无效 */
             allTreasure = Util.takeOutNullOrUndefined(array);
             var row = this.y / CELL_HEIGHT - 1,
-                col = this.x / CELL_WIDTH ;
+                col = this.x / CELL_WIDTH;
             Controller.pavement[row][col] = false;
 
             return true;
@@ -296,7 +296,8 @@ Player.prototype.handleInput = function(direction) {
     }
 
     /* 若移动后和障碍物发生碰撞，则还原到碰撞前的位置，因此这里对碰撞前位置进行记录 */
-    var lastX = this.x, lastY = this.y;
+    var lastX = this.x,
+        lastY = this.y;
 
     switch (direction) {
         case 'left':
@@ -329,7 +330,7 @@ Player.prototype.handleInput = function(direction) {
     }
 
     /* 如果移动后和障碍物碰到一起去了，就回到刚才的位置，相当于不能朝障碍物移动 */
-    if ( this.hasCollisionWith(allObstacles) ) {
+    if (this.hasCollisionWith(allObstacles)) {
         this.x = lastX;
         this.y = lastY;
     }

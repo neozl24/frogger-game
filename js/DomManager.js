@@ -130,7 +130,7 @@ DomManager = (function(global) {
             recordBoard.style.display = 'block';
 
             var topList = Util.StorageGetter('topList');
-            for (var i = 0; i < topList.length ; i++) {
+            for (var i = 0; i < topList.length; i++) {
                 var record = topList[i];
                 var img = doc.getElementById('img-' + i);
                 var name = doc.getElementById('name-' + i);
