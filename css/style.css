@@ -6,6 +6,7 @@
 
 body {
     text-align: center;
+    font: sans-serif;
 }
 
 .top-bar {
@@ -122,4 +123,83 @@ body {
     width: 100%;
     height: 100%;
     margin-top: -50%;
+}
+
+.record-board {
+    z-index: 5;
+    display: none;
+    position: absolute;
+    width: 546px;
+    height: 610px;
+    left: 50%;
+    margin-left: -273px;
+    top: 5px;
+    border-radius: 5px;
+    background-color: #000;
+    opacity: 0.92;
+    color: #fff;
+}
+
+.board-title {
+    margin: 20px auto;
+    height: 30px;
+    font-size: 24px;
+}
+
+.content-list {
+    margin: auto;
+    width: 400px;
+    height: 450px;
+}
+
+.btn-close {
+    width: 100px;
+    height: 40px;
+    margin-top: 20px;
+    background-color: #263;
+    color: #fff;
+    font-size: 18px;
+    border-color: #222;
+    border-radius: 5px;
+}
+
+.record {
+    height: 45px;
+}
+
+.odd-row {
+    background-color: #111;
+}
+
+.even-row {}
+
+.record-role {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    overflow: hidden;
+    float: left;
+    margin: auto 10px;
+}
+
+.role-img {
+    width: 100%;
+    height: 170%;
+    margin-top: -45%;
+}
+
+.record-txt {
+    display: inline-block;
+    height: 45px;
+    line-height: 45px;
+    overflow: hidden;
+}
+
+.record-name {
+    float: left;
+}
+
+.record-score {
+    float: right;
+    margin-right: 10px;
 }

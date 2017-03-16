@@ -257,7 +257,8 @@ var Controller = (function(global) {
                 }
                 var record = {
                     name: name,
-                    score: player.score
+                    score: player.score,
+                    role: player.sprite
                 };
 
                 /* 先添加本次记录，再按照分数对榜单上对所有记录进行排序 */
@@ -334,10 +335,15 @@ var Controller = (function(global) {
                 addRandomTreasure(1);
 
                 if (stage % 3 === 0) {
+                    if (allEnemies.length < 4) {
+                        addEnemy(1, stage);
+                    }
                     addObstacle(1);
                 }
                 if (stage % 4 === 0) {
-                    addEnemy(1, stage);
+                    if (allEnemies.length < 8) {
+                        addEnemy(1, stage);
+                    }
                 }
                 if (stage % 6 === 0) {
                     addTreasure(1, Key);
@@ -501,7 +507,7 @@ var Controller = (function(global) {
     /* 橙色宝石可以将所有敌人移到屏幕左侧以外去 */
     var obtainOrangeGem = function() {
         allEnemies.forEach(function(enemy) {
-            enemy.x = -100;
+            enemy.x = -200;
         });
         DomManager.setMsg('Push Bugs Away!!');
         global.setTimeout(function() {

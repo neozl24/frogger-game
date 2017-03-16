@@ -101,12 +101,12 @@ var Engine = (function(global) {
     function render() {
         /* 这个数组保存着游戏关卡的特有的行对应的图片相对路径。 */
         var rowImages = [
-                'images/water-block.png',   // 这一行是河。
-                'images/stone-block.png',   // 第一行石头
-                'images/stone-block.png',   // 第二行石头
-                'images/stone-block.png',   // 第三行石头
-                'images/stone-block.png',   // 第四行石头
-                'images/grass-block.png'    // 第一行草地
+                'images/water-block.png', // 这一行是河。
+                'images/stone-block.png', // 第一行石头
+                'images/stone-block.png', // 第二行石头
+                'images/stone-block.png', // 第三行石头
+                'images/stone-block.png', // 第四行石头
+                'images/grass-block.png' // 第一行草地
             ],
             numRows = 6,
             numCols = 5,
@@ -120,8 +120,8 @@ var Engine = (function(global) {
                  * 我们需要的图片，这样我们可以享受缓存图片的好处，因为我们会反复的用到这些图片
                  */
                 ctx.drawImage(Resources.get(rowImages[row]),
-                              col * CELL_WIDTH,
-                              row * CELL_HEIGHT - 40);
+                    col * CELL_WIDTH,
+                    row * CELL_HEIGHT - 40);
             }
         }
 

@@ -18,6 +18,8 @@ DomManager = (function(global) {
         menuButton = doc.getElementById('btn-menu'),
         menu = doc.getElementById('menu'),
         recordButton = doc.getElementById('btn-record'),
+        recordBoard = doc.getElementById('record-board'),
+        closeBoardButton = doc.getElementById('btn-close'),
         roleListButton = doc.getElementById('btn-role'),
         selectionList = doc.getElementById('selection-list'),
         restartButton = doc.getElementById('btn-restart');
@@ -25,7 +27,7 @@ DomManager = (function(global) {
     /* 重置上方中央的信息栏，参数为空 */
     var resetMsg = function() {
         msgTxt.innerText = 'Move to the river above';
-        msgTxt.style.color = 'white';
+        msgTxt.style.color = '#fff';
     };
 
     /* 设置信息栏的文字，参数为需要显示的字符串 */
@@ -119,9 +121,31 @@ DomManager = (function(global) {
             hideSelectionList();
         };
 
-        /* 点击记录按钮时，弹出Top 10排行榜 */
-        recordButton.onclick = function() {
-            console.log(Util.StorageGetter('topList'));
+        /* 点击排行榜按钮时，弹出Top 10排行榜 */
+        recordButton.onclick = function(e) {
+            /* 点击排行榜按钮时，点击事件停止向上传递，否则游戏会失去暂停效果 */
+            e.stopPropagation();
+            hideMenu();
+            Controller.pauseGame();
+            recordBoard.style.display = 'block';
+
+            var topList = Util.StorageGetter('topList');
+            for (var i = 0; i < topList.length ; i++) {
+                var record = topList[i];
+                var img = doc.getElementById('img-' + i);
+                var name = doc.getElementById('name-' + i);
+                var score = doc.getElementById('score-' + i);
+                img.src = record.role || 'images/char-boy.png';
+                name.innerText = record.name;
+                score.innerText = record.score;
+            }
+        };
+
+        /* 点击排行榜面板里的OK按钮时，关闭榜单
+         * 由于该点击事件会向上传递到document，因此会触发hideMenu()，从而继续游戏
+         */
+        closeBoardButton.onclick = function() {
+            recordBoard.style.display = 'none';
         };
 
         /* 点击角色按钮时，点击事件停止向上传递 */

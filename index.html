@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>Frogger</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
     <div id="top-bar" class="top-bar">
         <div id="progress-bar" class="progress-bar"></div>
@@ -20,26 +22,102 @@
             <ul id="menu" class="menu-list">
                 <li id="btn-record" class="btn-option btn-toggle">Record</li>
                 <li id="btn-role" class="btn-option btn-toggle">Role</li>
-                <li id="btn-restart"class="btn-option btn-toggle">Restart</li>
+                <li id="btn-restart" class="btn-option btn-toggle">Restart</li>
             </ul>
             <ul id="selection-list" class="selection-list">
                 <li class="btn-role btn-toggle">
-                    <img src="" alt="princess girl" id="role-4" class="role-img">
+                    <img src="" alt="role No.5" id="role-4" class="role-img">
                 </li>
                 <li class="btn-role btn-toggle">
-                    <img src="" alt="pink girl" id="role-3" class="role-img">
+                    <img src="" alt="role No.4" id="role-3" class="role-img">
                 </li>
                 <li class="btn-role btn-toggle">
-                    <img src="" alt="horn girl" id="role-2" class="role-img">
+                    <img src="" alt="role No.3" id="role-2" class="role-img">
                 </li>
                 <li class="btn-role btn-toggle">
-                    <img src="" alt="cat girl" id="role-1" class="role-img">
+                    <img src="" alt="role No.2" id="role-1" class="role-img">
                 </li>
                 <li class="btn-role btn-toggle">
-                    <img src="" alt="boy" id="role-0" class="role-img">
+                    <img src="" alt="role No.1" id="role-0" class="role-img">
                 </li>
             </ul>
         </div>
+    </div>
+    <div id="record-board" class="record-board">
+        <p class="board-title">Top 10</p>
+        <ul class="content-list">
+            <li class="record odd-row">
+                <div class="record-role">
+                    <img src="" alt="" class="role-img" id="img-0">
+                </div>
+                <p class="record-name record-txt" id="name-0"></p>
+                <p class="record-score record-txt" id="score-0"></p>
+            </li>
+            <li class="record even-row">
+                <div class="record-role">
+                    <img src="" alt="" class="role-img" id="img-1">
+                </div>
+                <p class="record-name record-txt" id="name-1"></p>
+                <p class="record-score record-txt" id="score-1"></p>
+            </li>
+            <li class="record odd-row">
+                <div class="record-role">
+                    <img src="" alt="" class="role-img" id="img-2">
+                </div>
+                <p class="record-name record-txt" id="name-2"></p>
+                <p class="record-score record-txt" id="score-2"></p>
+            </li>
+            <li class="record even-row">
+                <div class="record-role">
+                    <img src="" alt="" class="role-img" id="img-3">
+                </div>
+                <p class="record-name record-txt" id="name-3"></p>
+                <p class="record-score record-txt" id="score-3"></p>
+            </li>
+            <li class="record odd-row">
+                <div class="record-role">
+                    <img src="" alt="" class="role-img" id="img-4">
+                </div>
+                <p class="record-name record-txt" id="name-4"></p>
+                <p class="record-score record-txt" id="score-4"></p>
+            </li>
+            <li class="record even-row">
+                <div class="record-role">
+                    <img src="" alt="" class="role-img" id="img-5">
+                </div>
+                <p class="record-name record-txt" id="name-5"></p>
+                <p class="record-score record-txt" id="score-5"></p>
+            </li>
+            <li class="record odd-row">
+                <div class="record-role">
+                    <img src="" alt="" class="role-img" id="img-6">
+                </div>
+                <p class="record-name record-txt" id="name-6"></p>
+                <p class="record-score record-txt" id="score-6"></p>
+            </li>
+            <li class="record even-row">
+                <div class="record-role">
+                    <img src="" alt="" class="role-img" id="img-7">
+                </div>
+                <p class="record-name record-txt" id="name-7"></p>
+                <p class="record-score record-txt" id="score-7"></p>
+            </li>
+            <li class="record odd-row">
+                <div class="record-role">
+                    <img src="" alt="" class="role-img" id="img-8">
+                </div>
+                <p class="record-name record-txt" id="name-8"></p>
+                <p class="record-score record-txt" id="score-8"></p>
+            </li>
+            <li class="record even-row">
+                <div class="record-role">
+                    <img src="" alt="" class="role-img" id="img-9">
+                </div>
+                <p class="record-name record-txt" id="name-9"></p>
+                <p class="record-score record-txt" id="score-9"></p>
+            </li>
+        </ul>
+        <button id="btn-close" class="btn-close btn-toggle">OK</button>
     </div>
 
     <script src="js/resources.js"></script>
@@ -50,4 +128,5 @@
     <script src="js/app.js"></script>
     <script src="js/engine.js"></script>
 </body>
+
 </html>
