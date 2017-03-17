@@ -276,9 +276,6 @@ var Controller = (function(global) {
 
             restartGame();
         }, 10);
-
-
-        // restartGame();
     };
 
     /* 该函数用来初始化游戏元素 */
