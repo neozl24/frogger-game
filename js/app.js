@@ -29,7 +29,7 @@
  *
  */
 
-/* jshint undef: false, unused: false, strict: false */
+/* jshint undef: false, unused: false */
 
 /* 用来界定格子大小的全局常量，玩家不可修改，这组赋值是必须的 */
 var CELL_WIDTH = 101;

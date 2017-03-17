@@ -4,9 +4,10 @@
  *
  */
 
-/* jshint undef: false, unused: false, strict: false */
+/* jshint undef: false, unused: false */
 
 DomManager = (function(global) {
+    'use strict';
 
     /* 下面这些DOM元素用来反应游戏状态 */
     var doc = global.document,

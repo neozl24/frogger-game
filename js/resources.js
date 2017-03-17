@@ -4,9 +4,10 @@
  * 这个工具还包含一个缓存层从而当你试图加载同一张图片多次的时候可以重复使用缓存的图片
  */
 
-/* jshint undef: false, unused: false, strict: false */
+/* jshint undef: false, unused: false */
 
 (function() {
+    'use strict';
     var resourceCache = {};
     var loading = [];
     var readyCallbacks = [];

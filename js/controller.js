@@ -15,9 +15,10 @@
  *
  */
 
-/* jshint undef: false, unused: false, strict: false */
+/* jshint undef: false, unused: false */
 
 var Controller = (function(global) {
+    'use strict';
 
     /* 用来设定游戏开始时各元素的数量的对象 */
     var initialSettings = {

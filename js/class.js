@@ -22,10 +22,11 @@
  *
  */
 
-/* jshint undef: false, unused: false, strict: false */
+/* jshint undef: false, unused: false */
 
 /* 这是玩家要躲避的敌人类 */
 var Enemy = function(level) {
+    'use strict';
     this.level = level;
     this.initLocation();
 
@@ -37,6 +38,7 @@ var Enemy = function(level) {
  * 在实例对象初始化，或者已经移出屏幕边界，以及特殊效果触发时，都可能调用。
  */
 Enemy.prototype.initLocation = function() {
+    'use strict';
     this.x = -CELL_WIDTH;
     this.y = CELL_HEIGHT * (Math.ceil(Math.random() * 4));
 
@@ -46,6 +48,7 @@ Enemy.prototype.initLocation = function() {
 
 /* 此函数用来更新敌人的位置，参数 dt 表示时间间隙 */
 Enemy.prototype.update = function(dt) {
+    'use strict';
     /* 给每一次的移动都乘以 dt 参数，以此来保证游戏在所有的电脑上
      * 都是以同样的速度运行的
      */
@@ -59,17 +62,19 @@ Enemy.prototype.update = function(dt) {
 
 /* 此为游戏必须的函数，用来在屏幕上画出敌人，几个数字用来调整大小和坐标偏移 */
 Enemy.prototype.render = function() {
+    'use strict';
     ctx.drawImage(Resources.get(this.sprite), this.x + 20, this.y - 20, 60, 102);
 };
 
 /* Entity类为障碍物类和宝物类的父类 */
 var Entity = function() {
+    'use strict';
     this.initLocation();
 };
 
 /* 子类可能需要在多种情形下重设坐标，而不仅仅是初始化时 */
 Entity.prototype.initLocation = function() {
-
+    'use strict';
     var col, row;
 
     /* 通过下面的循环，保证新生成的静态元素不会和目前已有的静态元素或玩家重叠。
@@ -89,6 +94,7 @@ Entity.prototype.initLocation = function() {
 
 /* Obstacle类是Entity类的子类，它的主要特点是玩家无法移动到障碍物所在区域 */
 var Obstacle = function() {
+    'use strict';
     Entity.call(this);
     this.sprite = 'images/Rock.png';
 };
@@ -98,6 +104,7 @@ Obstacle.prototype.constructor = Obstacle;
 
 /* 障碍物在绘制时的大小和方位，我们进行了修正 */
 Obstacle.prototype.render = function() {
+    'use strict';
     ctx.drawImage(Resources.get(this.sprite), this.x + 10, this.y - 40, 80, 136);
 };
 
@@ -105,6 +112,7 @@ Obstacle.prototype.render = function() {
  * 玩家移动到所在格子之后会导致其消失，并触发效果
  */
 var Treasure = function() {
+    'use strict';
     Entity.call(this);
 };
 
@@ -113,11 +121,13 @@ Treasure.prototype.constructor = Treasure;
 
 /* 宝物在绘制时的大小和方位，同样进行了修正 */
 Treasure.prototype.render = function() {
+    'use strict';
     ctx.drawImage(Resources.get(this.sprite), this.x + 21, this.y - 15, 60, 102);
 };
 
 /* Treasure类的子类 */
 var BlueGem = function() {
+    'use strict';
     Treasure.call(this);
     this.sprite = 'images/Gem Blue.png';
 };
@@ -126,6 +136,7 @@ BlueGem.prototype.constructor = BlueGem;
 
 /* Treasure类的子类 */
 var GreenGem = function() {
+    'use strict';
     Treasure.call(this);
     this.sprite = 'images/Gem Green.png';
 };
@@ -134,6 +145,7 @@ GreenGem.prototype.constructor = GreenGem;
 
 /* Treasure类的子类 */
 var OrangeGem = function() {
+    'use strict';
     Treasure.call(this);
     this.sprite = 'images/Gem Orange.png';
 };
@@ -142,28 +154,33 @@ OrangeGem.prototype.constructor = OrangeGem;
 
 /* Treasure类的子类 */
 var Heart = function() {
+    'use strict';
     Treasure.call(this);
     this.sprite = 'images/Heart.png';
 };
 Heart.prototype = Object.create(Treasure.prototype);
 Heart.prototype.constructor = Heart;
 Heart.prototype.render = function() {
+    'use strict';
     ctx.drawImage(Resources.get(this.sprite), this.x + 21, this.y - 5, 60, 102);
 };
 
 /* Treasure类的子类 */
 var Key = function() {
+    'use strict';
     Treasure.call(this);
     this.sprite = 'images/Key.png';
 };
 Key.prototype = Object.create(Treasure.prototype);
 Key.prototype.constructor = Key;
 Key.prototype.render = function() {
+    'use strict';
     ctx.drawImage(Resources.get(this.sprite), this.x + 12, this.y - 30, 80, 136);
 };
 
 /* Treasure类的子类 */
 var Star = function() {
+    'use strict';
     Treasure.call(this);
     this.sprite = 'images/Star.png';
 };
@@ -175,6 +192,7 @@ Star.prototype.constructor = Star;
  * 需要一个 update() 函数， render() 函数，和一个 handleInput()函数
  */
 var Player = function() {
+    'use strict';
     this.sprite = 'images/char-boy.png';
     this.lives = 3;
     this.score = 0;
@@ -187,6 +205,7 @@ var Player = function() {
 
 /* initLocation不仅在初始化时调用，在游戏中只要角色回到初始位置，就调用这个函数 */
 Player.prototype.initLocation = function() {
+    'use strict';
     this.x = CELL_WIDTH * 2;
     this.y = CELL_HEIGHT * 5;
 };
@@ -195,7 +214,7 @@ Player.prototype.initLocation = function() {
  * 是否与静态物体(宝物等)发生碰撞，这个检测放到handleInput函数里，因为只有下达命令后才需检测
  */
 Player.prototype.update = function() {
-
+    'use strict';
     /* 发生碰撞时先暂停游戏，然后在上面文字区域提示玩家发生碰撞，
      * 再将角色归附原位，最后继续游戏
      */
@@ -211,7 +230,7 @@ Player.prototype.update = function() {
  * 则由外部函数处理。
  */
 Player.prototype.hasCollisionWith = function(array) {
-
+    'use strict';
     /* 确保参数是Array对象 */
     if (!(array instanceof Array)) {
         console.log('not an array!');
@@ -283,10 +302,12 @@ Player.prototype.hasCollisionWith = function(array) {
 
 /* 参数修正是为了调整玩家图像的坐标显示 */
 Player.prototype.render = function() {
+    'use strict';
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y - 50);
 };
 
 Player.prototype.handleInput = function(direction) {
+    'use strict';
     /* 到达河边，或者和敌人发生碰撞时，为了让玩家看清发生了什么，会让角色短暂地固定在事发地。
      * 而如果处于这种状态下，角色的canMove属性就会被我们置为false。
      * 这时我们就直接返回，相当于此时handleInput函数不起作用，也即键盘方向键失去了响应。

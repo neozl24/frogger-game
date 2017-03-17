@@ -4,10 +4,10 @@
  *
  */
 
-/* jshint undef: false, unused: false, strict: false */
+/* jshint undef: false, unused: false */
 
 var Util = (function(global) {
-
+    'use strict';
     /* 功能函数，返回值是参数数组去掉了null或undefined之后的结果 */
     var takeOutNullOrUndefined = function(array) {
         var newArray = [];

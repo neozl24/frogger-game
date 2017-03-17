@@ -11,9 +11,10 @@
  * 公开访问，以此使编写app.js的时候更加容易
  */
 
-/* jshint undef: false, unused: false, strict: false */
+/* jshint undef: false, unused: false */
 
 var Engine = (function(global) {
+    'use strict';
     /* 实现定义我们会在这个作用域用到的变量
      * 创建 canvas 元素，拿到对应的 2D 上下文
      * 设置 canvas 元素的高/宽 然后添加到dom中
