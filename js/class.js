@@ -193,7 +193,16 @@ Star.prototype.constructor = Star;
  */
 var Player = function() {
     'use strict';
-    this.sprite = 'images/char-boy.png';
+    var roleImages = [
+        'images/char-boy.png',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png'
+    ];
+    var index = Math.floor(Math.random() * roleImages.length);
+    this.sprite = roleImages[index];
+    
     this.lives = 3;
     this.score = 0;
 
