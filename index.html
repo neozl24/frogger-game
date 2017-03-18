@@ -21,7 +21,7 @@
                 <p class="line"></p>
             </button>
             <ul id="menu" class="menu-list">
-                <li id="btn-record" class="btn-option btn-toggle">Record</li>
+                <li id="btn-ranking" class="btn-option btn-toggle">Ranking</li>
                 <li id="btn-role" class="btn-option btn-toggle">Role</li>
                 <li id="btn-restart" class="btn-option btn-toggle">Restart</li>
             </ul>
@@ -44,9 +44,15 @@
             </ul>
         </div>
     </div>
-    <div id="record-board" class="record-board">
-        <p class="board-title">World Ranking</p>
-        <ul id="remote-list" class="content-list"></ul>
+    <div id="ranking-board" class="ranking-board">
+        <p class="board-title">
+            <span id="title-world" class="title-world">World</span>
+            <span id="title-local" class="title-local">Local</span>
+        </p>
+        <div class="board-content">
+            <ul id="remote-list" class="content-list remote-list"></ul>
+            <ul id="local-list" class="content-list local-list"></ul>
+        </div>
         <button id="btn-close" class="btn-close btn-toggle">OK</button>
     </div>
 

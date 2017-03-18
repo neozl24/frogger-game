@@ -18,9 +18,12 @@ DomManager = (function(global) {
         topBar = doc.getElementById('top-bar'),
         menuButton = doc.getElementById('btn-menu'),
         menu = doc.getElementById('menu'),
-        recordButton = doc.getElementById('btn-record'),
-        recordBoard = doc.getElementById('record-board'),
+        rankingButton = doc.getElementById('btn-ranking'),
+        titleWorld = doc.getElementById('title-world'),
+        titleLocal = doc.getElementById('title-local'),
+        rankingBoard = doc.getElementById('ranking-board'),
         remoteList = doc.getElementById('remote-list'),
+        localList = doc.getElementById('local-list'),
         closeBoardButton = doc.getElementById('btn-close'),
         roleListButton = doc.getElementById('btn-role'),
         selectionList = doc.getElementById('selection-list'),
@@ -123,56 +126,84 @@ DomManager = (function(global) {
             hideSelectionList();
         };
 
-        /* 在显示排行榜之前，生成它的Dom结构 */
-        var ranking, li, pRanking, rowClass, div, img, pRecord, pScore;
-        for (ranking = 0; ranking < 100; ranking++) {
-            li = doc.createElement('li');
-            rowClass = ranking % 2 === 0 ? 'odd-row' : 'even-row';
+        /* 生成一个li节点，根据参数的不同决定它是本地排行榜里的还是在线排行榜里的
+         * 参数scope的取值是'remote-'或'local-'，用来标记 id
+         */
+        var makeLiNode = function(scope) {
+            var li = doc.createElement('li');
+            var rowClass = ranking % 2 === 0 ? 'odd-row' : 'even-row';
             li.className = 'record ' + rowClass;
 
-            pRanking = doc.createElement('p');
+            var pRanking = doc.createElement('p');
             pRanking.className = 'record-ranking record-txt';
-            pRanking.id = 'ranking-' + ranking;
+            pRanking.id = scope + 'ranking-' + ranking;
 
-            div = doc.createElement('div');
+            var div = doc.createElement('div');
             div.className = 'record-role';
-            img = doc.createElement('img');
+            var img = doc.createElement('img');
             img.className = 'role-img';
-            img.id = 'img-' + ranking;
+            img.id = scope + 'img-' + ranking;
             div.appendChild(img);
 
-            pRecord = doc.createElement('p');
+            var pRecord = doc.createElement('p');
             pRecord.className = 'record-name record-txt';
-            pRecord.id = 'name-' + ranking;
-            pScore = doc.createElement('p');
+            pRecord.id = scope + 'name-' + ranking;
+            var pScore = doc.createElement('p');
             pScore.className = 'record-score record-txt';
-            pScore.id = 'score-' + ranking;
+            pScore.id = scope + 'score-' + ranking;
 
             li.appendChild(pRanking);
             li.appendChild(div);
             li.appendChild(pRecord);
             li.appendChild(pScore);
+
+            return li;
+        };
+
+        /* 在显示排行榜之前，生成它的Dom结构 */
+        var ranking, li;
+        /* 生成在线排行榜 */
+        for (ranking = 0; ranking < 100; ranking++) {
+            li = makeLiNode('remote-');
             remoteList.appendChild(li);
+        }
+        /* 生成在线排行榜 */
+        for (ranking = 0; ranking < 10; ranking++) {
+            li = makeLiNode('local-');
+            localList.appendChild(li);
         }
 
         /* 点击排行榜按钮时，弹出Top 10排行榜 */
-        recordButton.onclick = function(e) {
+        rankingButton.onclick = function(e) {
             /* 点击排行榜按钮时，点击事件停止向上传递，否则游戏会失去暂停效果 */
             e.stopPropagation();
             hideMenu();
             Controller.pauseGame();
-            recordBoard.style.display = 'block';
+            rankingBoard.style.display = 'block';
 
             var remoteList = Data.getRemoteList();
             var localList = Data.getLocalList();
+            var i, record, ranking, img, name, score;
 
             var count = Math.min(remoteList.length, 100);
-            for (var i = 0; i < count; i++) {
-                var record = remoteList[i];
-                var ranking = doc.getElementById('ranking-' + i);
-                var img = doc.getElementById('img-' + i);
-                var name = doc.getElementById('name-' + i);
-                var score = doc.getElementById('score-' + i);
+            for (i = 0; i < count; i++) {
+                record = remoteList[i];
+                ranking = doc.getElementById('remote-ranking-' + i);
+                img = doc.getElementById('remote-img-' + i);
+                name = doc.getElementById('remote-name-' + i);
+                score = doc.getElementById('remote-score-' + i);
+                ranking.innerText = i + 1;
+                img.src = record.role || 'images/char-boy.png';
+                img.alt = img.src;
+                name.innerText = record.name;
+                score.innerText = record.score;
+            }
+            for (i = 0; i < 10; i++) {
+                record = localList[i];
+                ranking = doc.getElementById('local-ranking-' + i);
+                img = doc.getElementById('local-img-' + i);
+                name = doc.getElementById('local-name-' + i);
+                score = doc.getElementById('local-score-' + i);
                 ranking.innerText = i + 1;
                 img.src = record.role || 'images/char-boy.png';
                 img.alt = img.src;
@@ -181,11 +212,26 @@ DomManager = (function(global) {
             }
         };
 
+        /* 点击排行榜上方的按钮，可以切换面板 */
+        titleWorld.onclick = function() {
+            titleWorld.style.backgroundColor = '#4156a0';
+            titleLocal.style.backgroundColor = 'transparent';
+            remoteList.style.left = '0';
+            localList.style.left = remoteList.offsetWidth + 'px';
+        };
+
+        titleLocal.onclick = function() {
+            titleLocal.style.backgroundColor = '#4156a0';
+            titleWorld.style.backgroundColor = 'transparent';
+            remoteList.style.left = -remoteList.offsetWidth + 'px';
+            localList.style.left = '0';
+        };
+
         /* 点击排行榜面板里的OK按钮时，关闭榜单
          * 由于该点击事件会向上传递到document，因此会触发hideMenu()，从而继续游戏
          */
         closeBoardButton.onclick = function() {
-            recordBoard.style.display = 'none';
+            rankingBoard.style.display = 'none';
         };
 
         /* 点击角色按钮时，点击事件停止向上传递 */

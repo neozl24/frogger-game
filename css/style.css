@@ -125,7 +125,7 @@ body {
     margin-top: -50%;
 }
 
-.record-board {
+.ranking-board {
     z-index: 5;
     display: none;
     position: absolute;
@@ -138,21 +138,67 @@ body {
     background-color: #000;
     opacity: 0.92;
     color: #fff;
+    cursor: default;
     user-select: none;
 }
 
 .board-title {
+    position: relative;
     margin: 20px auto;
     height: 30px;
-    font-size: 24px;
+    line-height: 30px;
+    width: 300px;
+    font-size: 18px;
+    border: 2px solid #555;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.title-world {
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    width: 149px;
+    height: 100%;
+    border-right: 1px solid #555;
+    background-color: #4156a0;
+}
+
+.title-local {
+    display: inline-block;
+    position: absolute;
+    right: 0;
+    width: 149px;
+    border-left: 1px solid #555;
+    height: 100%;
+}
+
+.board-content {
+    margin: auto;
+    overflow: hidden;
+    position: relative;
+    width: 400px;
+    height: 430px;
+}
+
+.remote-list {
+    position: absolute;
+    left: 0;
+    transition: 0.3s;
+}
+
+.local-list {
+    position: absolute;
+    left: 400px;
+    transition: 0.3s;
 }
 
 .content-list {
     margin: auto;
     /*overflow: auto;*/
     overflow-y: scroll;
-    width: 400px;
-    height: 430px;
+    width: 100%;
+    height: 100%;
 }
 
 .btn-close {
