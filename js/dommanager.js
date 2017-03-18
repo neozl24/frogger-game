@@ -27,7 +27,12 @@ DomManager = (function(global) {
         closeBoardButton = doc.getElementById('btn-close'),
         roleListButton = doc.getElementById('btn-role'),
         selectionList = doc.getElementById('selection-list'),
-        restartButton = doc.getElementById('btn-restart');
+        restartButton = doc.getElementById('btn-restart'),
+        operationPanel = doc.getElementById('operation-panel'),
+        arrowUp = doc.getElementById('arrow-up'),
+        arrowDown = doc.getElementById('arrow-down'),
+        arrowLeft = doc.getElementById('arrow-left'),
+        arrowRight = doc.getElementById('arrow-right');
 
     /* 重置上方中央的信息栏，参数为空 */
     var resetMsg = function() {
@@ -94,6 +99,23 @@ DomManager = (function(global) {
     var hideSelectionList = function() {
         selectionList.style.width = '0';
         isSelectionListHidden = false;
+    };
+
+    /* 判断登陆设备是否是PC */
+    var isPC = function() {
+        var userAgentInfo = navigator.userAgent;
+        var Agents = ["Android", "iPhone",
+            "SymbianOS", "Windows Phone",
+            "iPad", "iPod"
+        ];
+        var flag = true;
+        for (var v = 0; v < Agents.length; v++) {
+            if (userAgentInfo.indexOf(Agents[v]) > 0) {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
     };
 
     /* 添加各种事件响应，只需在游戏启动时执行一次，由Engine.init()调用 */
@@ -173,7 +195,7 @@ DomManager = (function(global) {
             localList.appendChild(li);
         }
 
-        /* 点击排行榜按钮时，弹出Top 10排行榜 */
+        /* 点击排行榜按钮时，弹出排行榜 */
         rankingButton.onclick = function(e) {
             /* 点击排行榜按钮时，点击事件停止向上传递，否则游戏会失去暂停效果 */
             e.stopPropagation();
@@ -281,6 +303,26 @@ DomManager = (function(global) {
         restartButton.onclick = function() {
             Controller.restartGame();
         };
+
+        /* 根据登陆设备决定是否显示模拟操作面板 */
+        if (isPC()) {
+            operationPanel.style.display = 'none';
+        } else {
+            operationPanel.style.display = 'block';
+            /* 再来绑定模拟操作面板上的事件 */
+            arrowUp.onclick = function() {
+                player.handleInput('up');
+            };
+            arrowDown.onclick = function() {
+                player.handleInput('down');
+            };
+            arrowLeft.onclick = function() {
+                player.handleInput('left');
+            };
+            arrowRight.onclick = function() {
+                player.handleInput('right');
+            };
+        }
     };
 
     return {
