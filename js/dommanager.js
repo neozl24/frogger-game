@@ -185,8 +185,8 @@ DomManager = (function(global) {
             var localList = Data.getLocalList();
             var i, record, ranking, img, name, score;
 
-            var count = Math.min(remoteList.length, 100);
-            for (i = 0; i < count; i++) {
+            var remoteCount = Math.min(remoteList.length, 100);
+            for (i = 0; i < remoteCount; i++) {
                 record = remoteList[i];
                 ranking = doc.getElementById('remote-ranking-' + i);
                 img = doc.getElementById('remote-img-' + i);
@@ -198,7 +198,8 @@ DomManager = (function(global) {
                 name.innerText = record.name;
                 score.innerText = record.score;
             }
-            for (i = 0; i < 10; i++) {
+            var localCount = Math.min(localList.length, 10);
+            for (i = 0; i < localCount; i++) {
                 record = localList[i];
                 ranking = doc.getElementById('local-ranking-' + i);
                 img = doc.getElementById('local-img-' + i);
