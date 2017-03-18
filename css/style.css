@@ -138,6 +138,7 @@ body {
     background-color: #000;
     opacity: 0.92;
     color: #fff;
+    user-select: none;
 }
 
 .board-title {
@@ -152,7 +153,6 @@ body {
     overflow-y: scroll;
     width: 400px;
     height: 430px;
-    user-select: none;
 }
 
 .btn-close {
@@ -198,11 +198,17 @@ body {
     overflow: hidden;
 }
 
+.record-ranking {
+    float: left;
+    width: 15px;
+    padding-left: 5px;
+    text-align: center;
+}
+
 .record-name {
     float: left;
     width: 200px;
     text-align: left;
-    overflow: hidden;
 }
 
 .record-score {

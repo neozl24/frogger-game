@@ -124,26 +124,31 @@ DomManager = (function(global) {
         };
 
         /* 在显示排行榜之前，生成它的Dom结构 */
-        var index, li, div, rowClass, img, pRecord, pScore;
-        for (index = 0; index < 100; index++) {
+        var ranking, li, pRanking, rowClass, div, img, pRecord, pScore;
+        for (ranking = 0; ranking < 100; ranking++) {
             li = doc.createElement('li');
-            rowClass = index % 2 === 0 ? 'odd-row' : 'even-row';
+            rowClass = ranking % 2 === 0 ? 'odd-row' : 'even-row';
             li.className = 'record ' + rowClass;
+
+            pRanking = doc.createElement('p');
+            pRanking.className = 'record-ranking record-txt';
+            pRanking.id = 'ranking-' + ranking;
 
             div = doc.createElement('div');
             div.className = 'record-role';
             img = doc.createElement('img');
             img.className = 'role-img';
-            img.id = 'img-' + index;
+            img.id = 'img-' + ranking;
             div.appendChild(img);
 
             pRecord = doc.createElement('p');
-            pRecord.className = 'recored-name record-txt';
-            pRecord.id = 'name-' + index;
+            pRecord.className = 'record-name record-txt';
+            pRecord.id = 'name-' + ranking;
             pScore = doc.createElement('p');
             pScore.className = 'record-score record-txt';
-            pScore.id = 'score-' + index;
+            pScore.id = 'score-' + ranking;
 
+            li.appendChild(pRanking);
             li.appendChild(div);
             li.appendChild(pRecord);
             li.appendChild(pScore);
@@ -161,12 +166,16 @@ DomManager = (function(global) {
             var remoteList = Data.getRemoteList();
             var localList = Data.getLocalList();
 
-            for (var i = 0; i < 10; i++) {
+            var count = Math.min(remoteList.length, 100);
+            for (var i = 0; i < count; i++) {
                 var record = remoteList[i];
+                var ranking = doc.getElementById('ranking-' + i);
                 var img = doc.getElementById('img-' + i);
                 var name = doc.getElementById('name-' + i);
                 var score = doc.getElementById('score-' + i);
+                ranking.innerText = i;
                 img.src = record.role || 'images/char-boy.png';
+                img.alt = img.src.slice(7);
                 name.innerText = record.name;
                 score.innerText = record.score;
             }
@@ -214,7 +223,7 @@ DomManager = (function(global) {
             roleImg.src = roleImages[i];
             /* 用立即执行的方式，解决异步调用中 i的值不对的问题 */
             (function(index) {
-                img.onclick = function() {
+                roleImg.onclick = function() {
                     player.sprite = roleImages[index];
                     hideSelectionList();
                 };
