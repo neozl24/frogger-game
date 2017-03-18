@@ -270,6 +270,7 @@ body {
     top: 600px;
     left: 50%;
     margin-left: -200px;
+    user-select: none;
 }
 
 .arrow-key {
