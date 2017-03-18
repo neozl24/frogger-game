@@ -20,6 +20,7 @@ DomManager = (function(global) {
         menu = doc.getElementById('menu'),
         recordButton = doc.getElementById('btn-record'),
         recordBoard = doc.getElementById('record-board'),
+        remoteList = doc.getElementById('remote-list'),
         closeBoardButton = doc.getElementById('btn-close'),
         roleListButton = doc.getElementById('btn-role'),
         selectionList = doc.getElementById('selection-list'),
@@ -122,6 +123,33 @@ DomManager = (function(global) {
             hideSelectionList();
         };
 
+        /* 在显示排行榜之前，生成它的Dom结构 */
+        var index, li, div, rowClass, img, pRecord, pScore;
+        for (index = 0; index < 100; index++) {
+            li = doc.createElement('li');
+            rowClass = index % 2 === 0 ? 'odd-row' : 'even-row';
+            li.className = 'record ' + rowClass;
+
+            div = doc.createElement('div');
+            div.className = 'record-role';
+            img = doc.createElement('img');
+            img.className = 'role-img';
+            img.id = 'img-' + index;
+            div.appendChild(img);
+
+            pRecord = doc.createElement('p');
+            pRecord.className = 'recored-name record-txt';
+            pRecord.id = 'name-' + index;
+            pScore = doc.createElement('p');
+            pScore.className = 'record-score record-txt';
+            pScore.id = 'score-' + index;
+
+            li.appendChild(div);
+            li.appendChild(pRecord);
+            li.appendChild(pScore);
+            remoteList.appendChild(li);
+        }
+
         /* 点击排行榜按钮时，弹出Top 10排行榜 */
         recordButton.onclick = function(e) {
             /* 点击排行榜按钮时，点击事件停止向上传递，否则游戏会失去暂停效果 */
@@ -182,8 +210,8 @@ DomManager = (function(global) {
 
         /* 在角色菜单栏点击图片，会将玩家形象改变成相应的样子 */
         for (var i = 0; i < roleImages.length; i++) {
-            var img = doc.getElementById('role-' + i);
-            img.src = roleImages[i];
+            var roleImg = document.getElementById('role-' + i);
+            roleImg.src = roleImages[i];
             /* 用立即执行的方式，解决异步调用中 i的值不对的问题 */
             (function(index) {
                 img.onclick = function() {
