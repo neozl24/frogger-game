@@ -310,16 +310,16 @@ DomManager = (function(global) {
         } else {
             operationPanel.style.display = 'block';
             /* 再来绑定模拟操作面板上的事件 */
-            arrowUp.onclick = function() {
+            arrowUp.ontouchstart = function() {
                 player.handleInput('up');
             };
-            arrowDown.onclick = function() {
+            arrowDown.ontouchstart = function() {
                 player.handleInput('down');
             };
-            arrowLeft.onclick = function() {
+            arrowLeft.ontouchstart = function() {
                 player.handleInput('left');
             };
-            arrowRight.onclick = function() {
+            arrowRight.ontouchstart = function() {
                 player.handleInput('right');
             };
         }
