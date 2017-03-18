@@ -173,9 +173,9 @@ DomManager = (function(global) {
                 var img = doc.getElementById('img-' + i);
                 var name = doc.getElementById('name-' + i);
                 var score = doc.getElementById('score-' + i);
-                ranking.innerText = i;
+                ranking.innerText = i + 1;
                 img.src = record.role || 'images/char-boy.png';
-                img.alt = img.src.slice(7);
+                img.alt = img.src;
                 name.innerText = record.name;
                 score.innerText = record.score;
             }
