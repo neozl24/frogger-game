@@ -148,14 +148,17 @@ body {
 
 .content-list {
     margin: auto;
+    /*overflow: auto;*/
+    overflow-y: scroll;
     width: 400px;
-    height: 450px;
+    height: 430px;
+    user-select: none;
 }
 
 .btn-close {
     width: 100px;
     height: 40px;
-    margin-top: 20px;
+    margin-top: 30px;
     background-color: #263;
     color: #fff;
     font-size: 18px;
@@ -197,6 +200,9 @@ body {
 
 .record-name {
     float: left;
+    width: 200px;
+    text-align: left;
+    overflow: hidden;
 }
 
 .record-score {

@@ -246,33 +246,36 @@ var Controller = (function(global) {
          */
         global.setTimeout(function() {
 
-            /* 先读取存储在本地的 topList，如果没有则新建空数组 */
-            var topList = (Util.StorageGetter('topList') || []);
+            var time = Date.now();
+            var record = {
+                name: "",
+                score: player.score,
+                role: player.sprite,
+                time: time
+            };
 
-            if (topList.length < 10 || player.score > topList[9].score) {
-                /* 如果记录不足10条，或者本次成绩超过了之前的最后一位，则更新榜单 */
-                var name = prompt('Welcome to the TOP 10 club !\n' +
-                    'Please leave your name :');
-                if (name === null) {
-                    name = "Unnamed Hero";
-                }
-                var record = {
-                    name: name,
-                    score: player.score,
-                    role: player.sprite
-                };
+            /* 玩家登上了本地 Top10，或者在线的 Top100榜单时，都可以留下姓名 */
+            var localList = Data.getLocalList();
+            var remoteList = Data.getRemoteList();
 
-                /* 先添加本次记录，再按照分数对榜单上对所有记录进行排序 */
-                topList.push(record);
-                topList.sort(function(recordA, recordB) {
-                    return recordB.score - recordA.score;
-                });
+            var isOnRemoteList = remoteList.length < 100 ||
+                record.score > remoteList[99];
+            var isOnLocalList = localList.length < 10 ||
+                record.score > localList[9];
 
-                topList = topList.slice(0, 10);
-                Util.StorageSetter('topList', topList);
+            if (isOnRemoteList) {
+                record.name = global.prompt('Congratulations! ' +
+                    'You have boarded on the World Top List \n' +
+                    'Please leave your name: ') || 'Unnamed Hero';
+                Data.updateRemoteList(record);
+                Data.updateLocalList(record);
 
+            } else if (isOnLocalList) {
+                record.name = global.prompt('You have refreshed your best 10 records\n' +
+                    'Please leave your name: ') || 'Unnamed Hero';
+                Data.updateLocalList(record);
             } else {
-                alert('Try harder next time!');
+                global.alert('You could be better!');
             }
 
             restartGame();

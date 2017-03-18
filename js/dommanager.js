@@ -130,9 +130,11 @@ DomManager = (function(global) {
             Controller.pauseGame();
             recordBoard.style.display = 'block';
 
-            var topList = Util.StorageGetter('topList');
-            for (var i = 0; i < topList.length; i++) {
-                var record = topList[i];
+            var remoteList = Data.getRemoteList();
+            var localList = Data.getLocalList();
+
+            for (var i = 0; i < 10; i++) {
+                var record = remoteList[i];
                 var img = doc.getElementById('img-' + i);
                 var name = doc.getElementById('name-' + i);
                 var score = doc.getElementById('score-' + i);
