@@ -2,7 +2,6 @@
  *
  * 这个文件用来提供数据的存取接口，能够从本地和服务器分别返回有序数组
  *
- *
  */
 
 /* jshint undef: false, unused: false */

@@ -2,7 +2,7 @@
  *
  * 整个游戏的加载逻辑大致是:
  *
- * 1.实例化 Resourse对象(图片加载工具)，Engine对象(动画渲染工具)，
+ * 1.实例化 Resourse对象(图片加载工具)，Engine对象(动画渲染工具)，Data对象(远程数据读取工具)，
  *   Controller对象(游戏逻辑控制中心)，DomManager对象(Dom元素控制中心)，
  *   Util对象(辅助功能提供者)，player玩家对象，
  *   以及三个不同类别的数组 allEnemies, allObstacles, allTreasure
