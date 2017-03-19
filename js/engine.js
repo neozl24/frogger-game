@@ -33,6 +33,7 @@ var Engine = (function(global) {
 
     canvas.width = CELL_WIDTH * 5;
     canvas.height = CELL_HEIGHT * 6.8;
+    canvas.style.userSelect = 'none';
     doc.body.appendChild(canvas);
     canvas.style.marginTop = '-11px';
 
