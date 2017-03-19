@@ -14,19 +14,19 @@ var Data = (function(global) {
     var ref = new Wilddog("https://frogger.wilddogio.com/records");
 
     /* 登陆成功的回调函数 */
-    function authHandler(error, authData) {
-        if (error) {
-            console.log("Login Failed!", error);
-        } else {
-            console.log("Authenticated successfully with payload:");
-            console.log(authData);
-        }
-    }
+    // function authHandler(error, authData) {
+    //     if (error) {
+    //         console.log("Login Failed!", error);
+    //     } else {
+    //         console.log("Authenticated successfully with payload:");
+    //         console.log(authData);
+    //     }
+    // }
     /* 认证登陆 */
-    ref.authWithPassword({
-        email    : Administrator.email,
-        password : Administrator.password
-    }, authHandler);
+    // ref.authWithPassword({
+    //     email    : Administrator.email,
+    //     password : Administrator.password
+    // }, authHandler);
     // console.log(refroot.getAuth());
 
 
