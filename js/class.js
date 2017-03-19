@@ -202,7 +202,7 @@ var Player = function() {
     ];
     var index = Math.floor(Math.random() * roleImages.length);
     this.sprite = roleImages[index];
-    
+
     this.lives = 3;
     this.score = 0;
 
@@ -279,7 +279,7 @@ Player.prototype.hasCollisionWith = function(array) {
             } else if (obj instanceof OrangeGem) {
                 Controller.obtainOrangeGem();
 
-            } else if ((obj instanceof Heart) && this.lives < 5) {
+            } else if (obj instanceof Heart) {
                 Controller.obtainHeart();
 
             } else if (obj instanceof Key) {

@@ -525,7 +525,7 @@ var Controller = (function(global) {
         } else {
             player.score += (30 + 3 * stage);
             DomManager.updateScore();
-            DomManager.setMsg(player.score + 'Extra Scores');
+            DomManager.setMsg(player.score + ' Extra Scores');
         }
         global.setTimeout(function() {
             DomManager.resetMsg();
