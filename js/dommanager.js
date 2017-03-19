@@ -148,6 +148,9 @@ DomManager = (function(global) {
             hideSelectionList();
         };
 
+        /* 以下一部分内容是关于排行榜面板的，首先动态控制排行榜的高度，让它充满屏幕 */
+        rankingBoard.style.height = doc.documentElement.clientHeight + 'px';
+
         /* 生成一个li节点，根据参数的不同决定它是本地排行榜里的还是在线排行榜里的
          * 参数scope的取值是'remote-'或'local-'，用来标记 id
          */

@@ -7,6 +7,7 @@
 body {
     text-align: center;
     font: sans-serif;
+    user-select: none;
 }
 
 .top-bar {
@@ -88,7 +89,7 @@ body {
     margin-top: -1px;
     background-color: inherit;
     overflow: hidden;
-    transition: 0.4s;
+    transition: 0.2s;
 }
 
 .btn-option {
@@ -109,7 +110,7 @@ body {
     border-bottom: 2px solid #251;
     background-color: #263;
     overflow: hidden;
-    transition: 0.1s;
+    transition: 0.08s;
 }
 
 .btn-role {
@@ -130,10 +131,10 @@ body {
     display: none;
     position: absolute;
     width: 516px;
-    height: 610px;
+    height: 750px;
     left: 50%;
     margin-left: -258px;
-    top: 5px;
+    top: 0;
     border-radius: 5px;
     background-color: #000;
     opacity: 0.92;
@@ -178,7 +179,7 @@ body {
     overflow: hidden;
     position: relative;
     width: 400px;
-    height: 430px;
+    height: 75%;
 }
 
 .remote-list {
@@ -249,6 +250,7 @@ body {
     width: 15px;
     padding-left: 5px;
     text-align: center;
+    overflow: visible;
 }
 
 .record-name {
@@ -265,21 +267,20 @@ body {
 .operation-panel {
     display: none;
     position: absolute;
-    width: 400px;
-    height: 200px;
-    top: 600px;
+    width: 360px;
+    height: 160px;
+    top: 596px;
     left: 50%;
-    margin-left: -200px;
+    margin-left: -180px;
     user-select: none;
 }
 
 .arrow-key {
-    border: 1px solid #555;
-    background-color: #3764b0;
+    background-color: #24519d;
     color: #fff;
     text-align: center;
-    font-size: 25px;
-    opacity: 0.9;
+    font-size: 45px;
+    opacity: 0.96;
     border-radius: 20px;
 }
 
@@ -289,7 +290,7 @@ body {
     left: 50%;
     margin-left: -50px;
     width: 100px;
-    height: 80px;
+    height: 75px;
     line-height: 80px;
 }
 
@@ -299,7 +300,7 @@ body {
     left: 50%;
     margin-left: -50px;
     width: 100px;
-    height: 80px;
+    height: 75px;
     line-height: 80px;
 }
 
