@@ -1,6 +1,8 @@
 /* Data.js
  *
  * 这个文件用来提供数据的存取接口，能够从本地和服务器分别返回有序数组
+ * 在登陆Wilddog服务器之前，需要通过邮箱名以及密码进行认证登陆，
+ * 这部分存在administrator.js文件里了，而它没有参与版本记录，也没有上传到github
  *
  */
 
@@ -10,6 +12,23 @@ var Data = (function(global) {
 
     /* 要读写数据，必须先创建 Wilddog 引用 */
     var ref = new Wilddog("https://frogger.wilddogio.com/records");
+
+    /* 登陆成功的回调函数 */
+    function authHandler(error, authData) {
+        if (error) {
+            console.log("Login Failed!", error);
+        } else {
+            console.log("Authenticated successfully with payload:");
+            console.log(authData);
+        }
+    }
+    /* 认证登陆 */
+    ref.authWithPassword({
+        email    : Administrator.email,
+        password : Administrator.password
+    }, authHandler);
+    // console.log(refroot.getAuth());
+
 
     /* 在这里就直接初始化remoteList，并利用Wilddog提供的回调函数，和服务器端同步更新 */
     var remoteList = [];
