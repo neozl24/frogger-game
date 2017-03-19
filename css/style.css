@@ -271,8 +271,8 @@ body {
     display: none;
     position: absolute;
     width: 360px;
-    height: 160px;
-    top: 596px;
+    height: 180px;
+    bottom: 10px;
     left: 50%;
     margin-left: -180px;
     user-select: none;
