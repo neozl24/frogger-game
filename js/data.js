@@ -84,7 +84,7 @@ var Data = (function(global) {
 
         localList.forEach(function(record) {
             if (shouldUpload(record)) {
-                console.log("Going to add record：" + record.name);
+                // console.log("Going to add record：" + record.name);
                 updateRemoteList(record);
             }
         });
@@ -98,7 +98,7 @@ var Data = (function(global) {
         var remoteList = getRemoteList();
         for (var i = 0; i < remoteList.length; i++) {
             if (remoteList[i].time === record.time) {
-                console.log('This record has existed: ' + record.name);
+                // console.log('This record has existed: ' + record.name);
                 return false;
             }
         }
