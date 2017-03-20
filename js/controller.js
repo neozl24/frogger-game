@@ -259,9 +259,9 @@ var Controller = (function(global) {
             var remoteList = Data.getRemoteList();
 
             var isOnRemoteList = remoteList.length < 100 ||
-                record.score > remoteList[99];
+                record.score > remoteList[99].score;
             var isOnLocalList = localList.length < 10 ||
-                record.score > localList[9];
+                record.score > localList[9].score;
 
             if (isOnRemoteList) {
                 record.name = global.prompt('Congratulations! ' +

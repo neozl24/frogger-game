@@ -45,9 +45,6 @@ var Data = (function(global) {
         remoteList.push(record);
     });
 
-    /* 直接在本文件初始化的时候，就将之前没有上传的本地记录上传 */
-    uploadLocalList();
-
     /* 以数组的形式返回按分数从高到低顺序的在线排行榜 */
     var getRemoteList = function() {
         return remoteList.sort(function(recordA, recordB) {
@@ -87,6 +84,7 @@ var Data = (function(global) {
 
         localList.forEach(function(record) {
             if (shouldUpload(record)) {
+                console.log("Going to add record：" + record.name);
                 updateRemoteList(record);
             }
         });
@@ -99,8 +97,8 @@ var Data = (function(global) {
     var shouldUpload = function(record) {
         var remoteList = getRemoteList();
         for (var i = 0; i < remoteList.length; i++) {
-            if (remoteList[i].time === record.time &&
-                remoteList[i].score === record.score) {
+            if (remoteList[i].time === record.time) {
+                console.log('This record has existed: ' + record.name);
                 return false;
             }
         }
@@ -116,6 +114,8 @@ var Data = (function(global) {
         updateRemoteList: updateRemoteList,
 
         getLocalList: getLocalList,
-        updateLocalList: updateLocalList
+        updateLocalList: updateLocalList,
+
+        uploadLocalList: uploadLocalList
     };
 })(this);
