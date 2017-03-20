@@ -495,15 +495,19 @@ var Controller = (function(global) {
         DomManager.setProgressBarLength(0);
     };
 
-    /* 得到绿宝石，减少一个敌人，如果当前只剩一个敌人，则效果改为得到大量分数 */
+    /* 得到绿宝石，减少一个敌人，如果当前只剩一个敌人，则效果改为得到中量分数
+     * 2017.3.20添加：如果到了游戏后期，绿宝石可以减去两个敌人
+     */
     var obtainGreenGem = function() {
         if (allEnemies.length <= 1) {
-            player.score += 50;
+            var awardScore = 30 + 2 * stage;
+            player.score += awardScore;
             DomManager.updateScore();
-            DomManager.setMsg('50 Scores Awarded!');
+            DomManager.setMsg(awardScore + ' Scores Awarded!');
         } else {
-            allEnemies = allEnemies.slice(0, allEnemies.length - 1);
-            DomManager.setMsg('One Bug Eliminated!');
+            var k = (allEnemies.length > 2 && stage > 60) ? 2 : 1;
+            allEnemies = allEnemies.slice(0, allEnemies.length - k);
+            DomManager.setMsg(k + ' Bug Eliminated!');
         }
 
         global.setTimeout(function() {
@@ -522,14 +526,14 @@ var Controller = (function(global) {
         }, 1000);
     };
 
-    /* 得到桃心，恢复一点生命。如果生命达到上限，则改为获得一定量的分数 */
+    /* 得到桃心，恢复一点生命。如果生命达到上限，则改为获得中量分数 */
     var obtainHeart = function() {
         if (player.lives < 5) {
             player.lives += 1;
             DomManager.updateLives();
             DomManager.setMsg('One More Life!');
         } else {
-            player.score += (30 + 3 * stage);
+            player.score += (50 + 2 * stage);
             DomManager.updateScore();
             DomManager.setMsg(player.score + ' Extra Scores');
         }
@@ -541,7 +545,7 @@ var Controller = (function(global) {
     /* 得到钥匙时，消除一个石头（如果屏幕上还有石头的话），同时得到少量分数 */
     var obtainKey = function() {
         removeRock();
-        player.score += 20;
+        player.score += 20 + Math.floor(stage * 0.5);
         DomManager.updateScore();
         DomManager.setMsg('Remove a Rock');
         global.setTimeout(function() {
@@ -551,7 +555,7 @@ var Controller = (function(global) {
 
     /* 得到星星可以获得大量分数 */
     var obtainStar = function() {
-        player.score += (50 + 5 * stage);
+        player.score += (100 + 3 * stage);
         DomManager.updateScore();
         DomManager.setMsg('Lucky! Much More Scores!');
         global.setTimeout(function() {

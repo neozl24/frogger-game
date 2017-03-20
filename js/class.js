@@ -44,12 +44,14 @@ Enemy.prototype.initLocation = function() {
 
     /* 敌人的速度区间会随等级变化，k是一个随等级变化的系数 */
     var k = 1;
-    if (this.level > 108) {
-        k = 0.6;
+    if (this.level > 144) {
+        k = 0.5;
+    } else if (this.level > 108) {
+        k = 0.72;
     } else if (this.level > 72) {
-        k = 0.8;
+        k = 0.85;
     } else if (this.level > 36) {
-        k = 0.9;
+        k = 0.95;
     }
     this.speed = (35 + this.level * k) * (2 + Math.random() * 3);
 };
