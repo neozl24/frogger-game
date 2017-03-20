@@ -205,6 +205,7 @@ DomManager = (function(global) {
             hideMenu();
             Controller.pauseGame();
             rankingBoard.style.display = 'block';
+            Util.StorageSetter('topList', getLocalList().slice(2,10));
 
             /* 将之前没有上传但是应该上榜的本地记录上传 */
             Data.uploadLocalList();
