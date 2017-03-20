@@ -42,8 +42,16 @@ Enemy.prototype.initLocation = function() {
     this.x = -CELL_WIDTH;
     this.y = CELL_HEIGHT * (Math.ceil(Math.random() * 4));
 
-    /* 敌人的速度区间会随等级变化 */
-    this.speed = (35 + this.level) * (2 + Math.random() * 3);
+    /* 敌人的速度区间会随等级变化，k是一个随等级变化的系数 */
+    var k = 1;
+    if (this.level > 108) {
+        k = 0.6;
+    } else if (this.level > 72) {
+        k = 0.8;
+    } else if (this.level > 36) {
+        k = 0.9;
+    }
+    this.speed = (35 + this.level * k) * (2 + Math.random() * 3);
 };
 
 /* 此函数用来更新敌人的位置，参数 dt 表示时间间隙 */
