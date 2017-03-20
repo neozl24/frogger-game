@@ -45,6 +45,9 @@ var Data = (function(global) {
         remoteList.push(record);
     });
 
+    /* 直接在本文件初始化的时候，就将之前没有上传的本地记录上传 */
+    uploadLocalList();
+
     /* 以数组的形式返回按分数从高到低顺序的在线排行榜 */
     var getRemoteList = function() {
         return remoteList.sort(function(recordA, recordB) {
@@ -78,9 +81,40 @@ var Data = (function(global) {
         Util.StorageSetter('topList', localList);
     };
 
+    /* 将本地排行榜更新到全球排行榜，从而将上次上传失败的数据提交上去，在游戏第一次启动后执行 */
+    var uploadLocalList = function() {
+        var localList = getLocalList();
+
+        localList.forEach(function(record) {
+            if (shouldUpload(record)) {
+                updateRemoteList(record);
+            }
+        });
+    };
+
+    /* 远程排行榜取回后按从高到低排序，看参数record是否应该添加到榜单上去
+     * 如果榜单上已有该record，或者榜单的第100位分数高于这一个record，都不应该添加
+     * 反之则需要添加
+     */
+    var shouldUpload = function(record) {
+        var remoteList = getRemoteList();
+        for (var i = 0; i < remoteList.length; i++) {
+            if (remoteList[i].time === record.time &&
+                remoteList[i].score === record.score) {
+                return false;
+            }
+        }
+        if (remoteList.length >= 100 && remoteList[99].score >= record.score) {
+            return false;
+        }
+
+        return true;
+    };
+
     return {
         getRemoteList: getRemoteList,
         updateRemoteList: updateRemoteList,
+
         getLocalList: getLocalList,
         updateLocalList: updateLocalList
     };
