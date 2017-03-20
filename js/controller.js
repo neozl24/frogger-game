@@ -263,19 +263,25 @@ var Controller = (function(global) {
             var isOnLocalList = localList.length < 10 ||
                 record.score > localList[9].score;
 
+            var prefix = '没有名字的';
+            var defaultNames = ['小猫','小狗','小老鼠','小牛','小老虎','小兔子',
+            '小羊羔','小猴子','小猪','小熊猫','小苹果'];
+            var randomIndex = Math.floor(Math.random() * defaultNames.length);
+            var defaultName = prefix + defaultNames[randomIndex];
+
             if (isOnRemoteList) {
-                record.name = global.prompt('Congratulations! ' +
-                    'You have boarded on the World Top List \n' +
-                    'Please leave your name: ') || 'Unnamed Hero';
+                record.name = global.prompt('恭喜，' +
+                    '你成功登上了世界排行榜！ \n' +
+                    '请留下你的大名: ', defaultName) || defaultName;
                 Data.updateRemoteList(record);
                 Data.updateLocalList(record);
 
             } else if (isOnLocalList) {
-                record.name = global.prompt('You have refreshed your best 10 records\n' +
-                    'Please leave your name: ') || 'Unnamed Hero';
+                record.name = global.prompt('你刷新了个人的10佳记录！\n' +
+                    '留下你的大名吧: ', defaultName) || defaultName;
                 Data.updateLocalList(record);
             } else {
-                global.alert('You could be better!');
+                global.alert('下次努力！');
             }
 
             restartGame();
