@@ -373,12 +373,14 @@ DomManager = (function(global) {
             initButtonNames();
             resetMsg();
             updateScore();
+            Util.StorageSetter('language', language);
         };
         languageChineseButton.onclick = function() {
             language = 1;
             initButtonNames();
             resetMsg();
             updateScore();
+            Util.StorageSetter('language', language);
         };
 
         /* 点击重启按钮会重启游戏 */

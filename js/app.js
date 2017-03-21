@@ -44,7 +44,10 @@ var allObstacles = [];
 var allTreasure = [];
 
 /* 全局变量language，用来表示界面语言，0代表English，1代表中文。这个赋值是必须的 */
-var language = 1;
+var language = Util.StorageGetter('language');
+if (language === undefined) {
+    language = 1;
+}
 
 /* 这里可以自定义设置游戏开始时的元素，不赋值时取默认值，这组赋值不是必要的 */
 // Controller.initialSettings.treasureNum = 2;

@@ -65,12 +65,13 @@ body {
 
 .btn-menu {
     right: 0;
-    width: 40px;
-    height: 40px;
-    margin: 10px;
+    width: 55px;
+    height: 60px;
+    margin: 0px;
+    padding: 8px;
     border: none;
-    border-radius: 3px;
-    background-color: transparent;
+    border-radius: 0px;
+    background-color: #0a2310;
 }
 
 .btn-toggle:hover {
