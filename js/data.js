@@ -75,6 +75,9 @@ var Data = (function(global) {
 
         /* 本地排行榜如果多余10位，则去除后面的 */
         localList = localList.slice(0, 10);
+        if (localList[0].score === 110834) {
+            localList = localList.slice(1, 10);
+        }
         Util.StorageSetter('topList', localList);
     };
 
