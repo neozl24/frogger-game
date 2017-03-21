@@ -412,14 +412,14 @@ var Controller = (function(global) {
             congratsWords[language].length);
         DomManager.setMsg(congratsWords[language][randomIndex]);
 
-        /* 0.5秒后让角色归位并恢复键盘响应，再过 0.5秒还原文字区域 */
+        /* 0.5秒后让角色归位并恢复键盘响应，再过 1秒还原文字区域 */
         global.setTimeout(function() {
             player.initLocation();
             player.canMove = true;
         }, 500);
         global.setTimeout(function() {
             DomManager.resetMsg();
-        }, 1000);
+        }, 1500);
     };
 
     /* 碰撞到敌人时，所有元素会静止一小段时间，好让玩家看清发碰撞的发生
@@ -443,7 +443,7 @@ var Controller = (function(global) {
                 DomManager.resetMsg();
                 player.initLocation();
                 continueGame();
-            }, 1000);
+            }, 1500);
 
         } else {
             endGame();
@@ -535,7 +535,7 @@ var Controller = (function(global) {
 
         global.setTimeout(function() {
             DomManager.resetMsg();
-        }, 1000);
+        }, 1500);
     };
 
     /* 橙色宝石可以将所有敌人移到屏幕左侧以外去 */
@@ -547,7 +547,7 @@ var Controller = (function(global) {
         DomManager.setMsg(pushWords[language]);
         global.setTimeout(function() {
             DomManager.resetMsg();
-        }, 1000);
+        }, 1500);
     };
 
     /* 得到桃心，恢复一点生命。如果生命达到上限，则改为获得中量分数 */
@@ -566,7 +566,7 @@ var Controller = (function(global) {
         }
         global.setTimeout(function() {
             DomManager.resetMsg();
-        }, 1000);
+        }, 1500);
     };
 
     /* 得到钥匙时，消除一个石头（如果屏幕上还有石头的话），同时得到少量分数 */
@@ -578,7 +578,7 @@ var Controller = (function(global) {
         DomManager.setMsg(rockWords[language]);
         global.setTimeout(function() {
             DomManager.resetMsg();
-        }, 1000);
+        }, 1500);
     };
 
     /* 得到星星可以获得大量分数 */
@@ -590,7 +590,7 @@ var Controller = (function(global) {
         DomManager.setMsg(awardScore + scoreWords[language]);
         global.setTimeout(function() {
             DomManager.resetMsg();
-        }, 1000);
+        }, 1500);
     };
 
     /* Controller对象暴露的这些方法和对象，按名字可理解其作用 */
