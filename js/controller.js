@@ -238,7 +238,8 @@ var Controller = (function(global) {
         stopLoop();
         stopTimer();
 
-        DomManager.setMsg('Game Over');
+        var endWords = ['Game Over', '游戏结束！'];
+        DomManager.setMsg(endWords[language]);
 
         /* 下面的这层逻辑做成异步，是因为我们的游戏结束发生在player的update函数中，
          * 所以输入框弹出的时候，玩家最后移动的一步动画的render函数还没有执行，
@@ -264,24 +265,33 @@ var Controller = (function(global) {
                 record.score > localList[9].score;
 
             var prefix = '没有名字的';
-            var defaultNames = ['小猫','小狗','小老鼠','小牛','小老虎','小兔子',
-            '小羊羔','小猴子','小猪','小熊猫','小苹果'];
+            var defaultNames = ['小猫', '小狗', '小老鼠', '小牛', '小老虎', '小兔子',
+                '小羊羔', '小猴子', '小猪', '小熊猫', '小苹果'
+            ];
             var randomIndex = Math.floor(Math.random() * defaultNames.length);
             var defaultName = prefix + defaultNames[randomIndex];
 
             if (isOnRemoteList) {
-                record.name = global.prompt('恭喜，' +
-                    '你成功登上了世界排行榜！ \n' +
-                    '请留下你的大名: ', defaultName) || defaultName;
+                var worldCongratsWords = [
+                    'Congratulations! You\'ve broaded on the global record list!' +
+                    'Please leave your name: ',
+                    '恭喜，你成功登上了全球排行榜！\n请留下你的大名：'];
+                record.name = global.prompt(worldCongratsWords[language],
+                    defaultName) || defaultName;
                 Data.updateRemoteList(record);
                 Data.updateLocalList(record);
 
             } else if (isOnLocalList) {
-                record.name = global.prompt('你刷新了个人的10佳记录！\n' +
-                    '留下你的大名吧: ', defaultName) || defaultName;
+                var localCongratsWords = [
+                    'You have freshed your own top 10 records!\n' +
+                    'Please leave your name: ' ,
+                    '你刷新了个人的10佳记录，可以留个名了：'];
+                record.name = global.prompt(localCongratsWords[language],
+                    defaultName) || defaultName;
                 Data.updateLocalList(record);
             } else {
-                global.alert('下次努力！');
+                var encouragingWords = ['You could do better!', '下次努力'];
+                global.alert(encouragingWords[language]);
             }
 
             restartGame();
@@ -384,15 +394,23 @@ var Controller = (function(global) {
         player.score += (10 + stage);
         DomManager.updateScore();
 
-        var congratsWords = [
+        var congratsWords = [];
+        congratsWords[0] = [
             'Good Job!',
             'Nice Move!',
-            'Game is Too Easy, Right?',
             'Well Done!',
             'You Need Water!'
         ];
-        var randomIndex = Math.floor(Math.random() * congratsWords.length);
-        DomManager.setMsg(congratsWords[randomIndex]);
+        congratsWords[1] = [
+            '好样的！',
+            '身手敏捷！',
+            '你的身法让人眼花缭乱',
+            '该让甲虫跑得再快一点',
+            '甲虫朋友们，碾死他！'
+        ];
+        var randomIndex = Math.floor(Math.random() *
+            congratsWords[language].length);
+        DomManager.setMsg(congratsWords[language][randomIndex]);
 
         /* 0.5秒后让角色归位并恢复键盘响应，再过 0.5秒还原文字区域 */
         global.setTimeout(function() {
@@ -418,7 +436,9 @@ var Controller = (function(global) {
          * 如果剩余生命值为 0，则提示Game Over，并重新开始游戏。
          */
         if (player.lives > 0) {
-            DomManager.setMsg('Oops! Collide with a bug!');
+            var collisionWords = ['Oops! Collide with a bug!',
+                '你被甲虫给逮住啦!'];
+            DomManager.setMsg(collisionWords[language]);
             global.setTimeout(function() {
                 DomManager.resetMsg();
                 player.initLocation();
@@ -459,7 +479,8 @@ var Controller = (function(global) {
      */
     var startTimer = function() {
         Engine.setTimeSpeed(0.2);
-        DomManager.setMsg('Time Slowing Down');
+        var words = ['Time Slowing Down', '时间变慢了！'];
+        DomManager.setMsg(words[language]);
 
         /* leftTime最长不超过5秒 */
         var maxTime = 5000;
@@ -503,11 +524,13 @@ var Controller = (function(global) {
             var awardScore = 30 + 2 * stage;
             player.score += awardScore;
             DomManager.updateScore();
-            DomManager.setMsg(awardScore + ' Scores Awarded!');
+            var scoreWords = [' Scores Awarded!', '分到手！'];
+            DomManager.setMsg(awardScore + scoreWords[language]);
         } else {
             var k = (allEnemies.length > 2 && stage > 60) ? 2 : 1;
             allEnemies = allEnemies.slice(0, allEnemies.length - k);
-            DomManager.setMsg(k + ' Bug Eliminated!');
+            var eliminatedWords = [' Bug Eliminated!', '只甲虫被消灭！'];
+            DomManager.setMsg(k + eliminatedWords[language]);
         }
 
         global.setTimeout(function() {
@@ -520,7 +543,8 @@ var Controller = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.x = -200;
         });
-        DomManager.setMsg('Push Bugs Away!!');
+        var pushWords = ['Push Bugs Away!!', '全部给我闪开！'];
+        DomManager.setMsg(pushWords[language]);
         global.setTimeout(function() {
             DomManager.resetMsg();
         }, 1000);
@@ -531,11 +555,14 @@ var Controller = (function(global) {
         if (player.lives < 5) {
             player.lives += 1;
             DomManager.updateLives();
-            DomManager.setMsg('One More Life!');
+            var lifeWords = ['One More Life!', '奖励1点生命值'];
+            DomManager.setMsg(lifeWords[language]);
         } else {
-            player.score += (50 + 2 * stage);
+            var awardScore = 50 + 2 * stage;
+            player.score += awardScore;
             DomManager.updateScore();
-            DomManager.setMsg(player.score + ' Extra Scores');
+            var scoreWords = ['分到手！', ' Extra Scores'];
+            DomManager.setMsg(player.score + scoreWords[language]);
         }
         global.setTimeout(function() {
             DomManager.resetMsg();
@@ -547,7 +574,8 @@ var Controller = (function(global) {
         removeRock();
         player.score += 20 + Math.floor(stage * 0.5);
         DomManager.updateScore();
-        DomManager.setMsg('Remove a Rock');
+        var rockWords = ['Remove a Rock!', '移开了一块石头!'];
+        DomManager.setMsg(rockWords[language]);
         global.setTimeout(function() {
             DomManager.resetMsg();
         }, 1000);
@@ -555,9 +583,11 @@ var Controller = (function(global) {
 
     /* 得到星星可以获得大量分数 */
     var obtainStar = function() {
-        player.score += (100 + 3 * stage);
+        var awardScore = 100 + 3 * stage;
+        player.score += awardScore;
         DomManager.updateScore();
-        DomManager.setMsg('Lucky! Much More Scores!');
+        var scoreWords = [' Scores Awarded!', '分到手，好多!'];
+        DomManager.setMsg(awardScore + scoreWords[language]);
         global.setTimeout(function() {
             DomManager.resetMsg();
         }, 1000);

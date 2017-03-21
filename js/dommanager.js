@@ -18,6 +18,7 @@ DomManager = (function(global) {
         topBar = doc.getElementById('top-bar'),
         menuButton = doc.getElementById('btn-menu'),
         menu = doc.getElementById('menu'),
+
         rankingButton = doc.getElementById('btn-ranking'),
         titleWorld = doc.getElementById('title-world'),
         titleLocal = doc.getElementById('title-local'),
@@ -25,8 +26,11 @@ DomManager = (function(global) {
         remoteList = doc.getElementById('remote-list'),
         localList = doc.getElementById('local-list'),
         closeBoardButton = doc.getElementById('btn-close'),
+
         roleListButton = doc.getElementById('btn-role'),
-        selectionList = doc.getElementById('selection-list'),
+        roleList = doc.getElementById('role-list'),
+        languageListButton = doc.getElementById('btn-language'),
+        languageList = doc.getElementById('language-list'),
         restartButton = doc.getElementById('btn-restart'),
         operationPanel = doc.getElementById('operation-panel'),
         arrowUp = doc.getElementById('arrow-up'),
@@ -34,9 +38,26 @@ DomManager = (function(global) {
         arrowLeft = doc.getElementById('arrow-left'),
         arrowRight = doc.getElementById('arrow-right');
 
+    /* 给菜单栏的按钮按语言设定起好对应的名字 */
+    var initButtonNames = function() {
+        var rankingButtonWords = ['Ranking', '排行榜'];
+        rankingButton.innerText = rankingButtonWords[language];
+        var roleListButtonWords = ['Role', '角色'];
+        roleListButton.innerText = roleListButtonWords[language];
+        var languageButtonWords = ['Language', '语言'];
+        languageListButton.innerText = languageButtonWords[language];
+        var restartButtonWords = ['Restart', '重新开始'];
+        restartButton.innerText = restartButtonWords[language];
+        var titleWorldWords = ['World', '全球榜单'];
+        titleWorld.innerText = titleWorldWords[language];
+        var titleLocalWords = ['Local', '本地榜单'];
+        titleLocal.innerText = titleLocalWords[language];
+    };
+
     /* 重置上方中央的信息栏，参数为空 */
     var resetMsg = function() {
-        msgTxt.innerText = 'Move to the river above';
+        var defaultWords = ['Move to the river above', '快到河边来！'];
+        msgTxt.innerText = defaultWords[language];
         msgTxt.style.color = '#fff';
     };
 
@@ -52,7 +73,8 @@ DomManager = (function(global) {
 
     /* 更新上方左边的得分栏 */
     var updateScore = function() {
-        scoreTxt.innerText = 'Score: ' + player.score;
+        var scoreWords = ['Score: ', '分数: '];
+        scoreTxt.innerText = scoreWords[language] + player.score;
     };
 
     /* 更新上方右边的生命值栏 */
@@ -75,7 +97,7 @@ DomManager = (function(global) {
     /* 定义一个变量，用来标记菜单栏是否隐藏 */
     var isMenuHidden = true;
     var showMenu = function() {
-        menu.style.height = '183px';
+        menu.style.height = '243px';
         menu.style.borderBottom = '2px solid #251';
         isMenuHidden = false;
         /* 菜单栏出现时，游戏暂停 */
@@ -93,12 +115,24 @@ DomManager = (function(global) {
     /* 定义一个变量，用来标记角色选择栏是否隐藏 */
     var isSelectionListHidden = true;
     var showSelectionList = function() {
-        selectionList.style.width = '310px';
+        roleList.style.width = '310px';
         isSelectionListHidden = false;
     };
     var hideSelectionList = function() {
-        selectionList.style.width = '0';
+        roleList.style.width = '0';
         isSelectionListHidden = false;
+    };
+
+    /* 鼠标放在语言按钮上，会弹出二级菜单，供玩家自定义角色外观 */
+    /* 定义一个变量，用来标记语言选择栏是否隐藏 */
+    var isLanguageSelectionListHidden = true;
+    var showLanguageList = function() {
+        languageList.style.width = '204px';
+        isLanguageSelectionListHidden = false;
+    };
+    var hideLanguageList = function() {
+        languageList.style.width = '0';
+        isLanguageSelectionListHidden = false;
     };
 
     /* 判断登陆设备是否是PC */
@@ -120,6 +154,9 @@ DomManager = (function(global) {
 
     /* 添加各种事件响应，只需在游戏启动时执行一次，由Engine.init()调用 */
     var addEventListener = function() {
+
+        /* 先执行给菜单按钮起名字的函数 */
+        initButtonNames();
 
         /* 监听游戏玩家的键盘点击事件 */
         doc.addEventListener('keyup', function(e) {
@@ -146,6 +183,7 @@ DomManager = (function(global) {
         doc.onclick = function() {
             hideMenu();
             hideSelectionList();
+            hideLanguageList();
         };
 
         /* 以下一部分内容是关于排行榜面板的，首先动态控制排行榜的高度，让它充满屏幕 */
@@ -270,18 +308,23 @@ DomManager = (function(global) {
             e.stopPropagation();
         };
 
+        /* 点击语言按钮时，点击事件停止向上传递 */
+        languageListButton.onclick = function(e) {
+            e.stopPropagation();
+        };
+
         /* 鼠标移到角色按钮上，或者移到由它弹出的二级菜单上，二级菜单都会处于显示状态 */
         roleListButton.onmouseover = function() {
             showSelectionList();
         };
-        selectionList.onmouseover = function() {
+        roleList.onmouseover = function() {
             showSelectionList();
         };
         /* 鼠标离开角色列表按钮，而且也离开了由它弹出的二级菜单，二级菜单就会处于隐藏状态 */
         roleListButton.onmouseout = function() {
             hideSelectionList();
         };
-        selectionList.onmouseout = function() {
+        roleList.onmouseout = function() {
             hideSelectionList();
         };
 
@@ -296,7 +339,7 @@ DomManager = (function(global) {
 
         /* 在角色菜单栏点击图片，会将玩家形象改变成相应的样子 */
         for (var i = 0; i < roleImages.length; i++) {
-            var roleImg = document.getElementById('role-' + i);
+            var roleImg = doc.getElementById('role-' + i);
             roleImg.src = roleImages[i];
             /* 用立即执行的方式，解决异步调用中 i的值不对的问题 */
             (function(index) {
@@ -306,6 +349,37 @@ DomManager = (function(global) {
                 };
             })(i);
         }
+
+        /* 鼠标移到语言按钮上，或者移到由它弹出的二级菜单上，二级菜单都会处于显示状态 */
+        languageListButton.onmouseover = function() {
+            showLanguageList();
+        };
+        languageList.onmouseover = function() {
+            showLanguageList();
+        };
+        /* 鼠标离开语言列表按钮，而且也离开了由它弹出的二级菜单，二级菜单就会处于隐藏状态 */
+        languageListButton.onmouseout = function() {
+            hideLanguageList();
+        };
+        languageList.onmouseout = function() {
+            hideLanguageList();
+        };
+
+        var languageEnglishButton = doc.getElementById('language-0'),
+            languageChineseButton = doc.getElementById('language-1');
+        /* 点击语言切换按钮后，要同时刷新分数栏和信息栏 */
+        languageEnglishButton.onclick = function() {
+            language = 0;
+            initButtonNames();
+            resetMsg();
+            updateScore();
+        };
+        languageChineseButton.onclick = function() {
+            language = 1;
+            initButtonNames();
+            resetMsg();
+            updateScore();
+        };
 
         /* 点击重启按钮会重启游戏 */
         restartButton.onclick = function() {

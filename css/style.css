@@ -16,7 +16,7 @@ body {
 .top-bar {
     height: 60px;
     line-height: 60px;
-    font: 18px/60px sans-serif;
+    font: 20px/60px sans-serif;
     background-color: #263;
     position: relative;
 }
@@ -54,7 +54,7 @@ body {
 }
 
 .msg {
-    left: 115px;
+    left: 120px;
     width: 240px;
 }
 
@@ -87,7 +87,7 @@ body {
     position: absolute;
     right: 0;
     top: 60px;
-    width: 100px;
+    width: 120px;
     height: 0;
     margin-top: -1px;
     background-color: inherit;
@@ -105,8 +105,7 @@ body {
 
 .selection-list {
     position: absolute;
-    top: 121px;
-    right: 99px;
+    right: 119px;
     width: 0;
     height: 100%;
     border-top: 2px solid #251;
@@ -116,17 +115,32 @@ body {
     transition: 0.08s;
 }
 
-.btn-role {
+.role-list {
+    top: 121px;
+}
+
+.btn-selection {
     display: inline-block;
     float: right;
-    width: 60px;
     border-left: 2px solid #251;
+}
+
+.btn-role {
+    width: 60px;
 }
 
 .role-img {
     width: 100%;
     height: 100%;
     margin-top: -50%;
+}
+
+.language-list {
+    top: 183px;
+}
+
+.btn-language {
+    width: 100px;
 }
 
 .ranking-board {

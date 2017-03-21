@@ -23,33 +23,38 @@
                 <p class="line"></p>
             </button>
             <ul id="menu" class="menu-list">
-                <li id="btn-ranking" class="btn-option btn-toggle">Ranking</li>
-                <li id="btn-role" class="btn-option btn-toggle">Role</li>
-                <li id="btn-restart" class="btn-option btn-toggle">Restart</li>
+                <li id="btn-ranking" class="btn-option btn-toggle"></li>
+                <li id="btn-role" class="btn-option btn-toggle"></li>
+                <li id="btn-language" class="btn-option btn-toggle"></li>
+                <li id="btn-restart" class="btn-option btn-toggle"></li>
             </ul>
-            <ul id="selection-list" class="selection-list">
-                <li class="btn-role btn-toggle">
+            <ul id="role-list" class="role-list selection-list">
+                <li class="btn-role btn-selection btn-toggle">
                     <img src="" alt="role No.5" id="role-4" class="role-img">
                 </li>
-                <li class="btn-role btn-toggle">
+                <li class="btn-role btn-selection btn-toggle">
                     <img src="" alt="role No.4" id="role-3" class="role-img">
                 </li>
-                <li class="btn-role btn-toggle">
+                <li class="btn-role btn-selection btn-toggle">
                     <img src="" alt="role No.3" id="role-2" class="role-img">
                 </li>
-                <li class="btn-role btn-toggle">
+                <li class="btn-role btn-selection btn-toggle">
                     <img src="" alt="role No.2" id="role-1" class="role-img">
                 </li>
-                <li class="btn-role btn-toggle">
+                <li class="btn-role btn-selection btn-toggle">
                     <img src="" alt="role No.1" id="role-0" class="role-img">
                 </li>
+            </ul>
+            <ul id="language-list" class="language-list selection-list">
+                <li class="btn-language btn-selection btn-toggle" id="language-1">中文</li>
+                <li class="btn-language btn-selection btn-toggle" id="language-0">English</li>
             </ul>
         </div>
     </div>
     <div id="ranking-board" class="ranking-board">
         <p class="board-title">
-            <span id="title-world" class="title-world">World</span>
-            <span id="title-local" class="title-local">Local</span>
+            <span id="title-world" class="title-world"></span>
+            <span id="title-local" class="title-local"></span>
         </p>
         <div class="board-content">
             <ul id="remote-list" class="content-list remote-list"></ul>
