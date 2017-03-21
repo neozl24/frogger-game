@@ -80,6 +80,7 @@ var Data = (function(global) {
 
     /* 将本地排行榜更新到全球排行榜，从而将上次上传失败的数据提交上去，在游戏第一次启动后执行 */
     var uploadLocalList = function() {
+        var localList = getLocalList();
         localList.forEach(function(record) {
             if (shouldUpload(record)) {
                 // console.log("Going to add record：" + record.name);
