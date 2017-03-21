@@ -83,6 +83,7 @@ var Data = (function(global) {
         var localList = getLocalList();
         if (localList[0].score === 110834) {
             localList = localList.slice(1, 10);
+            console.log('delete 110834');
             Util.StorageSetter('topList', localList);
         }
         localList.forEach(function(record) {
