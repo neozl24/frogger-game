@@ -44,16 +44,21 @@ Enemy.prototype.initLocation = function() {
 
     /* 敌人的速度区间会随等级变化，k是一个随等级变化的系数 */
     var k = 1;
-    if (this.level > 144) {
-        k = 0.6;
-    } else if (this.level > 108) {
-        k = 0.77;
-    } else if (this.level > 72) {
-        k = 0.88;
-    } else if (this.level > 36) {
-        k = 0.95;
+    var baseSpeed = 36;
+    if (this.level < 36) {
+        baseSpeed = 36 + this.level * k;
+    } else if (this.level < 72) {
+        baseSpeed = 36 + 36 * 1 + (this.level - 36) * 0.95;
+    } else if (this.level < 108) {
+        baseSpeed = 36 + 36 * 1 + 36 * 0.95 + (this.level - 72) * 0.88;
+    } else if (this.level < 144) {
+        baseSpeed = 36 + 36 * 1 + 36 * 0.95 + 36 * 0.88 +
+            (this.level - 108) * 0.77;
+    } else {
+        baseSpeed = 36 + 36 * 1 + 36 * 0.95 + 36 * 0.88 +
+            36 * 0.77 + (this.level - 144) * 0.6;
     }
-    this.speed = (35 + this.level * k) * (2 + Math.random() * 3);
+    this.speed = baseSpeed * (2 + Math.random() * 3);
 };
 
 /* 此函数用来更新敌人的位置，参数 dt 表示时间间隙 */
