@@ -45,7 +45,7 @@ var allTreasure = [];
 
 /* 全局变量language，用来表示界面语言，0代表English，1代表中文。这个赋值是必须的 */
 var language = Util.StorageGetter('language');
-if (language === undefined) {
+if (language === undefined || language === null) {
     language = 1;
 }
 
