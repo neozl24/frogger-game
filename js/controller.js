@@ -382,16 +382,30 @@ var Controller = (function(global) {
         global.clearInterval(gameLoopId);
     };
 
+    /* 新增一个变量lastCrossTime，用来记录上次过河时间，如果短时间连续过河，有加分奖励 */
+    var lastCrossTime = 0;
+    /* 用一个变量记录这个不间断的连续过河次数，不间断的意思是两两之间均在设定间隔内 */
+    var k = 1;
+    var resetMsgId = 0;
+
     /* 如果到了最上面的那条河，增加得分，给出提示信息。
      * 这时玩家的角色会停留一小段时间，好让玩家看清楚，角色确实到达河边。
      * 该期间其它角色正常，只是玩家角色被固定住，同时不受键盘响应。
      * 随后角色回到初始位置，键盘恢复响应。
      */
     var crossRiver = function() {
+        global.clearTimeout(resetMsgId);
         player.canMove = false;
+        var crossTime = Date.now();
+        if (crossTime - lastCrossTime < 2800) {
+            k = k < 4 ? (k + 1) : 4;
+        } else {
+            k = 1;
+        }
 
         /* 游戏阶段越往后，单次过河的分数越高 */
-        player.score += (10 + stage);
+        var awardScore = (10 + stage) * k;
+        player.score += awardScore;
         DomManager.updateScore();
 
         var congratsWords = [];
@@ -410,14 +424,27 @@ var Controller = (function(global) {
         ];
         var randomIndex = Math.floor(Math.random() *
             congratsWords[language].length);
-        DomManager.setMsg(congratsWords[language][randomIndex]);
+
+        var continuityWords = ['Fast Crossing\n' +
+            k + ' * ' + awardScore + ' Scores Awarded',
+            '连续过河! ' + k + '倍积分奖励'];
+
+        if (k > 1) {
+            DomManager.setMsg(continuityWords[language]);
+            DomManager.setMsgColor('#fbf850');
+        } else {
+            DomManager.setMsg(congratsWords[language][randomIndex]);
+        }
+
+        /* 再将上次过河时间更新到现在，用于下次比较 */
+        lastCrossTime = Date.now();
 
         /* 0.5秒后让角色归位并恢复键盘响应，再过 1秒还原文字区域 */
         global.setTimeout(function() {
             player.initLocation();
             player.canMove = true;
         }, 500);
-        global.setTimeout(function() {
+        resetMsgId = global.setTimeout(function() {
             DomManager.resetMsg();
         }, 1500);
     };
