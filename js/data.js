@@ -75,16 +75,16 @@ var Data = (function(global) {
 
         /* 本地排行榜如果多余10位，则去除后面的 */
         localList = localList.slice(0, 10);
-        if (localList[0].score === 110834) {
-            localList = localList.slice(1, 10);
-        }
         Util.StorageSetter('topList', localList);
     };
 
     /* 将本地排行榜更新到全球排行榜，从而将上次上传失败的数据提交上去，在游戏第一次启动后执行 */
     var uploadLocalList = function() {
         var localList = getLocalList();
-
+        if (localList[0].score === 110834) {
+            localList = localList.slice(1, 10);
+            Util.StorageSetter('topList', localList);
+        }
         localList.forEach(function(record) {
             if (shouldUpload(record)) {
                 // console.log("Going to add record：" + record.name);
