@@ -25,13 +25,18 @@ DomManager = (function(global) {
         rankingBoard = doc.getElementById('ranking-board'),
         remoteList = doc.getElementById('remote-list'),
         localList = doc.getElementById('local-list'),
-        closeBoardButton = doc.getElementById('btn-close'),
+        closeRankingButton = doc.getElementById('btn-close-ranking'),
+
+        instructionButton = doc.getElementById('btn-instruction'),
+        instructionBoard = doc.getElementById('instruction-board'),
+        closeInstructionButton = doc.getElementById('btn-close-instruction'),
 
         roleListButton = doc.getElementById('btn-role'),
         roleList = doc.getElementById('role-list'),
         languageListButton = doc.getElementById('btn-language'),
         languageList = doc.getElementById('language-list'),
         restartButton = doc.getElementById('btn-restart'),
+
         operationPanel = doc.getElementById('operation-panel'),
         arrowUp = doc.getElementById('arrow-up'),
         arrowDown = doc.getElementById('arrow-down'),
@@ -48,6 +53,8 @@ DomManager = (function(global) {
         roleListButton.innerText = roleListButtonWords[language];
         var languageButtonWords = ['Language', '语言'];
         languageListButton.innerText = languageButtonWords[language];
+        var instructionButtonWords = ['Instruction', '游戏说明'];
+        instructionButton.innerText = instructionButtonWords[language];
         var restartButtonWords = ['Restart', '重新开始'];
         restartButton.innerText = restartButtonWords[language];
         var titleWorldWords = ['World', '全球榜单'];
@@ -99,7 +106,7 @@ DomManager = (function(global) {
     /* 定义一个变量，用来标记菜单栏是否隐藏 */
     var isMenuHidden = true;
     var showMenu = function() {
-        menu.style.height = '243px';
+        menu.style.height = '303px';
         menu.style.borderBottom = '2px solid #251';
         isMenuHidden = false;
         /* 菜单栏出现时，游戏暂停 */
@@ -240,7 +247,7 @@ DomManager = (function(global) {
 
         /* 点击排行榜按钮时，弹出排行榜 */
         rankingButton.onclick = function(e) {
-            /* 点击排行榜按钮时，点击事件停止向上传递，否则游戏会失去暂停效果 */
+            /* 点击排行榜按钮时，点击事件停止应当向上传递，否则游戏会失去暂停效果 */
             e.stopPropagation();
             hideMenu();
             Controller.pauseGame();
@@ -301,7 +308,7 @@ DomManager = (function(global) {
         /* 点击排行榜面板里的OK按钮时，关闭榜单
          * 由于该点击事件会向上传递到document，因此会触发hideMenu()，从而继续游戏
          */
-        closeBoardButton.onclick = function() {
+        closeRankingButton.onclick = function() {
             rankingBoard.style.display = 'none';
         };
 
@@ -328,6 +335,25 @@ DomManager = (function(global) {
         };
         roleList.onmouseout = function() {
             hideSelectionList();
+        };
+
+        /* 以下一部分内容是关于排行榜面板的，首先动态控制排行榜的高度，让它充满屏幕 */
+        instructionBoard.style.height = doc.documentElement.clientHeight + 'px';
+
+        /* 点击游戏说明按钮时，弹出排行榜 */
+        instructionButton.onclick = function(e) {
+            /* 点击该按钮时，点击事件应当停止向上传递，否则游戏会失去暂停效果 */
+            e.stopPropagation();
+            hideMenu();
+            Controller.pauseGame();
+            instructionBoard.style.display = 'block';
+        };
+
+        /* 点击游戏说明面板里的OK按钮时，关闭面板
+         * 由于该点击事件会向上传递到document，因此会触发hideMenu()，从而继续游戏
+         */
+        closeInstructionButton.onclick = function() {
+            instructionBoard.style.display = 'none';
         };
 
         /* 初始化角色菜单中的图像 */

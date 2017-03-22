@@ -29,6 +29,7 @@
                 <li id="btn-ranking" class="btn-option btn-toggle"></li>
                 <li id="btn-role" class="btn-option btn-toggle"></li>
                 <li id="btn-language" class="btn-option btn-toggle"></li>
+                <li id="btn-instruction" class="btn-option btn-toggle"></li>
                 <li id="btn-restart" class="btn-option btn-toggle"></li>
             </ul>
             <ul id="role-list" class="role-list selection-list">
@@ -54,16 +55,50 @@
             </ul>
         </div>
     </div>
-    <div id="ranking-board" class="ranking-board">
+    <div id="ranking-board" class="popup-board">
         <p class="board-title">
             <span id="title-world" class="title-world"></span>
             <span id="title-local" class="title-local"></span>
         </p>
-        <div class="board-content">
+        <div class="board-content ranking-content">
             <ul id="remote-list" class="content-list remote-list"></ul>
             <ul id="local-list" class="content-list local-list"></ul>
         </div>
-        <button id="btn-close" class="btn-close btn-toggle">OK</button>
+        <button id="btn-close-ranking" class="btn-close btn-toggle">OK</button>
+    </div>
+    <div id="instruction-board" class="popup-board">
+        <div class="board-content instruction-content">
+            <h2>游戏目标</h2>
+            <p>玩家通过上下左右四个方向键，操纵角色避开甲虫，到达河边。每次过河会有一定积分奖励，获取更高积分，登上全球排行榜</p>
+            <h2>积分规则</h2>
+            <p>随着时间推移和玩家分数提升，甲虫速度会越来越快，相应的，玩家在每次过河以及获得道具时，也能获得更高的奖励积分</p>
+            <p>玩家在一次过河成功之后，短时间内连续第二次过河，将提升1倍积分奖励，最高可累加至4倍。若连续过河中断，将还原成1倍奖励</p>
+            <h2>道具功能</h2>
+            <p>石头：阻碍玩家的行进线路</p>
+            <p>蓝宝石：使游戏时间变慢，持续5秒</p>
+            <p>黄宝石：将所有甲虫移到屏幕的左侧之外</p>
+            <p>绿宝石：随机消除1只甲虫，游戏后期可以消除2只甲虫。若当前屏幕内只剩一只甲虫，将改为获得中量积分</p>
+            <p>钥匙：随机消除一个石块，同时获得少量积分</p>
+            <p>红心：补充一点生命值，如果达到5点的上限，则改为获得中量积分</p>
+            <p>五角星：获得大量积分</p>
+            <h2>版本更新记录</h2>
+            <h4>2017.3.19</h4>
+            <ul>
+                <li>没起名字的玩家将被随机指定一个小猫小狗的名字</li>
+                <li>略微降低中后期甲虫速度的增幅</li>
+                <li>降低五角星的得分和满血时红心的积分奖励，小幅增加钥匙的得分</li>
+                <li>中后期绿宝石将能一次消除两只甲虫</li>
+            </ul>
+            <h4>2017.3.22</h4>
+            <ul>
+                <li>提供语言设置选项，默认为中文</li>
+                <li>增加短时间内连续过河积分奖励</li>
+                <li>添加游戏说明面板</li>
+                <li>提升甲虫升级时的积分门槛，现在除了坚持得够久，玩家还需取得足够多的积分，才能面对更快速的甲虫，从而在单次过河中获得更高的积分</li>
+                <li>添加微信分享链接的缩略图</li>
+            </ul>
+        </div>
+        <button id="btn-close-instruction" class="btn-close btn-toggle">OK</button>
     </div>
     <div id="operation-panel" class="operation-panel">
         <button id="arrow-up" class="arrow-up arrow-key">⇧</button>

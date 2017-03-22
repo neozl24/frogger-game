@@ -144,7 +144,7 @@ body {
     width: 100px;
 }
 
-.ranking-board {
+.popup-board {
     z-index: 5;
     display: none;
     position: absolute;
@@ -197,6 +197,9 @@ body {
     overflow: hidden;
     position: relative;
     width: 400px;
+}
+
+.ranking-content {
     height: 75%;
 }
 
@@ -280,6 +283,34 @@ body {
 .record-score {
     float: right;
     margin-right: 10px;
+}
+
+.instruction-content {
+    margin-top: 40px;
+    height: 80%;
+    overflow-y: scroll;
+    text-align: left;
+}
+
+.instruction-content h2 {
+    margin-top: 25px;
+    margin-bottom: 10px;
+    color: #fbf850;
+}
+
+.instruction-content h4 {
+    margin: 5px auto;
+    color: #50b3fb;
+}
+
+.instruction-content p {
+    margin: 10px auto;
+}
+
+.instruction-content li {
+    margin: 10px auto;
+    list-style-position: inside;
+    list-style-type: circle;
 }
 
 .operation-panel {
