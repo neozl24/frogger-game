@@ -338,11 +338,14 @@ var Controller = (function(global) {
         gameLoopId = global.setInterval(function() {
 
             /* 只有player.score和Engine.getTime()两个值都达标，才能进入下一个stage
-             * 一般情况下，我们希望stage值由游戏时间决定，每隔 5秒提升一档。
-             * 只有玩家分数太低，平均每 5秒的得分不到10分的情况下，stage才由分数决定
+             * 游戏前期，stage值主要由游戏时间决定，每隔 5秒提升一档。
+             * 游戏后期，不希望玩家通过等甲虫自动提升到很高的等级，再利用道具过河拿分，
+             * stage更多地由分数决定，因此利用了指数函数的成长作为限制。
              * 个别情况会导致stage停留不动，例如玩家在出发点挂机。
              */
-            stage = Math.floor(Math.min(Engine.getTime() / 5.0, player.score / 10.0));
+            var timeLimitStage = Engine.getTime() / 5.0,
+                scoreLimitStage = Math.sqrt(player.score) * 1.25;
+            stage = Math.floor(Math.min(timeLimitStage, scoreLimitStage));
 
             if (stage !== lastStage) {
                 // console.log(stage);
