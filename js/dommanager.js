@@ -38,8 +38,10 @@ DomManager = (function(global) {
         arrowLeft = doc.getElementById('arrow-left'),
         arrowRight = doc.getElementById('arrow-right');
 
-    /* 给菜单栏的按钮按语言设定起好对应的名字 */
-    var initButtonNames = function() {
+    /* 给游戏标题栏，以及菜单栏的按钮，按语言设定起好对应的名字 */
+    var initDomText = function() {
+        var gameTitleWords = ['Frogger', '扶小朋友过马路'];
+        doc.getElementById('game-title').innerText = gameTitleWords[language];
         var rankingButtonWords = ['Ranking', '排行榜'];
         rankingButton.innerText = rankingButtonWords[language];
         var roleListButtonWords = ['Role', '角色'];
@@ -155,8 +157,8 @@ DomManager = (function(global) {
     /* 添加各种事件响应，只需在游戏启动时执行一次，由Engine.init()调用 */
     var addEventListener = function() {
 
-        /* 先执行给菜单按钮起名字的函数 */
-        initButtonNames();
+        /* 先执行给标题和按钮起名字的函数 */
+        initDomText();
 
         /* 监听游戏玩家的键盘点击事件 */
         doc.addEventListener('keyup', function(e) {
@@ -370,14 +372,14 @@ DomManager = (function(global) {
         /* 点击语言切换按钮后，要同时刷新分数栏和信息栏 */
         languageEnglishButton.onclick = function() {
             language = 0;
-            initButtonNames();
+            initDomText();
             resetMsg();
             updateScore();
             Util.StorageSetter('language', language);
         };
         languageChineseButton.onclick = function() {
             language = 1;
-            initButtonNames();
+            initDomText();
             resetMsg();
             updateScore();
             Util.StorageSetter('language', language);
