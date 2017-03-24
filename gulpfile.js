@@ -37,7 +37,7 @@ gulp.task('minifycss',  function() {
 gulp.task('minifyjs', function() {
     'use strict';
     return gulp.src(['js/resources.js','js/class.js','js/util.js','js/controller.js',
-        'js/dommanager.js','js/data,js','js/app.js','js/engine.js'])    //顺序加载
+        'js/dommanager.js','js/data.js','js/app.js','js/engine.js'])    //顺序加载
         .pipe(concat('main.js'))            //合并到 main.js
         .pipe(gulp.dest('minified/js'))     //输出到文件夹
         .pipe(rename({suffix: '.min'}))     //rename压缩后的文件名
