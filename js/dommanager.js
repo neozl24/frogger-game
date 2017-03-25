@@ -270,7 +270,10 @@ DomManager = (function(global) {
 
             /* 计算本地最佳成绩在排行榜上的排名 */
             var bestRanking = 0;
-            var bestScore = localList[0].score || 0;
+            var bestScore = 0;
+            if (localList.length > 0) {
+                bestScore = localList[0].score;
+            }
             bestRanking = Data.getRanking(bestScore, remoteList);
             if (bestRanking !== 0) {
                 var rankingDetail = doc.getElementById('ranking-detail');

@@ -29,7 +29,7 @@ var Util = (function(global) {
     };
     var StorageSetter = function(key, value) {
         var stringValue = JSON.stringify(value);
-        return global.localStorage.setItem(prefix + key, stringValue);
+        global.localStorage.setItem(prefix + key, stringValue);
     };
 
     return {
