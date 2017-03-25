@@ -244,6 +244,21 @@ body {
 
 .even-row {}
 
+.first-record {
+    height: 60px;
+    position: relative;
+}
+
+.ranking-detail {
+    position: absolute;
+    right: 5px;
+    bottom: 2px;
+    height: 20px;
+    text-align: right;
+    font-size: 16px;
+    color: #fbf850;
+}
+
 .record-role {
     display: inline-block;
     width: 40px;

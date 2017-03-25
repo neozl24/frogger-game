@@ -1378,6 +1378,15 @@ DomManager = (function(global) {
             var rowClass = ranking % 2 === 0 ? 'odd-row' : 'even-row';
             li.className = 'record ' + rowClass;
 
+            /* 本地排行榜的第一行因为要显示总排名信息，所以要大一点 */
+            if (scope === 'local-' && ranking === 0) {
+                li.className = 'first-record ' + rowClass;
+                var pDetail = doc.createElement('p');
+                pDetail.className = 'ranking-detail';
+                pDetail.id = 'ranking-detail';
+                li.appendChild(pDetail);
+            }
+
             var pRanking = doc.createElement('p');
             pRanking.className = 'record-ranking record-txt';
             pRanking.id = scope + 'ranking-' + ranking;
@@ -1430,6 +1439,20 @@ DomManager = (function(global) {
 
             var remoteList = Data.getRemoteList();
             var localList = Data.getLocalList();
+
+            /* 计算本地最佳成绩在排行榜上的排名 */
+            var bestRanking = 0;
+            var bestScore = localList[0].score || 0;
+            bestRanking = Data.getRanking(bestScore, remoteList);
+            console.log(bestScore, bestRanking);
+            if (bestRanking !== 0) {
+                var rankingDetail = doc.getElementById('ranking-detail');
+                var percent = (remoteList.length - bestRanking) / remoteList.length;
+                percent = Math.floor(10000 * percent) / 100;
+                rankingDetail.innerText = '全球排名第' + bestRanking +
+                    '，超过了' + percent + '%的玩家';
+            }
+
             var i, record, ranking, img, name, score;
 
             var remoteCount = Math.min(remoteList.length, 100);
@@ -1732,22 +1755,49 @@ var Data = (function(global) {
     };
 
     /* 远程排行榜取回后按从高到低排序，看参数record是否应该添加到榜单上去
-     * 如果榜单上已有该record，或者榜单的第100位分数高于这一个record，都不应该添加
+     * 如果榜单上已有该record，或者该record的分数为 0，则不应该添加
      * 反之则需要添加
      */
     var shouldUpload = function(record) {
         var remoteList = getRemoteList();
+
+        /* 如果网络状况不好等原因导致没有返回在线排行榜，则返回false
+         * 否则，可能出现重复添加记录的问题
+         * 注意，这也导致了，当remoteList还没有任何一个记录时，shouldUpload始终返回false
+         * 那么，给在线排行榜增添第一个记录的时候，就不能采用本函数的返回值作为参考意见
+         */
+        if (remoteList.length === 0) {
+            return false;
+        }
+
         for (var i = 0; i < remoteList.length; i++) {
             if (remoteList[i].time === record.time) {
                 // console.log('This record has existed: ' + record.name);
                 return false;
             }
         }
-        if (remoteList.length >= 100 && remoteList[99].score >= record.score) {
+        // if (remoteList.length >= 100 && remoteList[99].score >= record.score) {
+        //     return false;
+        // }
+        if (record.score === 0) {
             return false;
         }
 
         return true;
+    };
+
+    /* 计算在排行榜上的位置，为了避免重复计算和通用性，分数和数组作为参数传入 */
+    var getRanking = function(score, list) {
+        /* 如果第二个参数不是数组，或者为空数组，或者传入的分数是 0 ，则返回 0，代表没有正常排序 */
+        if (!(list instanceof Array) || list.length === 0 || score === 0) {
+            return 0;
+        }
+        console.log(list.length);
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].score <= score) {
+                return i + 1;
+            }
+        }
     };
 
     return {
@@ -1757,7 +1807,9 @@ var Data = (function(global) {
         getLocalList: getLocalList,
         updateLocalList: updateLocalList,
 
-        uploadLocalList: uploadLocalList
+        uploadLocalList: uploadLocalList,
+
+        getRanking: getRanking
     };
 })(this);
 

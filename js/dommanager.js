@@ -206,6 +206,15 @@ DomManager = (function(global) {
             var rowClass = ranking % 2 === 0 ? 'odd-row' : 'even-row';
             li.className = 'record ' + rowClass;
 
+            /* 本地排行榜的第一行因为要显示总排名信息，所以要大一点 */
+            if (scope === 'local-' && ranking === 0) {
+                li.className = 'first-record ' + rowClass;
+                var pDetail = doc.createElement('p');
+                pDetail.className = 'ranking-detail';
+                pDetail.id = 'ranking-detail';
+                li.appendChild(pDetail);
+            }
+
             var pRanking = doc.createElement('p');
             pRanking.className = 'record-ranking record-txt';
             pRanking.id = scope + 'ranking-' + ranking;
@@ -258,6 +267,20 @@ DomManager = (function(global) {
 
             var remoteList = Data.getRemoteList();
             var localList = Data.getLocalList();
+
+            /* 计算本地最佳成绩在排行榜上的排名 */
+            var bestRanking = 0;
+            var bestScore = localList[0].score || 0;
+            bestRanking = Data.getRanking(bestScore, remoteList);
+            console.log(bestScore, bestRanking);
+            if (bestRanking !== 0) {
+                var rankingDetail = doc.getElementById('ranking-detail');
+                var percent = (remoteList.length - bestRanking) / remoteList.length;
+                percent = Math.floor(10000 * percent) / 100;
+                rankingDetail.innerText = '全球排名第' + bestRanking +
+                    '，超过了' + percent + '%的玩家';
+            }
+
             var i, record, ranking, img, name, score;
 
             var remoteCount = Math.min(remoteList.length, 100);
