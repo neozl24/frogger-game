@@ -127,7 +127,6 @@ var Data = (function(global) {
         if (!(list instanceof Array) || list.length === 0 || score === 0) {
             return 0;
         }
-        console.log(list.length);
         for (var i = 0; i < list.length; i++) {
             if (list[i].score <= score) {
                 return i + 1;
