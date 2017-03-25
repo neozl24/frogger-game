@@ -1448,8 +1448,13 @@ DomManager = (function(global) {
                 var rankingDetail = doc.getElementById('ranking-detail');
                 var percent = (remoteList.length - bestRanking) / remoteList.length;
                 percent = Math.floor(10000 * percent) / 100;
-                rankingDetail.innerText = '全球排名第' + bestRanking +
-                    '，超过了' + percent + '%的玩家';
+                if (language === 0) {
+                    rankingDetail.innerText = 'No.' + bestRanking +
+                        ' in world ranking - Above ' + percent + '% players';
+                } else if (language === 1) {
+                    rankingDetail.innerText = '全球排名第' + bestRanking +
+                        '，超过了' + percent + '%的玩家';
+                }
             }
 
             var i, record, ranking, img, name, score;
