@@ -1,0 +1,33 @@
+{
+    "name": "frogger-game",
+    "version": "1.0.0",
+    "description": "An exciting upgraded version of the traditional arcade game 'frogger'",
+    "main": "index.html",
+    "dependencies": {},
+    "devDependencies": {
+        "gulp": "^3.9.1",
+        "gulp-clean-css": "^3.0.4",
+        "gulp-concat": "^2.6.1",
+        "gulp-jshint": "^2.0.4",
+        "gulp-rename": "^1.2.2",
+        "gulp-minify-css": "^1.2.4",
+        "gulp-uglify": "^2.1.2",
+        "jshint": "^2.9.4"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/neozl24/frogger-game.git"
+    },
+    "keywords": [
+        "frogger-game"
+    ],
+    "author": "Zhong Li",
+    "license": "SEE LICENSE IN LICENSE",
+    "bugs": {
+        "url": "https://github.com/neozl24/frogger-game/issues"
+    },
+    "homepage": "https://github.com/neozl24/frogger-game#readme"
+}
