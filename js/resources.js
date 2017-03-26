@@ -45,18 +45,29 @@
                  * 在未来再次加载这个图片的时候我们就可以简单的返回即可。
                  */
                 resourceCache[url] = img;
-                /* 一旦我们的图片已经被全部加载和缓存，调用所有我们已经定义的回调函数。
-                 */
+
+                /* 如果之前从本地缓存中没有成功读取图片数据，则将图片添加到本地缓存 */
+                if (dataURL === null) {
+                    Util.storeImg(img, url);
+                }
+                /* 一旦我们的图片已经被全部加载和缓存，调用所有我们已经定义的回调函数 */
                 if(isReady()) {
                     readyCallbacks.forEach(function(func) { func(); });
                 }
             };
 
-            /* 将一开始的缓存值设置成 false 。在图片的 onload 事件回调被调用的时候会
-             * 改变这个值。最后，将图片的 src 属性值设置成传进来的 URl 。
+            /* 将一开始的缓存值设成 false。图片的 onload事件发生时，回调函数将其重置成 true
+             * 然后试着从localStorage获取图片资源，如果返回值为null，则需要重新给 img的
+             * src 赋值，赋值成传进来的参数 url；如果返回值不为null，则说明localStorage
+             * 存有有效的img数据信息，将返回的数据信息传给 img就行
              */
             resourceCache[url] = false;
-            img.src = url;
+            var dataURL = Util.getImg(url);
+            if (dataURL === null) {
+                img.src = url;
+            } else {
+                img.src = dataURL;
+            }
         }
     }
 

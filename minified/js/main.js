@@ -45,18 +45,29 @@
                  * 在未来再次加载这个图片的时候我们就可以简单的返回即可。
                  */
                 resourceCache[url] = img;
-                /* 一旦我们的图片已经被全部加载和缓存，调用所有我们已经定义的回调函数。
-                 */
+
+                /* 如果之前从本地缓存中没有成功读取图片数据，则将图片添加到本地缓存 */
+                if (dataURL === null) {
+                    Util.storeImg(img, url);
+                }
+                /* 一旦我们的图片已经被全部加载和缓存，调用所有我们已经定义的回调函数 */
                 if(isReady()) {
                     readyCallbacks.forEach(function(func) { func(); });
                 }
             };
 
-            /* 将一开始的缓存值设置成 false 。在图片的 onload 事件回调被调用的时候会
-             * 改变这个值。最后，将图片的 src 属性值设置成传进来的 URl 。
+            /* 将一开始的缓存值设成 false。图片的 onload事件发生时，回调函数将其重置成 true
+             * 然后试着从localStorage获取图片资源，如果返回值为null，则需要重新给 img的
+             * src 赋值，赋值成传进来的参数 url；如果返回值不为null，则说明localStorage
+             * 存有有效的img数据信息，将返回的数据信息传给 img就行
              */
             resourceCache[url] = false;
-            img.src = url;
+            var dataURL = Util.getImg(url);
+            if (dataURL === null) {
+                img.src = url;
+            } else {
+                img.src = dataURL;
+            }
         }
     }
 
@@ -513,10 +524,55 @@ var Util = (function(global) {
         global.localStorage.setItem(prefix + key, stringValue);
     };
 
+    /* 将图片资源缓存到 localStorage */
+    var storeImg = function(img, url) {
+        var canvas = document.createElement('canvas'),
+            ctx = canvas.getContext('2d');
+
+        /* 保证canvas足够大 */
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0, img.width, img.height);
+
+        var storageFile = StorageGetter(url) || {};
+
+        /* 下面这一行是以字符串形式获取图像信息的关键，需要在服务器上运行这行代码，
+         * 而且要求html里面有meta标签，设置访问权限的跨域处理，否则canvas无法对
+         * 其它域的 url执行 toDataURL函数
+         */
+        storageFile.img = canvas.toDataURL(url);
+        storageFile.time = Date.now();
+        console.log(url + ' 存储到本地');
+        try {
+            StorageSetter(url, storageFile);
+        } catch (e) {
+            console.log("Storage failed: " + e);
+        }
+    };
+
+    /* 从localStorage中读取对应的图片资源 */
+    var getImg = function(url) {
+        var storageFile = StorageGetter(url);
+        var now = Date.now();
+
+        /* 设置一个过期时间，超过了这个时间则需从服务器重新获取 */
+        var warrantyPeriod = 1000 * 60 * 60 * 24 * 30;
+        if (storageFile === null || (now - storageFile.time) > warrantyPeriod) {
+            console.log(url + ' 本地没有或者过期');
+            return null;
+        }
+        console.log('成功获取本地文件: ' + url);
+        return storageFile.img;
+    };
+
     return {
         takeOutNullOrUndefined: takeOutNullOrUndefined,
         StorageGetter: StorageGetter,
-        StorageSetter: StorageSetter
+        StorageSetter: StorageSetter,
+
+        getImg: getImg,
+        storeImg: storeImg
+
     };
 })(this);
 
