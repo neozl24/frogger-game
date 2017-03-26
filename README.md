@@ -8,15 +8,24 @@ This [**Frogger**](https://neozl24.github.io/frogger-game/) is an improved versi
 
 ### Getting Started
 
-Clone the Github repository and then open `index.html` in frogger-game directory
-
+Clone the Github repository and switch to this directory
 ```
 $ git clone https://github.com/neozl24/frogger-game.git
 $ cd frogger-game
-$ open index.html
 ```
 
-Or download this project on your computer, unzip it, and simply open `index.html` in your favorite Web-browser. Now the game starts automatically and your role is able to move while you press the arrow keys on the keyboard.
+Then install the dev-dependent modules according to package.json
+```
+$ npm install
+```
+All the things needed for development stay on your machine now.
+
+Besides, you'd better have downloaded python so as to  start game on your local server with only one-line command
+```
+$ python -m SimpleHTTPServer 8080
+```
+
+Type `127.0.0.1:8080` in the browser address bar, you'll see the game starts automatically and your role is able to move while you press the arrow keys.
 
 
 ### Authors
