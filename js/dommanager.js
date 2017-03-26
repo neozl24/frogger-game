@@ -398,7 +398,7 @@ DomManager = (function(global) {
         /* 在角色菜单栏点击图片，会将玩家形象改变成相应的样子 */
         for (var i = 0; i < roleImages.length; i++) {
             var roleImg = doc.getElementById('role-' + i);
-            roleImg.src = roleImages[i];
+            roleImg.src = Util.getImg(roleImages[i]);
             /* 用立即执行的方式，解决异步调用中 i的值不对的问题 */
             (function(index) {
                 roleImg.onclick = function() {
