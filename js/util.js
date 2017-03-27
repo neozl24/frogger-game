@@ -8,6 +8,8 @@
 
 var Util = (function(global) {
     'use strict';
+    var win = global.window;
+
     /* 功能函数，返回值是参数数组去掉了null或undefined之后的结果 */
     var takeOutNullOrUndefined = function(array) {
         var newArray = [];
@@ -24,12 +26,12 @@ var Util = (function(global) {
     var prefix = 'frogger_game_';
     /* localStorage是以字符串形式存储的，所以JSON对象要先转化才能存取，读取同理 */
     var StorageGetter = function(key) {
-        var stringValue = global.localStorage.getItem(prefix + key);
+        var stringValue = win.localStorage.getItem(prefix + key);
         return JSON.parse(stringValue);
     };
     var StorageSetter = function(key, value) {
         var stringValue = JSON.stringify(value);
-        global.localStorage.setItem(prefix + key, stringValue);
+        win.localStorage.setItem(prefix + key, stringValue);
     };
 
     /* 将图片资源缓存到 localStorage */

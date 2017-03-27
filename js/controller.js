@@ -20,6 +20,8 @@
 var Controller = (function(global) {
     'use strict';
 
+    var win = global.window;
+
     /* 用来设定游戏开始时各元素的数量的对象 */
     var initialSettings = {
         treasureNum: 2,
@@ -245,7 +247,7 @@ var Controller = (function(global) {
          * 所以输入框弹出的时候，玩家最后移动的一步动画的render函数还没有执行，
          * 因此我们加入一小段延时，让这部分处理发生在走出这一步后
          */
-        global.setTimeout(function() {
+        win.setTimeout(function() {
 
             var time = Date.now();
             var record = {
@@ -276,7 +278,7 @@ var Controller = (function(global) {
                     'Congratulations! You\'ve broaded on the global record list!' +
                     'Please leave your name: ',
                     '恭喜，你成功登上了全球排行榜！\n请留下你的大名：'];
-                record.name = global.prompt(worldCongratsWords[language],
+                record.name = win.prompt(worldCongratsWords[language],
                     defaultName) || defaultName;
                 Data.updateRemoteList(record);
                 Data.updateLocalList(record);
@@ -286,12 +288,12 @@ var Controller = (function(global) {
                     'You have freshed your own top 10 records!\n' +
                     'Please leave your name: ' ,
                     '你刷新了个人的10佳记录，可以留个名了：'];
-                record.name = global.prompt(localCongratsWords[language],
+                record.name = win.prompt(localCongratsWords[language],
                     defaultName) || defaultName;
                 Data.updateLocalList(record);
             } else {
                 var encouragingWords = ['You could do better!', '下次努力'];
-                global.alert(encouragingWords[language]);
+                win.alert(encouragingWords[language]);
             }
 
             restartGame();
@@ -329,13 +331,13 @@ var Controller = (function(global) {
         var lastStage = stage;
 
         /* 每次执行下面的setInterval时，都需要将上一次的结果清除掉 */
-        global.clearInterval(gameLoopId);
+        win.clearInterval(gameLoopId);
 
         /* 这个setInterval函数每隔1秒检查stage值是否有变化，
          * 如果有变化，则准备新增元素，并提升敌人等级。
          * 将它的返回值存储下来，方便之后clearInterval调用，从而停止游戏逻辑循环
          */
-        gameLoopId = global.setInterval(function() {
+        gameLoopId = win.setInterval(function() {
 
             /* 只有player.score和Engine.getTime()两个值都达标，才能进入下一个stage
              * 游戏前期，stage值主要由游戏时间决定，每隔 5秒提升一档。
@@ -382,7 +384,7 @@ var Controller = (function(global) {
 
     /* 结束游戏循环 */
     var stopLoop = function() {
-        global.clearInterval(gameLoopId);
+        win.clearInterval(gameLoopId);
     };
 
     /* 新增一个变量lastCrossTime，用来记录上次过河时间，如果短时间连续过河，有加分奖励 */
@@ -397,7 +399,7 @@ var Controller = (function(global) {
      * 随后角色回到初始位置，键盘恢复响应。
      */
     var crossRiver = function() {
-        global.clearTimeout(resetMsgId);
+        win.clearTimeout(resetMsgId);
         player.canMove = false;
         var crossTime = Date.now();
         if (crossTime - lastCrossTime < 2800) {
@@ -443,11 +445,11 @@ var Controller = (function(global) {
         lastCrossTime = Date.now();
 
         /* 0.5秒后让角色归位并恢复键盘响应，再过 1秒还原文字区域 */
-        global.setTimeout(function() {
+        win.setTimeout(function() {
             player.initLocation();
             player.canMove = true;
         }, 500);
-        resetMsgId = global.setTimeout(function() {
+        resetMsgId = win.setTimeout(function() {
             DomManager.resetMsg();
         }, 1500);
     };
@@ -469,7 +471,7 @@ var Controller = (function(global) {
             var collisionWords = ['Oops! Collide with a bug!',
                 '你被甲虫给逮住啦!'];
             DomManager.setMsg(collisionWords[language]);
-            global.setTimeout(function() {
+            win.setTimeout(function() {
                 DomManager.resetMsg();
                 player.initLocation();
                 continueGame();
@@ -519,29 +521,29 @@ var Controller = (function(global) {
         var dt = 10;
 
         /* 每次启动setInterval之前，需要将上一次的循环清除 */
-        global.clearInterval(timerId);
+        win.clearInterval(timerId);
 
         /* 倒计时器，leftTime逐步减少，直到为 0，才触发时间流速恢复正常 */
-        timerId = global.setInterval(function() {
+        timerId = win.setInterval(function() {
             leftTime -= dt;
             leftTime = Math.max(leftTime - dt, 0);
             DomManager.setProgressBarLength(leftTime / maxTime);
             if (leftTime <= 0) {
                 Engine.setTimeSpeed(1);
                 DomManager.resetMsg();
-                global.clearInterval(timerId);
+                win.clearInterval(timerId);
             }
         }, dt);
     };
 
     /* 暂停倒计时器，游戏暂停时执行 */
     var pauseTimer = function() {
-        global.clearInterval(timerId);
+        win.clearInterval(timerId);
     };
 
     /* 停止倒计时器，游戏重启时执行 */
     var stopTimer = function() {
-        global.clearInterval(timerId);
+        win.clearInterval(timerId);
         leftTime = 0;
         DomManager.setProgressBarLength(0);
     };
@@ -563,7 +565,7 @@ var Controller = (function(global) {
             DomManager.setMsg(k + eliminatedWords[language]);
         }
 
-        global.setTimeout(function() {
+        win.setTimeout(function() {
             DomManager.resetMsg();
         }, 1500);
     };
@@ -575,7 +577,7 @@ var Controller = (function(global) {
         });
         var pushWords = ['Push Bugs Away!!', '全部给我闪开！'];
         DomManager.setMsg(pushWords[language]);
-        global.setTimeout(function() {
+        win.setTimeout(function() {
             DomManager.resetMsg();
         }, 1500);
     };
@@ -594,7 +596,7 @@ var Controller = (function(global) {
             var scoreWords = ['分到手！', ' Extra Scores'];
             DomManager.setMsg(player.score + scoreWords[language]);
         }
-        global.setTimeout(function() {
+        win.setTimeout(function() {
             DomManager.resetMsg();
         }, 1500);
     };
@@ -606,7 +608,7 @@ var Controller = (function(global) {
         DomManager.updateScore();
         var rockWords = ['Remove a Rock!', '移开了一块石头!'];
         DomManager.setMsg(rockWords[language]);
-        global.setTimeout(function() {
+        win.setTimeout(function() {
             DomManager.resetMsg();
         }, 1500);
     };
@@ -618,7 +620,7 @@ var Controller = (function(global) {
         DomManager.updateScore();
         var scoreWords = [' Scores Awarded!', '分到手，好多!'];
         DomManager.setMsg(awardScore + scoreWords[language]);
-        global.setTimeout(function() {
+        win.setTimeout(function() {
             DomManager.resetMsg();
         }, 1500);
     };
