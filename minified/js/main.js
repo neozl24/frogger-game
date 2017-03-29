@@ -1327,12 +1327,18 @@ DomManager = (function(global) {
     };
 
     /* 设置进度条的长度，参数为 0到1之间的数值，代表相对其最大长度的比例 */
-    var maxBarWidth = topBar.offsetWidth;
     var setProgressBarLength = function(ratio) {
         /* ratio取值范围在 [0, 1] */
         ratio = Math.max(ratio, 0);
         ratio = Math.min(ratio, 1);
         progressBar.style.width = (maxBarWidth * ratio) + 'px';
+    };
+    /* 为避免setProgressBarLength频繁读取layout property，将maxBarWidth拿出来提前求值
+     * 但是如果浏览器宽度发生变化时，这个 maxBarWidth需要作出响应的调整
+     */
+    var maxBarWidth = topBar.offsetWidth;
+    global.window.onresize = function() {
+        maxBarWidth = topBar.offsetWidth;
     };
 
     /* 添加菜单中的点击响应事件 */
