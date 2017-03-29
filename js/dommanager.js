@@ -95,11 +95,12 @@ DomManager = (function(global) {
     };
 
     /* 设置进度条的长度，参数为 0到1之间的数值，代表相对其最大长度的比例 */
+    var maxBarWidth = topBar.offsetWidth;
     var setProgressBarLength = function(ratio) {
         /* ratio取值范围在 [0, 1] */
         ratio = Math.max(ratio, 0);
         ratio = Math.min(ratio, 1);
-        progressBar.style.width = (topBar.offsetWidth * ratio) + 'px';
+        progressBar.style.width = (maxBarWidth * ratio) + 'px';
     };
 
     /* 添加菜单中的点击响应事件 */
@@ -319,19 +320,20 @@ DomManager = (function(global) {
         };
 
         /* 点击排行榜上方的按钮，可以切换面板 */
+        var listWidth = remoteList.offsetWidth;
         titleWorld.onclick = function(e) {
             e.stopPropagation();
             titleWorld.style.backgroundColor = '#4156a0';
             titleLocal.style.backgroundColor = 'transparent';
             remoteList.style.left = '0';
-            localList.style.left = remoteList.offsetWidth + 'px';
+            localList.style.left = listWidth + 'px';
         };
 
         titleLocal.onclick = function(e) {
             e.stopPropagation();
             titleLocal.style.backgroundColor = '#4156a0';
             titleWorld.style.backgroundColor = 'transparent';
-            remoteList.style.left = -remoteList.offsetWidth + 'px';
+            remoteList.style.left = -listWidth + 'px';
             localList.style.left = '0';
         };
 
