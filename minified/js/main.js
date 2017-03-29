@@ -1552,20 +1552,19 @@ DomManager = (function(global) {
         };
 
         /* 点击排行榜上方的按钮，可以切换面板 */
-        var listWidth = remoteList.offsetWidth;
         titleWorld.onclick = function(e) {
             e.stopPropagation();
             titleWorld.style.backgroundColor = '#4156a0';
             titleLocal.style.backgroundColor = 'transparent';
             remoteList.style.left = '0';
-            localList.style.left = listWidth + 'px';
+            localList.style.left = remoteList.offsetWidth + 'px';
         };
 
         titleLocal.onclick = function(e) {
             e.stopPropagation();
             titleLocal.style.backgroundColor = '#4156a0';
             titleWorld.style.backgroundColor = 'transparent';
-            remoteList.style.left = -listWidth + 'px';
+            remoteList.style.left = -remoteList.offsetWidth + 'px';
             localList.style.left = '0';
         };
 
