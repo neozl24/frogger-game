@@ -52,7 +52,7 @@ var Util = (function(global) {
          */
         storageFile.img = canvas.toDataURL(url);
         storageFile.time = Date.now();
-        console.log(url + ' 存储到本地');
+        // console.log(url + ' 存储到本地');
         try {
             StorageSetter(url, storageFile);
         } catch (e) {
@@ -68,10 +68,10 @@ var Util = (function(global) {
         /* 设置一个过期时间，超过了这个时间则需从服务器重新获取 */
         var warrantyPeriod = 1000 * 60 * 60 * 24 * 30;
         if (storageFile === null || (now - storageFile.time) > warrantyPeriod) {
-            console.log(url + ' 本地没有或者过期');
+            // console.log(url + ' 本地没有或者过期');
             return null;
         }
-        console.log('成功获取本地文件: ' + url);
+        // console.log('成功获取本地文件: ' + url);
         return storageFile.img;
     };
 
