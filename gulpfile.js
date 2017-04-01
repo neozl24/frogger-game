@@ -1,6 +1,7 @@
 /* jshint undef: false, unused: false */
 
 var gulp = require('gulp'),
+    minifyhtml = require('gulp-htmlmin'),
     minifycss = require('gulp-minify-css'),
     cleanCSS = require('gulp-clean-css'),
     concat = require('gulp-concat'),
@@ -23,6 +24,25 @@ gulp.task('jshint',  function () {
 //         .pipe(cleanCSS({compatibility: 'ie8'}))
 //         .pipe(gulp.dest('minified/css'));
 // });
+
+/* 压缩html */
+gulp.task('minifyhtml', function () {
+    'use strict';
+    var options = {
+        removeComments: true,//清除HTML注释
+        collapseWhitespace: true,//压缩HTML
+        collapseBooleanAttributes: true,//省略布尔属性的值 <input checked="true"/> ==> <input />
+        removeEmptyAttributes: true,//删除所有空属性值 <input id="" /> ==> <input />
+        removeScriptTypeAttributes: true,//删除<script>的type="text/javascript"
+        removeStyleLinkTypeAttributes: true,//删除<style>和<link>的type="text/css"
+        minifyJS: true,//压缩页面JS
+        minifyCSS: true//压缩页面CSS
+    };
+    gulp.src('*.html')
+        .pipe(rename({suffix: '.min'}))//rename压缩后的文件名
+        .pipe(minifyhtml(options))
+        .pipe(gulp.dest('minified/html'));
+});
 
 /* 压缩css */
 gulp.task('minifycss',  function() {
@@ -48,5 +68,5 @@ gulp.task('minifyjs', function() {
 /* 默认命令，在cmd中输入gulp后，执行的就是这个任务(压缩js需要在检查js之后操作) */
 gulp.task('default', ['jshint'], function() {
     'use strict';
-    gulp.start('minifycss', 'minifyjs');
+    gulp.start('minifycss', 'minifyjs', 'minifyhtml');
 });
