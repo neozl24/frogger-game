@@ -1,4 +1,4 @@
 administrator.js
-/node_modules/*
-/minified/*
+node_modules/*
+minified/*
 ngrok
