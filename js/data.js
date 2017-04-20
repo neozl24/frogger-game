@@ -11,7 +11,7 @@ var Data = (function(global) {
     'use strict';
 
     /* 要读写数据，必须先创建 Wilddog 引用 */
-    var ref = new Wilddog('https://frogger.wilddogio.com/records');
+    var ref = new Wilddog('https://frogger-game.wilddogio.com/records');
 
     /* 登陆成功的回调函数 */
     // function authHandler(error, authData) {
