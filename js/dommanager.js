@@ -269,9 +269,6 @@ DomManager = (function(global) {
             Controller.pauseGame();
             rankingBoard.style.display = 'block';
 
-            /* 将之前没有上传但是应该上榜的本地记录上传 */
-            Data.uploadLocalList();
-
             var remoteList = Data.getRemoteList();
             var localList = Data.getLocalList();
 
