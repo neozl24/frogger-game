@@ -13,12 +13,11 @@ var Data = (function(global) {
     function GetXmlHttpObject() {
         if (window.XMLHttpRequest){
             // code for IE7+, Firefox, Chrome, Opera, Safari
-            var xmlhttp = new XMLHttpRequest();
+            return new XMLHttpRequest();
         } else {
             // code for IE6, IE5
-            var xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
+            return new ActiveXObject('Microsoft.XMLHTTP');
         }
-    　　return xmlhttp;
     }
 
     /* 要读写数据，必须先创建 Wilddog 引用 */
@@ -65,15 +64,14 @@ var Data = (function(global) {
     };
 
     /* 按分数从高到低顺序得到在线排行榜之后，用参数中的回调函数对其进行处理 */
-    var queryRemoteList = function(isAsync) {
+    var queryRemoteList = function() {
         var xmlHttp = GetXmlHttpObject();
         if (!xmlHttp) {
             console.log('您的浏览器不支持AJAX !');
             return;
         }
         var url = 'http://www.neozl24.cn/frogger/api/queryHighLadder.php';
-        isAsync = isAsync ? isAsync : false;    // 默认为异步执行，除非在参数中指定为同步执行
-        xmlHttp.open('GET', url, isAsync);
+        xmlHttp.open('GET', url, true);
         xmlHttp.onreadystatechange = function() {
           　if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
                 remoteList = JSON.parse(xmlHttp.responseText);
@@ -86,7 +84,7 @@ var Data = (function(global) {
         xmlHttp.send();
     };
 
-    queryRemoteList(false);
+    queryRemoteList();
 
     /* 更新在线排行榜，参数是record对象 */
     var updateRemoteList = function(record) {
