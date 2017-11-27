@@ -10,8 +10,19 @@
 var Data = (function(global) {
     'use strict';
 
+    function GetXmlHttpObject() {
+        if (window.XMLHttpRequest){
+            // code for IE7+, Firefox, Chrome, Opera, Safari
+            var xmlhttp = new XMLHttpRequest();
+        } else {
+            // code for IE6, IE5
+            var xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
+        }
+    　　return xmlhttp;
+    }
+
     /* 要读写数据，必须先创建 Wilddog 引用 */
-    var ref = new Wilddog('https://frogger-game.wilddogio.com/records');
+    // var ref = new Wilddog('https://frogger-game.wilddogio.com/records');
 
     /* 登陆成功的回调函数 */
     // function authHandler(error, authData) {
@@ -33,28 +44,68 @@ var Data = (function(global) {
     /* 在这里就直接初始化remoteList，并利用Wilddog提供的回调函数，和服务器端同步更新 */
     var remoteList = [];
     var record = {};
-    /* 每次有新数据添加，都会触发回调函数，参数是新增节点对象 */
-    ref.on('child_added', function(snapshot) {
-        var data = snapshot.val();
-        record = {
-            name: data.name,
-            score: data.score,
-            role: data.role,
-            time: data.time
-        };
-        remoteList.push(record);
-    });
 
-    /* 以数组的形式返回按分数从高到低顺序的在线排行榜 */
+    /* 每次有新数据添加，都会触发回调函数，参数是新增节点对象 */
+    // ref.on('child_added', function(snapshot) {
+    //     var data = snapshot.val();
+    //     record = {
+    //         name: data.name,
+    //         score: data.score,
+    //         role: data.role,
+    //         time: data.time
+    //     };
+    //     remoteList.push(record);
+    // });
+
     var getRemoteList = function() {
-        return remoteList.sort(function(recordA, recordB) {
+        remoteList.sort(function(recordA, recordB) {
             return recordB.score - recordA.score;
         });
+        return remoteList;
     };
+
+    /* 按分数从高到低顺序得到在线排行榜之后，用参数中的回调函数对其进行处理 */
+    var queryRemoteList = function(isAsync) {
+        var xmlHttp = GetXmlHttpObject();
+        if (!xmlHttp) {
+            console.log('您的浏览器不支持AJAX !');
+            return;
+        }
+        var url = 'http://www.neozl24.cn/frogger/api/queryHighLadder.php';
+        isAsync = isAsync ? isAsync : false;    // 默认为异步执行，除非在参数中指定为同步执行
+        xmlHttp.open('GET', url, isAsync);
+        xmlHttp.onreadystatechange = function() {
+          　if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+                remoteList = JSON.parse(xmlHttp.responseText);
+                for (var i = 0; i < remoteList.length; i++) {
+                  remoteList[i].score = Number(remoteList[i].score);
+                  remoteList[i].time = Number(remoteList[i].time);
+                }
+          　}
+        };
+        xmlHttp.send();
+    };
+
+    queryRemoteList(false);
 
     /* 更新在线排行榜，参数是record对象 */
     var updateRemoteList = function(record) {
-        ref.push(record);
+        // ref.push(record);
+        var xmlHttp = GetXmlHttpObject();
+        if (!xmlHttp) {
+            console.log('您的浏览器不支持AJAX !');
+            return;
+        }
+        var url = 'http://www.neozl24.cn/frogger/api/addHighLadder.php';
+        xmlHttp.open('POST', url, true);
+        xmlHttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xmlHttp.onreadystatechange = function() {
+          　if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+                queryRemoteList();
+          　}
+        };
+        xmlHttp.send('name=' + record.name + '&role=' + record.role + '&score=' +
+            record.score + '&time=' + record.time);
     };
 
     /* 返回本地排行榜，返回值是一个长度为10的分数从高到低的数组 */
@@ -120,6 +171,9 @@ var Data = (function(global) {
 
         return true;
     };
+
+    /* 将之前没有上传但是应该上榜的本地记录上传 */
+    uploadLocalList();
 
     /* 计算在排行榜上的位置，为了避免重复计算和通用性，分数和数组作为参数传入 */
     var getRanking = function(score, list) {
