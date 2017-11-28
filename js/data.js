@@ -70,7 +70,7 @@ var Data = (function(global) {
             console.log('您的浏览器不支持AJAX !');
             return;
         }
-        var url = 'http://www.neozl24.cn/frogger/api/queryHighLadder.php';
+        var url = 'https://www.neozl24.cn/frogger/api/queryHighLadder.php';
         xmlHttp.open('GET', url, true);
         xmlHttp.onreadystatechange = function() {
           　if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
@@ -94,7 +94,7 @@ var Data = (function(global) {
             console.log('您的浏览器不支持AJAX !');
             return;
         }
-        var url = 'http://www.neozl24.cn/frogger/api/addHighLadder.php';
+        var url = 'https://www.neozl24.cn/frogger/api/addHighLadder.php';
         xmlHttp.open('POST', url, true);
         xmlHttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xmlHttp.onreadystatechange = function() {
