@@ -269,7 +269,7 @@ var Controller = (function(global) {
             var prefix = '没有名字的';
             var defaultNames = ['小猫', '小狗', '小老鼠', '小牛', '小老虎', '小兔子',
                 '小羊羔', '小猴子', '小猪', '小熊猫', '小苹果', '小辣椒', '小青蛙', '小螃蟹',
-                '小虾米', '小毛豆', '小西瓜', '小苹果', '小雪梨', '小笨蛋'
+                '小虾米', '小毛豆', '小西瓜', '小南瓜', '小雪梨', '小笨蛋'
             ];
             var randomIndex = Math.floor(Math.random() * defaultNames.length);
             var defaultName = prefix + defaultNames[randomIndex];
