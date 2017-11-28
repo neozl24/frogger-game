@@ -163,7 +163,7 @@ var Data = (function(global) {
         // if (remoteList.length >= 100 && remoteList[99].score >= record.score) {
         //     return false;
         // }
-        if (record.score === 0) {
+        if (record.score <= 0) {
             return false;
         }
 
