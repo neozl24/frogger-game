@@ -2,9 +2,9 @@
 
 <img src="https://github.com/neozl24/frogger-game/raw/master/images/screen-shot-1.jpeg" alt="screen-shot" width="300" height="350" align="center">
 
-This [**Frogger**](https://neozl24.github.io/frogger-game/) is an improved version of the old arcade game 'frogger'. You have to get avoid the bugs and move your role to the river at the top of the screen. By doing that, you'll be rewarded some scores and your final goal should be getting as more scores as you can, and boarding on the world ranking list.
+This [**Frogger**](https://www.neozl24.cn/frogger/) is an improved version of the old arcade game 'frogger'. You have to get avoid the bugs and move your role to the river at the top of the screen. By doing that, you'll be rewarded some scores and your final goal should be getting as more scores as you can, and boarding on the world ranking list.
 
-[Start Game now](https://neozl24.github.io/frogger-game/)
+[Start Game now](https://www.neozl24.cn/frogger/)
 
 ### Getting Started
 
