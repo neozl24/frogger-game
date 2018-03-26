@@ -2,31 +2,31 @@
 
 <img src="https://github.com/neozl24/frogger-game/raw/master/images/screen-shot-1.jpeg" alt="screen-shot" width="300" height="350" align="center">
 
-This [**Frogger**](https://www.neozl24.cn/frogger/) is an improved version of the old arcade game 'frogger'. You have to get avoid the bugs and move your role to the river at the top of the screen. By doing that, you'll be rewarded some scores and your final goal should be getting as more scores as you can, and boarding on the world ranking list.
+[**Frogger**](https://www.neozl24.cn/frogger/) is an improved version of the original Konami arcade game 'Frogger'. The goal is to avoid obstacles (including bugs) while moving your character towards the opposite side of the river (towards the top of the screen). The more rivers you cross, the more scores you will be rewarded, and the higher you will be ranked on the world rankings. 
 
 [Start Game now](https://www.neozl24.cn/frogger/)
 
 ### Getting Started
 
-Clone the Github repository and switch to this directory
+Clone the Github repository and switch to this directory:
 ```
 $ git clone https://github.com/neozl24/frogger-game.git
 $ cd frogger-game
 ```
 
-Then install the dev-dependent modules according to package.json
+Then install the dev-dependent modules according to package.json:
 ```
 $ npm install
 ```
-All the things needed for development stay on your machine now.
+All the files needed for development will now be on your machine. 
 
-Besides, you'd better have downloaded python so as to  start game on your local server with only one-line command
+Download Python if you do not already have Python installed. Using Python, Frogger can be started on your local server by entering the following command:
+
 ```
 $ python -m SimpleHTTPServer 8080
 ```
 
-Type `127.0.0.1:8080` in the browser address bar, you'll see the game starts automatically and your role is able to move while you press the arrow keys.
-
+Then by typing `127.0.0.1:8080` into the browser address bar, your game will automatically start. Character movement will be controlled by the arrow keys.
 
 ### Authors
 
